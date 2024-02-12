@@ -1,0 +1,3 @@
+-r autoformatter.txt
+-r linters.txt
+-r pre_commit.txt
