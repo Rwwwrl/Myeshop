@@ -84,7 +84,19 @@ LOCAL_DATABASE = {
         },
 }
 
-DATABASES = LOCAL_DATABASE
+DATABASE_IN_DOCKER = {
+    'default':
+        {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'myeshop',
+            'USER': decouple.config('POSTGRES_USER_LOGIN'),
+            'PASSWORD': decouple.config('POSTGRES_USER_PASSWORD'),
+            'HOST': 'postgres_db',
+        },
+}
+
+# DATABASES = LOCAL_DATABASE
+DATABASES = DATABASE_IN_DOCKER
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
