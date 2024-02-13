@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import decouple
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -13,13 +15,27 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-INSTALLED_APPS = [
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+]
+
+PROJECT_APPS = [
+    'test_app',
+]
+
+THIRD_PARTY_APPS = [
+    'rest_framework',
+]
+
+INSTALLED_APPS = [
+    *DJANGO_APPS,
+    *THIRD_PARTY_APPS,
+    *PROJECT_APPS,
 ]
 
 MIDDLEWARE = [
@@ -57,12 +73,18 @@ WSGI_APPLICATION = 'eshop.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    },
+LOCAL_DATABASE = {
+    'default':
+        {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'myeshop',
+            'USER': decouple.config('POSTGRES_USER_LOGIN'),
+            'PASSWORD': decouple.config('POSTGRES_USER_PASSWORD'),
+            'HOST': 'localhost',
+        },
 }
+
+DATABASES = LOCAL_DATABASE
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
