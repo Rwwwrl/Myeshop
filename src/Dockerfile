@@ -11,4 +11,9 @@ COPY . .
 
 RUN pip install -e .
 
-CMD ["python", "./eshop/manage.py", "runserver", "--noreload", "0.0.0.0:80" ]
+WORKDIR /usr/code/myeshop/eshop/
+
+CMD ["gunicorn", "eshop.wsgi", "-b", "0.0.0.0:80"]
+
+# for debugging container
+# ENTRYPOINT ["tail", "-f", "/dev/null"]

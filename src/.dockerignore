@@ -1,0 +1,6 @@
+**/*.pyc
+
+.env.example
+down.sh
+up.sh
+restart.sh
