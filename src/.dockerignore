@@ -1,6 +1,4 @@
 **/*.pyc
 
 .env.example
-down.sh
-up.sh
-restart.sh
+.prod_up.sh

@@ -4,5 +4,7 @@ services:
   web_app:
     build:
       context: .
-      dockerfile: Dockerfile.tests
+      dockerfile: Dockerfile
+      target: build_for_run_pytest
+    command: pytest -c pytest.ini
     container_name: web_app

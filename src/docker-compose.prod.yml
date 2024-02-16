@@ -4,7 +4,9 @@ services:
   web_app:
     build:
       context: .
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile
+      target: build
+    command: sh -c "cd eshop && gunicorn eshop.wsgi -b 0.0.0.0:80 --access-logfile=-"
     container_name: web_app
     ports:
       - 80:80
