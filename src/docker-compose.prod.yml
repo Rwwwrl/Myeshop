@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
       target: build
     command: gunicorn --chdir eshop eshop.wsgi -b 0.0.0.0:80 --access-logfile=-
-    container_name: web_app
+    image: app_build_to_run_server
     ports:
       - 80:80
     depends_on:
