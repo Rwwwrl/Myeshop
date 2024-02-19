@@ -30,5 +30,26 @@ services:
       timeout: 3s
       retries: 30
 
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: node_exporter
+    ports:
+      - 9100:9100
+    command:
+      - '--path.rootfs=/host'
+    volumes:
+      - '/:/host:ro,rslave'
+
+  prometheus:
+    build:
+      context: deploy/prometheus/
+      dockerfile: Dockerfile
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - prometheus_data:/prometheus
+
 volumes:
   postgres_db_data:
+  prometheus_data:
