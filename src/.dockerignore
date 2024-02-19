@@ -1,4 +1,9 @@
 **/*.pyc
 
 .env.example
-.prod_up.sh
+
+# local
+build_prod.sh
+build_tests.sh
+up_and_build_prod.sh
+up_and_build_tests.sh
