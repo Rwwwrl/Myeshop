@@ -6,8 +6,9 @@ services:
       context: .
       dockerfile: Dockerfile
       target: build
-    command: gunicorn --chdir eshop eshop.wsgi -b 0.0.0.0:80 --access-logfile=-
+    command: gunicorn --config deploy/gunicorn/gunicorn.conf.py eshop.wsgi 
     image: app_build_to_run_server
+    container_name: prod_web_app
     ports:
       - 80:80
     depends_on:
