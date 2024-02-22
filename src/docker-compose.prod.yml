@@ -50,6 +50,15 @@ services:
     volumes:
       - prometheus_data:/prometheus
 
+  grafana:
+    image: grafana/grafana-enterprise
+    ports:
+      - 3000:3000
+    container_name: grafana_container
+    volumes:
+      - grafana_data:/var/lib/grafana
+
 volumes:
   postgres_db_data:
   prometheus_data:
+  grafana_data:
