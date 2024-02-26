@@ -6,8 +6,11 @@ services:
       context: .
       dockerfile: Dockerfile
       target: build
-    command: sh -c "cd eshop && python manage.py runserver 0.0.0.0:80"
+    command: sh -c "cd eshop && uvicorn main.main_app:MAIN_APP --host 0.0.0.0 --port 80"
+    # FOR debugging container
+    # command: sleep infinity
     image: app_build_to_run_local_dev_server
+    container_name: web_app_dev
     ports:
       - 80:80
     volumes:
@@ -18,7 +21,7 @@ services:
 
   postgres_db:
     image: postgres:14
-    container_name: postgres_db
+    container_name: postgres_db_dev
     restart: always
     environment:
       - POSTGRES_USER=${POSTGRES_USER_LOGIN}
