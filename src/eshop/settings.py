@@ -1,11 +1,16 @@
 from contextlib import asynccontextmanager
 from typing import List, Type
 
-from apps.test_app.app_config import TestAppConfig
+import dotenv
+
+from eshop.apps.test_app.app_config import TestAppConfig
+from eshop.framework.fastapi.app_config import AppConfig
 
 from fastapi import FastAPI
 
-from framework.fastapi.app_config import AppConfig
+import pydantic_settings
+
+dotenv.load_dotenv('.env')
 
 INSTALLED_APPS: List[Type[AppConfig]] = [
     TestAppConfig,
@@ -35,3 +40,24 @@ async def lifespan(app: FastAPI):
 
 
 MAIN_APP = FastAPI(lifespan=lifespan)
+
+
+class BaseSettings(pydantic_settings.BaseSettings):
+
+    model_config = pydantic_settings.SettingsConfigDict(env_file='.env')
+
+
+class DatabaseSettings(BaseSettings, frozen=True):
+
+    db_name: str
+    db_host: str
+    db_user_login: str
+    db_user_password: str
+
+
+class Settings(BaseSettings, frozen=True):
+
+    db: DatabaseSettings = DatabaseSettings()
+
+
+SETTINGS = Settings()

@@ -1,6 +1,6 @@
-from fastapi import APIRouter
+from eshop.framework.fastapi.app_config import AppConfig
 
-from framework.fastapi.app_config import AppConfig
+from fastapi import APIRouter
 
 
 class TestAppConfig(AppConfig):

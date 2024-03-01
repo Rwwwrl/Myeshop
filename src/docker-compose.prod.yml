@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: build
-    command: python deploy/uvicorn/uvicorn_run.py 
+    command: python deploy/uvicorn/uvicorn_run.py
     image: app_build_to_run_server
     container_name: web_app_prod
     ports:
@@ -20,9 +20,9 @@ services:
     container_name: postgres_db_prod
     restart: always
     environment:
-      - POSTGRES_USER=${POSTGRES_USER_LOGIN}
-      - POSTGRES_PASSWORD=${POSTGRES_USER_PASSWORD}
-      - POSTGRES_DB=myeshop
+      - POSTGRES_USER=${DB_USER_LOGIN}
+      - POSTGRES_PASSWORD=${DB_USER_PASSWORD}
+      - POSTGRES_DB={$DB_NAME}
     volumes:
       - postgres_db_data:/var/lib/postgresql/data
     healthcheck:
