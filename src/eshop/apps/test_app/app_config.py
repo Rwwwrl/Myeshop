@@ -15,7 +15,7 @@ class TestAppConfig(AppConfig):
 
     @classmethod
     def import_models(cls) -> None:
-        pass
+        exec('from .models import *')
 
     @classmethod
     def import_views(cls) -> None:

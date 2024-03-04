@@ -1,8 +1,10 @@
 from fastapi import APIRouter
 
+from .app_config import TestAppConfig
+
 api_router = APIRouter(
-    prefix='/test_app',
+    prefix=f'/{TestAppConfig.name}',
     tags=[
-        'test_app',
+        TestAppConfig.name,
     ],
 )
