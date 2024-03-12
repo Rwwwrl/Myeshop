@@ -15,12 +15,14 @@ from sqlalchemy.engine import create_engine
 from sqlalchemy.orm import DeclarativeBase as SqlalchemyDeclarativeBase
 
 from eshop.apps.test_app.app_config import TestAppConfig
+from eshop.apps.user_identity.app_config import UserIdentityAppConfig
 from eshop.framework.fastapi.app_config import AppConfig
 
 dotenv.load_dotenv('.env')
 
 INSTALLED_APPS: List[Type[AppConfig]] = [
     TestAppConfig,
+    UserIdentityAppConfig,
 ]
 
 
