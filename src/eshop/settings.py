@@ -1,18 +1,21 @@
 from contextlib import asynccontextmanager
+from datetime import timedelta
 from typing import List, Type
+
+import decouple
 
 import dotenv
 
-from eshop.apps.test_app.app_config import TestAppConfig
-from eshop.framework.fastapi.app_config import AppConfig
-
 from fastapi import FastAPI
 
-import pydantic_settings
+import pydantic
 
 from sqlalchemy import URL
 from sqlalchemy.engine import create_engine
 from sqlalchemy.orm import DeclarativeBase as SqlalchemyDeclarativeBase
+
+from eshop.apps.test_app.app_config import TestAppConfig
+from eshop.framework.fastapi.app_config import AppConfig
 
 dotenv.load_dotenv('.env')
 
@@ -46,32 +49,38 @@ async def lifespan(app: FastAPI):
 MAIN_APP = FastAPI(lifespan=lifespan)
 
 
-class BaseSettings(pydantic_settings.BaseSettings, frozen=True):
-
-    model_config = pydantic_settings.SettingsConfigDict(env_file='.env')
+class BaseSettings(pydantic.BaseModel, frozen=True):
+    pass
 
 
 class DatabaseSettings(BaseSettings):
 
-    db_name: str
-    db_host: str
-    db_user_login: str
-    db_user_password: str
+    name: str = decouple.config('DB_NAME')
+    host: str = decouple.config('DB_HOST')
+    login: str = decouple.config('DB_USER_LOGIN')
+    password: str = decouple.config('DB_USER_PASSWORD')
+
+
+class UserIdentityServiceSettings(BaseSettings):
+
+    secret: str = decouple.config('USER_IDENTITY_SERVICE_SECRET')
+    token_life_time_duration: timedelta = timedelta(minutes=5)
 
 
 class Settings(BaseSettings):
 
     db: DatabaseSettings = DatabaseSettings()
+    user_identity_service_settings: UserIdentityServiceSettings = UserIdentityServiceSettings()
 
 
 SETTINGS = Settings()
 
 DB_URL = URL.create(
     drivername='postgresql',
-    database=SETTINGS.db.db_name,
-    host=SETTINGS.db.db_host,
-    username=SETTINGS.db.db_user_login,
-    password=SETTINGS.db.db_user_password,
+    database=SETTINGS.db.name,
+    host=SETTINGS.db.host,
+    username=SETTINGS.db.login,
+    password=SETTINGS.db.password,
 )
 
 

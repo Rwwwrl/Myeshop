@@ -1,9 +1,9 @@
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
 from eshop import settings
 from eshop.apps.test_app import hints
 from eshop.framework.ddd.dto import DTO
-
-from sqlalchemy import select
-from sqlalchemy.orm import Session
 
 from .api_router import api_router
 from .models import Author, Book
@@ -18,7 +18,7 @@ def index():
 def settings__get():
     from eshop.settings import SETTINGS
 
-    return {'db_name': SETTINGS.db.db_name}
+    return {'db_name': SETTINGS.db.name}
 
 
 class BookDTO(DTO):
