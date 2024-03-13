@@ -9,7 +9,7 @@ services:
     command: uvicorn eshop.settings:MAIN_APP --host 0.0.0.0 --port 80 --reload
     # FOR debugging container
     # command: sleep infinity
-    image: app_build_to_run_local_dev_server
+    image: web_app_dev
     container_name: web_app_dev
     ports:
       - 80:80
@@ -28,7 +28,7 @@ services:
       - POSTGRES_PASSWORD=${DB_USER_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
     volumes:
-      - postgres_db_data:/var/lib/postgresql/data
+      - postgres_db_data_dev:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 1s
@@ -36,4 +36,4 @@ services:
       retries: 30
 
 volumes:
-  postgres_db_data:
+  postgres_db_data_dev:

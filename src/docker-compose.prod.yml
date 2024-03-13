@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
       target: build
     command: python deploy/uvicorn/uvicorn_run.py
-    image: app_build_to_run_server
+    image: web_app_prod
     container_name: web_app_prod
     ports:
       - 80:80
@@ -24,7 +24,7 @@ services:
       - POSTGRES_PASSWORD=${DB_USER_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
     volumes:
-      - postgres_db_data:/var/lib/postgresql/data
+      - postgres_db_data_prod:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 1s
@@ -60,6 +60,6 @@ services:
       - grafana_data:/var/lib/grafana
 
 volumes:
-  postgres_db_data:
+  postgres_db_data_prod:
   prometheus_data:
   grafana_data:
