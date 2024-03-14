@@ -1,8 +1,9 @@
 from sqlalchemy.orm import Session
 
 from eshop import settings
-from eshop.apps.user_identity.dependency_container import dependency_container
-from eshop.apps.user_identity.domain.models.user import User
+
+from user_identity.dependency_container import dependency_container
+from user_identity.domain.models.user import User
 
 
 def create_admin():

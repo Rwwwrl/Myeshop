@@ -1,1 +1,0 @@
-from .view import token_view

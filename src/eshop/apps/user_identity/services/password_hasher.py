@@ -2,7 +2,7 @@ import abc
 
 from passlib.context import CryptContext
 
-from eshop.apps.user_identity import hints
+from user_identity import hints
 
 
 class IPasswordHasher(abc.ABC):

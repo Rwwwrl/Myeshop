@@ -1,9 +1,9 @@
 from fastapi import APIRouter
 
-from eshop.framework.fastapi.app_config import AppConfig
+from eshop.framework.fastapi.app_config import IAppConfig
 
 
-class UserIdentityAppConfig(AppConfig):
+class UserIdentityAppConfig(IAppConfig):
 
     name = 'user_identity'
 
@@ -18,5 +18,9 @@ class UserIdentityAppConfig(AppConfig):
         exec('from .domain.models import *')
 
     @classmethod
-    def import_views(cls) -> None:
-        exec('from .views import *')
+    def import_http_views(cls) -> None:
+        exec('from .views.http import *')
+
+    @classmethod
+    def import_cqrs_handlers(cls) -> None:
+        exec('from .views.cqrs import *')

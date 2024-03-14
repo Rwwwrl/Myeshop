@@ -2,8 +2,9 @@ from sqlalchemy import Integer, VARCHAR
 from sqlalchemy.orm import Mapped, mapped_column
 
 from eshop import settings
-from eshop.apps.user_identity import hints
-from eshop.apps.user_identity.app_config import UserIdentityAppConfig
+
+from user_identity import hints
+from user_identity.app_config import UserIdentityAppConfig
 
 
 class User(settings.SQLALCHEMY_BASE):
