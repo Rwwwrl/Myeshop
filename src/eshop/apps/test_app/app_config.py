@@ -1,9 +1,9 @@
-from eshop.framework.fastapi.app_config import AppConfig
-
 from fastapi import APIRouter
 
+from eshop.framework.fastapi.app_config import IAppConfig
 
-class TestAppConfig(AppConfig):
+
+class TestAppConfig(IAppConfig):
 
     name = 'test_app'
 
@@ -18,5 +18,8 @@ class TestAppConfig(AppConfig):
         exec('from .models import *')
 
     @classmethod
-    def import_views(cls) -> None:
+    def import_http_views(cls) -> None:
         exec('from .views import *')
+
+    def import_cqrs_handlers(cls) -> None:
+        pass
