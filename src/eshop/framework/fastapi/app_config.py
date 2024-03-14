@@ -4,7 +4,7 @@ from typing import ClassVar
 from fastapi import APIRouter
 
 
-class AppConfig:
+class IAppConfig:
 
     name: ClassVar[str]
 
@@ -22,5 +22,9 @@ class AppConfig:
         raise NotImplementedError
 
     @abc.abstractclassmethod
-    def import_views(cls) -> None:
+    def import_http_views(cls) -> None:
+        raise NotImplementedError
+
+    @abc.abstractclassmethod
+    def import_cqrs_handlers(cls) -> None:
         raise NotImplementedError

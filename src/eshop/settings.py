@@ -7,6 +7,7 @@ import decouple
 import dotenv
 
 from fastapi import FastAPI
+from fastapi.security import OAuth2PasswordBearer
 
 import pydantic
 
@@ -16,11 +17,11 @@ from sqlalchemy.orm import DeclarativeBase as SqlalchemyDeclarativeBase
 
 from eshop.apps.test_app.app_config import TestAppConfig
 from eshop.apps.user_identity.app_config import UserIdentityAppConfig
-from eshop.framework.fastapi.app_config import AppConfig
+from eshop.framework.fastapi.app_config import IAppConfig
 
 dotenv.load_dotenv('.env')
 
-INSTALLED_APPS: List[Type[AppConfig]] = [
+INSTALLED_APPS: List[Type[IAppConfig]] = [
     TestAppConfig,
     UserIdentityAppConfig,
 ]
@@ -31,9 +32,9 @@ def import_all_models_in_project() -> None:
         app_config.import_models()
 
 
-def import_views() -> None:
+def import_http_views() -> None:
     for app_config in INSTALLED_APPS:
-        app_config.import_views()
+        app_config.import_http_views()
 
 
 def include_routes() -> None:
@@ -41,10 +42,16 @@ def include_routes() -> None:
         MAIN_APP.include_router(app_config.get_api_router())
 
 
+def import_cqrs_controllers() -> None:
+    for app_config in INSTALLED_APPS:
+        app_config.import_cqrs_handlers()
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    import_views()
+    import_http_views()
     include_routes()
+    import_cqrs_controllers()
     yield
 
 
@@ -91,3 +98,10 @@ class SQLALCHEMY_BASE(SqlalchemyDeclarativeBase):
 
 
 SQLALCHEMY_ENGINE = create_engine(url=DB_URL)
+
+
+def get_token_url() -> str:
+    return TestAppConfig.get_api_router().url_path_for('token_view')
+
+
+OAUTH2_SCHEME = OAuth2PasswordBearer(tokenUrl=get_token_url())

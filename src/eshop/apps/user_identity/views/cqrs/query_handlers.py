@@ -6,6 +6,8 @@ from user_identity.dependency_container import dependency_container
 from user_identity_cqrs_contract.query.query import UserIdFromJWTTokenQuery
 from user_identity_cqrs_contract.query.query_response import UserDTO
 
+__all__ = ('UserFromJWTTokenQueryHandler', )
+
 
 @query_handler(UserIdFromJWTTokenQuery)
 class UserFromJWTTokenQueryHandler(IQueryHandler):
