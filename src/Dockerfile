@@ -10,8 +10,10 @@ EXPOSE 80
 
 COPY . .
 
+RUN pip install -e eshop/apps/user_identity
+RUN pip install -e eshop/apps/user_identity_cqrs_contract
+RUN pip install -e eshop/framework
 RUN pip install -e .
-
 
 # build for run pytest stage
 FROM build as build_for_run_pytest

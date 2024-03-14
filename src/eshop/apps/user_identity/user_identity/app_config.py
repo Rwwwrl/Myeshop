@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from eshop.framework.fastapi.app_config import IAppConfig
+from framework.fastapi.app_config import IAppConfig
 
 
 class UserIdentityAppConfig(IAppConfig):

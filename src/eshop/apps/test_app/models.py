@@ -1,9 +1,9 @@
+from sqlalchemy import ForeignKey, Integer
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from eshop import settings
 from eshop.apps.test_app import hints
 from eshop.apps.test_app.app_config import TestAppConfig
-
-from sqlalchemy import ForeignKey, Integer
-from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 class Author(settings.SQLALCHEMY_BASE):

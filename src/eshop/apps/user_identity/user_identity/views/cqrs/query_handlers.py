@@ -1,5 +1,6 @@
 from eshop import settings
-from eshop.framework.cqrs.query.handler import IQueryHandler, query_handler
+
+from framework.cqrs.query.handler import IQueryHandler, query_handler
 
 from user_identity.dependency_container import dependency_container
 

@@ -2,7 +2,6 @@ import abc
 from typing import Type
 
 from .query import Query, QueryResponse
-from .registry import query_registry
 
 
 class IQueryHandler(abc.ABC):
@@ -11,9 +10,11 @@ class IQueryHandler(abc.ABC):
         raise NotImplementedError
 
 
-def query_handler(query: Query):
+def query_handler(query_cls: Type[Query]):
+    from .registry import query_registry
+
     def inner(query_handler_cls: Type[IQueryHandler]):
-        query_registry.register_query(query_cls=query.__class__, query_handler_cls=query_handler_cls)
+        query_registry.register_query(query_cls=query_cls, query_handler_cls=query_handler_cls)
         return query_handler_cls
 
     return inner

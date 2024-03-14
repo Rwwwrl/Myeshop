@@ -1,6 +1,6 @@
-from eshop.framework.cqrs.query import Query
+from framework.cqrs.query import Query
 
-from user_identity_cqrs_contract.types import JWTToken
+from user_identity_cqrs_contract.hints import JWTToken
 
 from .query_response import UserDTO
 

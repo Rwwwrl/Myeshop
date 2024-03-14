@@ -1,10 +1,9 @@
-from typing import Dict, TYPE_CHECKING, Type
+from typing import Dict, Type
 
-if TYPE_CHECKING:
-    from .query import Query
-    from .handler import IQueryHandler
+from .handler import IQueryHandler
+from .query import IQuery
 
-QueryRegistryData = Dict[Type[Query], Type[IQueryHandler]]
+QueryRegistryData = Dict[Type[IQuery], Type[IQueryHandler]]
 
 
 class QueryAlreadyRegisteredException(Exception):
@@ -19,13 +18,13 @@ class QueryRegistry:
     def __init__(self):
         self._data: QueryRegistryData = {}
 
-    def register_query(self, query_cls: Type[Query], query_handler_cls: Type[IQueryHandler]) -> None:
+    def register_query(self, query_cls: Type[IQuery], query_handler_cls: Type[IQueryHandler]) -> None:
         if self._data.get(query_cls, None) is not None:
             raise QueryAlreadyRegisteredException
 
         self._data[query_cls] = query_handler_cls
 
-    def get_query_handler_cls(self, query_cls: Type[Query]) -> Type[IQueryHandler]:
+    def get_query_handler_cls(self, query_cls: Type[IQuery]) -> Type[IQueryHandler]:
         try:
             return self._data[query_cls]
         except KeyError:

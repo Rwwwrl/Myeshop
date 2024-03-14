@@ -10,7 +10,8 @@ import pytz
 from sqlalchemy.orm import Session
 
 from eshop import settings
-from eshop.framework.ddd.dto import DTO
+
+from framework.ddd.dto import DTO
 
 from user_identity import hints
 from user_identity.api_router import api_router
@@ -71,4 +72,4 @@ def token_view(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Ac
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    return AccessTokenDTO(acess_token=jwt_token, token_type=TokenType.bearer)
+    return AccessTokenDTO(access_token=jwt_token, token_type=TokenType.bearer)

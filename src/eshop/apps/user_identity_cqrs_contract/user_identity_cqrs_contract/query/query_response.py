@@ -1,6 +1,6 @@
-from eshop.framework.ddd.dto import DTO
+from framework.ddd.dto import DTO
 
-from user_identity_cqrs_contract.types import UserId
+from user_identity_cqrs_contract.hints import UserId
 
 
 class UserDTO(DTO):

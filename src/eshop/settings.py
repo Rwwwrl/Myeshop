@@ -16,8 +16,10 @@ from sqlalchemy.engine import create_engine
 from sqlalchemy.orm import DeclarativeBase as SqlalchemyDeclarativeBase
 
 from eshop.apps.test_app.app_config import TestAppConfig
-from eshop.apps.user_identity.user_identity.app_config import UserIdentityAppConfig
-from eshop.framework.fastapi.app_config import IAppConfig
+
+from framework.fastapi.app_config import IAppConfig
+
+from user_identity.app_config import UserIdentityAppConfig
 
 dotenv.load_dotenv('.env')
 
@@ -99,10 +101,4 @@ class SQLALCHEMY_BASE(SqlalchemyDeclarativeBase):
 
 SQLALCHEMY_ENGINE = create_engine(url=DB_URL)
 
-
-def get_token_url() -> str:
-    import_http_views()
-    return TestAppConfig.get_api_router().url_path_for('token_view')
-
-
-OAUTH2_SCHEME = OAuth2PasswordBearer(tokenUrl=get_token_url())
+OAUTH2_SCHEME = OAuth2PasswordBearer(tokenUrl='user_identity/token/')

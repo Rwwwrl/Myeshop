@@ -1,3 +1,4 @@
+pip==23.0.1
 uvicorn==0.27.1
 fastapi==0.110.0
 alembic==1.13.1
@@ -10,3 +11,6 @@ python-decouple==3.8
 python-dotenv==1.0.1
 python-multipart==0.0.9
 dependency-injector==4.41.0
+user_identity
+user_identity_cqrs_contract
+myeshop

@@ -24,7 +24,7 @@ class JoseJWTEncoderDecoder(IJWTEncoderDecoder):
     def __init__(self):
         self._algorithm = 'HS256'
 
-    def encode(self, user_id: hints.UserId, expire_at: datetime, secret: str) -> hints.JwtToken:
+    def encode(self, user_id: hints.UserId, expire_at: datetime, secret: str) -> hints.JWTToken:
         payload = {'sub': str(user_id), 'exp': expire_at}
         return jwt.encode(
             claims=payload,
@@ -32,7 +32,7 @@ class JoseJWTEncoderDecoder(IJWTEncoderDecoder):
             algorithm=self._algorithm,
         )
 
-    def decode(self, token: hints.JwtToken, secret: str) -> hints.UserId:
+    def decode(self, token: hints.JWTToken, secret: str) -> hints.UserId:
         try:
             payload = jwt.decode(
                 token=token,

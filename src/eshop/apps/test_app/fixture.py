@@ -1,7 +1,7 @@
+from sqlalchemy.orm import Session
+
 from eshop import settings
 from eshop.apps.test_app.models import Author, Book
-
-from sqlalchemy.orm import Session
 
 
 def create_data() -> None:

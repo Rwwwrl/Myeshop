@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from eshop.framework.fastapi.app_config import IAppConfig
+from framework.fastapi.app_config import IAppConfig
 
 
 class TestAppConfig(IAppConfig):
@@ -21,5 +21,6 @@ class TestAppConfig(IAppConfig):
     def import_http_views(cls) -> None:
         exec('from .views import *')
 
+    @classmethod
     def import_cqrs_handlers(cls) -> None:
         pass

@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 
 from eshop import settings
 from eshop.apps.test_app import hints
-from eshop.framework.ddd.dto import DTO
+
+from framework.ddd.dto import DTO
 
 from .api_router import api_router
 from .models import Author, Book
