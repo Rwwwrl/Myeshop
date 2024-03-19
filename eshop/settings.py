@@ -102,3 +102,10 @@ class SQLALCHEMY_BASE(SqlalchemyDeclarativeBase):
 SQLALCHEMY_ENGINE = create_engine(url=DB_URL)
 
 OAUTH2_SCHEME = OAuth2PasswordBearer(tokenUrl='user_identity/token/')
+
+
+
+
+
+def some_fucn():
+    pass
