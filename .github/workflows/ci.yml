@@ -41,3 +41,13 @@ jobs:
         run: ./deploy/ci/build_project.sh && pip install -r requirements/for_run_tests.txt
       - name: run pytest
         run: pytest -c pytest.ini -m cqrs_contract_usage
+
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout to repository code
+        uses: actions/checkout@v4
+      - name: setup project
+        run: ./deploy/ci/build_project.sh && pip install -r requirements/for_run_tests.txt
+      - name: run pytest
+        run: pytest -c pytest.ini
