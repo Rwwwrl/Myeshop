@@ -17,8 +17,6 @@ class TestUserIdFromJWTTokenQuery:
             assert UserIdFromJWTTokenQuery.model_fields.get('jwt_token', None)
             assert UserIdFromJWTTokenQuery.model_fields['jwt_token'].annotation == JWTToken
 
-        assert False is True
-
     def test_response(self):
         response_type = UserIdFromJWTTokenQuery.get_response_type()
 
