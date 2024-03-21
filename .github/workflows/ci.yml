@@ -32,22 +32,14 @@ jobs:
       - name: run linter
         run: flake8 --config=setup.cfg $(git diff origin/${{ github.event.pull_request.base.ref }} --name-only --diff-filter=d | grep -E '.+\.py$')
 
-  pytest_contract_usage:
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout to repository code
-        uses: actions/checkout@v4
-      - name: setup project
-        run: ./deploy/ci/build_project.sh && pip install -r requirements/for_run_tests.txt
-      - name: run pytest
-        run: pytest -c pytest.ini -m cqrs_contract_usage
-
   pytest:
     runs-on: ubuntu-latest
     steps:
       - name: checkout to repository code
         uses: actions/checkout@v4
-      - name: setup project
-        run: ./deploy/ci/build_project.sh && pip install -r requirements/for_run_tests.txt
+      - name: build_project
+        run: docker build -t "image_to_run_tests" -f Dockerfile --target build_for_run_pytest .
+      - name: run pytest_contract_usage
+        run: docker run --rm image_to_run_tests pytest -c pytest.ini -m cqrs_contract_usage
       - name: run pytest
-        run: pytest -c pytest.ini
+        run: docker run --rm image_to_run_tests pytest -c pytest.ini
