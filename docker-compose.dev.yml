@@ -14,7 +14,7 @@ services:
     ports:
       - 80:80
     volumes:
-      - ./:/usr/code/myeshop
+      - .eshop/:/usr/code/myeshop/eshop/
     environment:
       - DB_HOST=postgres_db
       - DB_NAME=${DB_NAME}

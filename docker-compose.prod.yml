@@ -51,6 +51,7 @@ services:
     build:
       context: deploy/prometheus/
       dockerfile: Dockerfile
+    image: myeshop/prometheus
     container_name: prometheus
     ports:
       - 9090:9090

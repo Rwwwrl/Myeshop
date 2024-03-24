@@ -1,14 +1,26 @@
 **/*.pyc
 **/__pycache__
-
 .pytest_cache
+**/.git
+**/.gitignore
+**/.github
+**/.DS_Store
+**/env
+**/.vscode
+**/.env
 
-# local dev secret
-.env
+README.md
+deploy
+Dockerfile
+docker-compose.*.yml
 
-# local
+setup.cfg
+.pre-commit-config.yaml
+.yapfignore
+
+build_dev.sh
 build_prod.sh
-build_tests.sh
-up_and_build_prod.sh
-up_and_build_tests.sh
-up_and_build_dev.sh
+down_dev.sh
+down_prod.sh
+up_dev.sh
+up_prod.sh
