@@ -3,7 +3,8 @@
 
 .pytest_cache
 
-.env.example
+# local dev secret
+.env
 
 # local
 build_prod.sh
