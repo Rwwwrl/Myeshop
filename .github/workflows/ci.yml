@@ -28,3 +28,39 @@ jobs:
         run: docker run --rm image_to_run_tests pytest -c pytest.ini -m cqrs_contract_usage
       - name: run pytest
         run: docker run --rm image_to_run_tests pytest -c pytest.ini
+
+  build_and_push_to_dockerhub:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout to repository code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: docker login
+        run: echo ${{ secrets.DOCKER_HUB_ACESS_TOKEN_FOR_CI_CD }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+      - name: set last git commit sha
+        run: |
+          LAST_GIT_COMMIT_SHA=$(git log -1 --pretty=format:%h)
+          echo "LAST_GIT_COMMIT_SHA=$LAST_GIT_COMMIT_SHA" >> $GITHUB_ENV
+      - name: set target branch name
+        run: |
+          TARGET_BRANCH_NAME=${{ github.event.pull_request.base.ref }}
+          echo "TARGET_BRANCH_NAME=$TARGET_BRANCH_NAME" >> $GITHUB_ENV
+      - name: build web app image
+        run: |
+          docker build -t rwwwrl/myeshop_web_app -f Dockerfile --target build_for_prod .
+          docker tag rwwwrl/myeshop_web_app rwwwrl/myeshop_web_app:${{ env.TARGET_BRANCH_NAME }}_${{ env.LAST_GIT_COMMIT_SHA }}
+          docker tag rwwwrl/myeshop_web_app rwwwrl/myeshop_web_app:${{ env.TARGET_BRANCH_NAME }}_latest
+      - name: push web app image to docker hub
+        run: |
+          docker push rwwwrl/myeshop_web_app:${{ env.TARGET_BRANCH_NAME }}_${{ env.LAST_GIT_COMMIT_SHA }}
+          docker push rwwwrl/myeshop_web_app:${{ env.TARGET_BRANCH_NAME }}_latest
+      - name: build prometheus image
+        run: |
+          cd deploy/prometheus
+          docker build -t rwwwrl/myeshop_prometheus:${{ env.TARGET_BRANCH_NAME }}_latest .
+          cd -
+      - name: push prometheus image to docker hub
+        run: docker push rwwwrl/myeshop_prometheus:${{ env.TARGET_BRANCH_NAME }}_latest
+      - name: docker logout
+        run: docker logout
