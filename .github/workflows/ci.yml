@@ -54,8 +54,8 @@ jobs:
 
     steps:
       - name: get sha of last commit
-        run: >
-          SHA_OF_LAST_COMMIT=${{ github.event.push.head_commit.id }} ,
+        run: |
+          SHA_OF_LAST_COMMIT=${{ github.event.push.head_commit.id }}
           echo $SHA_OF_LAST_COMMIT
 
     # steps:
