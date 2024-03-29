@@ -33,8 +33,6 @@ jobs:
           push: false
           target: build_for_run_pytest
           tags: web_app:tests
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Run pytest_contract_usage
         uses: addnab/docker-run-action@v3
@@ -55,6 +53,7 @@ jobs:
       TARGET_BRANCH_NAME: main
       LAST_GIT_COMMIT_SHA: ${{ github.event.head_commit.id }}
 
+    steps:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -70,10 +69,8 @@ jobs:
           push: true
           target: build_for_prod
           tags: >
-            rwwwrl/myeshop_web_app:{{ env.TARGET_BRANCH_NAME }}_${{ env.LAST_GIT_COMMIT_SHA }} ,
-            rwwwrl/myeshop_web_app:{{ env.TARGET_BRANCH_NAME }}_latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+            rwwwrl/myeshop_web_app:${{ env.TARGET_BRANCH_NAME }}_${{ env.LAST_GIT_COMMIT_SHA }} ,
+            rwwwrl/myeshop_web_app:${{ env.TARGET_BRANCH_NAME }}_latest
 
       - name: Build and push to docker hub prometheus
         uses: docker/build-push-action@v5
@@ -81,5 +78,3 @@ jobs:
           context: "{{ defaultContext }}:deploy/prometheus"
           push: true
           tags: rwwwrl/myeshop_prometheus:${{ env.TARGET_BRANCH_NAME }}_latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
