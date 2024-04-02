@@ -5,6 +5,9 @@ on:
   push:
     branches: ["main"]
 
+env:
+  WORK_BRANCH_NAME: main
+
 jobs:
   run_flake8_linter:
     runs-on: ubuntu-latest
@@ -50,7 +53,6 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     env:
-      TARGET_BRANCH_NAME: main
       LAST_GIT_COMMIT_SHA: ${{ github.event.head_commit.id }}
 
     steps:
@@ -69,12 +71,49 @@ jobs:
           push: true
           target: build_for_prod
           tags: >
-            rwwwrl/myeshop_web_app:${{ env.TARGET_BRANCH_NAME }}_${{ env.LAST_GIT_COMMIT_SHA }} ,
-            rwwwrl/myeshop_web_app:${{ env.TARGET_BRANCH_NAME }}_latest
+            rwwwrl/myeshop_web_app:${{ env.WORK_BRANCH_NAME }}_${{ env.LAST_GIT_COMMIT_SHA }} ,
+            rwwwrl/myeshop_web_app:${{ env.WORK_BRANCH_NAME }}_latest
 
       - name: Build and push to docker hub prometheus
         uses: docker/build-push-action@v5
         with:
           context: "{{ defaultContext }}:deploy/prometheus"
           push: true
-          tags: rwwwrl/myeshop_prometheus:${{ env.TARGET_BRANCH_NAME }}_latest
+          tags: rwwwrl/myeshop_prometheus:${{ env.WORK_BRANCH_NAME }}_latest
+
+  pull_main_latest_and_restart_server_on_test_machine:
+    needs: build_and_push_to_dockerhub
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+
+    steps:
+      - name: Setup ssh
+        run: |
+          mkdir -p ~/.ssh/
+          echo "${{ secrets.SSH_PRIVATE_KEY_TO_YANDEX_CLOUD_VM_TEST_STAND }}" > ~/.ssh/yandex-cloud-test-stand.key
+          chmod 600 ~/.ssh/yandex-cloud-test-stand.key
+          cat >>~/.ssh/config <<END
+          Host yandex-cloud-test-stand
+            HostName ${{ secrets.YANDEX_CLOUD_VM_TEST_STAND_PUBLIC_IP }}
+            User ${{ secrets.YANDEX_CLOUD_VM_TEST_STAND_USER_USERNAME }}
+            IdentityFile ~/.ssh/yandex-cloud-test-stand.key
+            StrictHostKeyChecking no
+          END
+
+      - name: Git pull main
+        run: ssh yandex-cloud-test-stand "cd $PROJECT_DIR && git pull origin main"
+
+      - name: Stop current running server
+        run: ssh yandex-cloud-test-stand "cd $PROJECT_DIR && sudo docker-compose -f docker-compose.prod.yml down"
+
+      - name: Pull latest docker images
+        run: ssh yandex-cloud-test-stand "cd $PROJECT_DIR && sudo docker-compose -f docker-compose.prod.yml pull"
+
+      - name: Alembic upgrade head
+        run: ssh yandex-cloud-test-stand "cd $PROJECT_DIR && sudo docker-compose -f docker-compose.prod.yml run web_app alembic upgrade head"
+
+      - name: Start server
+        run: ssh yandex-cloud-test-stand "cd $PROJECT_DIR && sudo docker-compose -f docker-compose.prod.yml up -d"
+
+      - name: logout
+        run: ssh yandex-cloud-test-stand "logout"

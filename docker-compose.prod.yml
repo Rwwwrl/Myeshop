@@ -2,13 +2,8 @@ version: "3.9"
 
 services:
   web_app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: build
+    image: rwwwrl/myeshop_web_app:main_latest
     command: python deploy/uvicorn/uvicorn_run.py
-    image: web_app_prod
-    container_name: web_app_prod
     ports:
       - 80:80
     environment:
@@ -17,6 +12,7 @@ services:
       - DB_USER_LOGIN=${DB_USER_LOGIN}
       - DB_USER_PASSWORD=${DB_USER_PASSWORD}
       - USER_IDENTITY_SERVICE_SECRET=${USER_IDENTITY_SERVICE_SECRET}
+    container_name: myeshop_web_app
     depends_on:
       postgres_db:
         condition: service_healthy
@@ -32,7 +28,7 @@ services:
     volumes:
       - postgres_db_data_prod:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER_LOGIN}" ]
       interval: 1s
       timeout: 3s
       retries: 30
@@ -48,10 +44,7 @@ services:
       - '/:/host:ro,rslave'
 
   prometheus:
-    build:
-      context: deploy/prometheus/
-      dockerfile: Dockerfile
-    image: myeshop/prometheus
+    image: rwwwrl/myeshop_prometheus:main_latest
     container_name: prometheus
     ports:
       - 9090:9090
