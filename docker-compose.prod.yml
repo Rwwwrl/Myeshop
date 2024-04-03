@@ -28,7 +28,7 @@ services:
     volumes:
       - postgres_db_data_prod:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER_LOGIN}" ]
       interval: 1s
       timeout: 3s
       retries: 30

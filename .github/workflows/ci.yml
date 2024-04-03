@@ -82,6 +82,7 @@ jobs:
           tags: rwwwrl/myeshop_prometheus:${{ env.WORK_BRANCH_NAME }}_latest
 
   pull_main_latest_and_restart_server_on_test_machine:
+    needs: build_and_push_to_dockerhub
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
@@ -100,7 +101,7 @@ jobs:
           END
 
       - name: Git pull main
-        run: ssh yandex-cloud-test-stand "cd $PROJECT_DIR && git pull origin ${{ env.WORK_BRANCH_NAME }}"
+        run: ssh yandex-cloud-test-stand "cd $PROJECT_DIR && git pull origin main"
 
       - name: Stop current running server
         run: ssh yandex-cloud-test-stand "cd $PROJECT_DIR && sudo docker-compose -f docker-compose.prod.yml down"
