@@ -101,19 +101,19 @@ jobs:
           END
 
       - name: Git pull main
-        run: ssh yandex-cloud-test-stand "cd $PROJECT_DIR && git pull origin main"
+        run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && git pull origin main"
 
       - name: Stop current running server
-        run: ssh yandex-cloud-test-stand "cd $PROJECT_DIR && sudo docker-compose -f docker-compose.prod.yml down"
+        run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo docker-compose -f docker-compose.prod.yml down"
 
       - name: Pull latest docker images
-        run: ssh yandex-cloud-test-stand "cd $PROJECT_DIR && sudo docker-compose -f docker-compose.prod.yml pull"
+        run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo docker-compose -f docker-compose.prod.yml pull"
 
       - name: Alembic upgrade head
-        run: ssh yandex-cloud-test-stand "cd $PROJECT_DIR && sudo docker-compose -f docker-compose.prod.yml run web_app alembic upgrade head"
+        run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo docker-compose -f docker-compose.prod.yml run web_app alembic upgrade head"
 
       - name: Start server
-        run: ssh yandex-cloud-test-stand "cd $PROJECT_DIR && sudo docker-compose -f docker-compose.prod.yml up -d"
+        run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo docker-compose -f docker-compose.prod.yml up -d"
 
       - name: logout
         run: ssh yandex-cloud-test-stand "logout"
