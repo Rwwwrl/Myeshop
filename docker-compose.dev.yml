@@ -9,12 +9,12 @@ services:
     command: uvicorn eshop.settings:MAIN_APP --host 0.0.0.0 --port 80 --reload
     # FOR debugging container
     # command: sleep infinity
-    image: web_app_dev
-    container_name: web_app_dev
+    image: rwwwrl/myeshop_web_app:dev
+    container_name: myeshop_web_app_dev
     ports:
       - 80:80
     volumes:
-      - .eshop/:/usr/code/myeshop/eshop/
+      - ./eshop/:/usr/code/myeshop/eshop/
     environment:
       - DB_HOST=postgres_db
       - DB_NAME=${DB_NAME}

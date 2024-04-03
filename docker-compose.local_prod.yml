@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  web_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: build_for_prod
+    image: rwwwrl/myeshop_web_app:local_prod
+    container_name: myeshop_web_app_local_prod
+
+  prometheus:
+    build:
+      context: deploy/prometheus
+      dockerfile: Dockerfile
+    image: rwwwrl/myeshop_prometheus
