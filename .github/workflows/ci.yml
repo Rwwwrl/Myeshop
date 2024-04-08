@@ -100,7 +100,20 @@ jobs:
             StrictHostKeyChecking no
           END
 
+      # нужен для работы dorny/paths-filter@v3
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            docker_compose_prod_yaml:
+              - 'docker-compose.prod.yml'
+            migrations_files:
+              - 'eshop/migrations/versions/*.py'
+
       - name: Git pull main
+        if: steps.changes.outputs.docker_compose_prod_yaml == 'true'
         run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && git pull origin main"
 
       - name: Stop current running server
@@ -110,10 +123,8 @@ jobs:
         run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo docker-compose -f docker-compose.prod.yml pull"
 
       - name: Alembic upgrade head
+        if: steps.changes.outputs.migrations_files == 'true'
         run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo docker-compose -f docker-compose.prod.yml run web_app alembic upgrade head"
 
       - name: Start server
         run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo docker-compose -f docker-compose.prod.yml up -d"
-
-      - name: logout
-        run: ssh yandex-cloud-test-stand "logout"
