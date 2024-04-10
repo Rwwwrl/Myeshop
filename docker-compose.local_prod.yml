@@ -9,6 +9,13 @@ services:
     image: rwwwrl/myeshop_web_app:local_prod
     container_name: myeshop_web_app_local_prod
 
+  nginx:
+    build:
+      context: deploy/nginx
+      dockerfile: Dockerfile
+    image: rwwwrl/myeshop_nginx:local_prod
+    container_name: myeshop_nginx_local_prod
+
   prometheus:
     build:
       context: deploy/prometheus
