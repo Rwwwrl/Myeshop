@@ -4,8 +4,6 @@ services:
   web_app:
     image: rwwwrl/myeshop_web_app:main_latest
     command: python deploy/uvicorn/uvicorn_run.py
-    ports:
-      - 80:80
     environment:
       - DB_HOST=postgres_db
       - DB_NAME=${DB_NAME}
@@ -13,9 +11,21 @@ services:
       - DB_USER_PASSWORD=${DB_USER_PASSWORD}
       - USER_IDENTITY_SERVICE_SECRET=${USER_IDENTITY_SERVICE_SECRET}
     container_name: myeshop_web_app
+    volumes:
+      - uvicorn_socket_folder:/usr/uvicorn_socket_folder
     depends_on:
       postgres_db:
         condition: service_healthy
+
+  nginx:
+    build: rwwwrl/myeshop_nginx:main_latest
+    container_name: nginx_container
+    volumes:
+      - uvicorn_socket_folder:/usr/uvicorn_socket_folder
+    ports:
+      - 80:80
+    depends_on:
+      - web_app
 
   postgres_db:
     image: postgres:14
@@ -63,3 +73,4 @@ volumes:
   postgres_db_data_prod:
   prometheus_data:
   grafana_data:
+  uvicorn_socket_folder:
