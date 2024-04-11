@@ -102,7 +102,6 @@ jobs:
 
       # нужен для работы dorny/paths-filter@v3
       - uses: actions/checkout@v4
-
       - uses: dorny/paths-filter@v3
         id: changes
         with:
@@ -112,12 +111,12 @@ jobs:
             migrations_files:
               - 'eshop/migrations/versions/*.py'
 
+      - name: Stop current running server
+        run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo docker-compose -f docker-compose.prod.yml down"
+
       - name: Git pull main
         if: steps.changes.outputs.docker_compose_prod_yaml == 'true'
         run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && git pull origin main"
-
-      - name: Stop current running server
-        run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo docker-compose -f docker-compose.prod.yml down"
 
       - name: Pull latest docker images
         run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo docker-compose -f docker-compose.prod.yml pull"
