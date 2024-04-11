@@ -86,6 +86,16 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACESS_TOKEN_FOR_CI_CD }}
 
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            nginx_docker_context:
+              - 'deploy/nginx/**'
+            prometheus_docker_context:
+              - 'deploy/prometheus/**'
+
       - name: Build and push to docker hub web app
         uses: docker/build-push-action@v5
         with:
@@ -96,6 +106,7 @@ jobs:
             rwwwrl/myeshop_web_app:${{ env.WORK_BRANCH_NAME }}_latest
 
       - name: Build and push to docker hub prometheus
+        if: steps.changes.outputs.prometheus_docker_context == 'true'
         uses: docker/build-push-action@v5
         with:
           context: "{{ defaultContext }}:deploy/prometheus"
@@ -103,6 +114,7 @@ jobs:
           tags: rwwwrl/myeshop_prometheus:${{ env.WORK_BRANCH_NAME }}_latest
 
       - name: Build and push to docker hub nginx
+        if: steps.changes.outputs.nginx_docker_context == 'true'
         uses: docker/build-push-action@v5
         with:
           context: "{{ defaultContext }}:deploy/nginx"
