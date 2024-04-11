@@ -58,6 +58,8 @@ jobs:
           push: false
           target: build_for_run_pytest
           tags: web_app:tests
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Run pytest_contract_usage
         uses: addnab/docker-run-action@v3
@@ -105,6 +107,8 @@ jobs:
           tags: >
             rwwwrl/myeshop_web_app:${{ env.WORK_BRANCH_NAME }}_${{ env.LAST_GIT_COMMIT_SHA }} ,
             rwwwrl/myeshop_web_app:${{ env.WORK_BRANCH_NAME }}_latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Build and push to docker hub prometheus
         if: steps.changes.outputs.prometheus_docker_context == 'true'
