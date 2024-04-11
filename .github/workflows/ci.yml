@@ -9,9 +9,29 @@ env:
   WORK_BRANCH_NAME: main
 
 jobs:
-  run_flake8_linter:
+  get_changes:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' }}
+    outputs:
+      any_python_file: ${{ steps.changes.outputs.any_python_file }}
+      eshop: ${{ steps.changes.outputs.eshop }}
+      dependency_versions: ${{ steps.changes.outputs.dependency_versions }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            any_python_file:
+              - '**/*.py'
+            eshop:
+              - 'eshop/**'
+            dependency_versions:
+              - 'requirements/prod.txt'
+
+  run_flake8_linter:
+    needs: get_changes
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' && needs.get_changes.outputs.any_python_file == 'true' }}
     steps:
       - name: checkout to repository code
         uses: actions/checkout@v4
@@ -23,8 +43,9 @@ jobs:
         run: flake8 --config=setup.cfg $(git diff origin/${{ github.event.pull_request.base.ref }} --name-only --diff-filter=d | grep -E '.+\.py$')
 
   run_tests:
+    needs: get_changes
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' }}
+    if: ${{ github.event_name == 'pull_request' && ( needs.get_changes.outputs.eshop == 'true' || needs.get_changes.outputs.dependency_versions == 'true' ) }}
     steps:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -65,6 +86,16 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACESS_TOKEN_FOR_CI_CD }}
 
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            nginx_docker_context:
+              - 'deploy/nginx/**'
+            prometheus_docker_context:
+              - 'deploy/prometheus/**'
+
       - name: Build and push to docker hub web app
         uses: docker/build-push-action@v5
         with:
@@ -75,11 +106,20 @@ jobs:
             rwwwrl/myeshop_web_app:${{ env.WORK_BRANCH_NAME }}_latest
 
       - name: Build and push to docker hub prometheus
+        if: steps.changes.outputs.prometheus_docker_context == 'true'
         uses: docker/build-push-action@v5
         with:
           context: "{{ defaultContext }}:deploy/prometheus"
           push: true
           tags: rwwwrl/myeshop_prometheus:${{ env.WORK_BRANCH_NAME }}_latest
+
+      - name: Build and push to docker hub nginx
+        if: steps.changes.outputs.nginx_docker_context == 'true'
+        uses: docker/build-push-action@v5
+        with:
+          context: "{{ defaultContext }}:deploy/nginx"
+          push: true
+          tags: rwwwrl/myeshop_nginx:${{ env.WORK_BRANCH_NAME }}_latest
 
   pull_main_latest_and_restart_server_on_test_machine:
     needs: build_and_push_to_dockerhub
@@ -100,7 +140,6 @@ jobs:
             StrictHostKeyChecking no
           END
 
-      # нужен для работы dorny/paths-filter@v3
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
         id: changes
@@ -120,6 +159,9 @@ jobs:
 
       - name: Pull latest docker images
         run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo docker-compose -f docker-compose.prod.yml pull"
+
+      - name: Docker prune
+        run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo docker-compose -f docker system prune -f"
 
       - name: Alembic upgrade head
         if: steps.changes.outputs.migrations_files == 'true'
