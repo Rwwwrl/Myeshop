@@ -10,6 +10,7 @@ env:
 
 jobs:
   get_changes:
+    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     outputs:
       any_python_file: ${{ steps.changes.outputs.any_python_file }}
