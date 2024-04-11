@@ -140,7 +140,6 @@ jobs:
             StrictHostKeyChecking no
           END
 
-      # нужен для работы dorny/paths-filter@v3
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
         id: changes
@@ -160,6 +159,9 @@ jobs:
 
       - name: Pull latest docker images
         run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo docker-compose -f docker-compose.prod.yml pull"
+
+      - name: Docker prune
+        run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo docker-compose -f docker system prune -f"
 
       - name: Alembic upgrade head
         if: steps.changes.outputs.migrations_files == 'true'
