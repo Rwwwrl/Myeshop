@@ -1,3 +1,5 @@
+from fastapi.responses import FileResponse
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -63,3 +65,8 @@ def test() -> dict:
         logger.exception('some exception info')
 
     return {"hello": "world"}
+
+
+@api_router.get('/logs/')
+def logs() -> FileResponse:
+    return FileResponse(path=settings.BASE_DIR / 'logs' / 'logs.jsonl')
