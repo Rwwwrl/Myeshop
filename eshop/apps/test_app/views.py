@@ -46,3 +46,20 @@ def book__get(id: hints.BookId) -> BookDTO:
         result = session.execute(stmt).one()._asdict()
 
     return BookDTO(title=result['title'], author_name=result['author_name'])
+
+
+@api_router.get('/test/')
+def test() -> dict:
+    import logging
+
+    logger = logging.getLogger('test_app.views.test')
+
+    logger.debug('some debug info')
+    logger.warning('some warning!')
+
+    try:
+        1 / 0
+    except ZeroDivisionError:
+        logger.exception('some exception info')
+
+    return {"hello": "world"}
