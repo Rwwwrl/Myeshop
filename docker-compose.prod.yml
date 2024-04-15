@@ -13,6 +13,7 @@ services:
     container_name: myeshop_web_app
     volumes:
       - uvicorn_socket_folder:/usr/uvicorn_socket_folder
+      - logs:/usr/code/myeshop/logs/
     depends_on:
       postgres_db:
         condition: service_healthy
@@ -74,3 +75,4 @@ volumes:
   prometheus_data:
   grafana_data:
   uvicorn_socket_folder:
+  logs:
