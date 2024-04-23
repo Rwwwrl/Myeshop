@@ -4,20 +4,22 @@ services:
   web_app:
     build:
       context: .
-      dockerfile: Dockerfile
       target: build_for_prod
     image: rwwwrl/myeshop_web_app:local_prod
-    container_name: myeshop_web_app_local_prod
+    container_name: web_app
 
   nginx:
     build:
       context: deploy/nginx
-      dockerfile: Dockerfile
     image: rwwwrl/myeshop_nginx:local_prod
-    container_name: myeshop_nginx_local_prod
+    container_name: nginx
 
   prometheus:
     build:
       context: deploy/prometheus
-      dockerfile: Dockerfile
-    image: rwwwrl/myeshop_prometheus
+    image: rwwwrl/myeshop_prometheus:local_prod
+
+  grafana:
+    build:
+      context: deploy/grafana
+    image: rwwwrl/myeshop_grafana:local_prod

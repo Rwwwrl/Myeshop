@@ -98,6 +98,8 @@ jobs:
               - 'deploy/nginx/**'
             prometheus_docker_context:
               - 'deploy/prometheus/**'
+            grafana_docker_context:
+              - 'deploy/grafana/**'
 
       - name: Build and push to docker hub web app
         uses: docker/build-push-action@v5
@@ -125,6 +127,14 @@ jobs:
           context: "{{ defaultContext }}:deploy/nginx"
           push: true
           tags: rwwwrl/myeshop_nginx:${{ env.WORK_BRANCH_NAME }}_latest
+
+      - name: Build and push to docker hub grafana
+        if: steps.changes.outputs.grafana_docker_context == 'true'
+        uses: docker/build-push-action@v5
+        with:
+          context: "{{ defaultContext }}:deploy/grafana"
+          push: true
+          tags: rwwwrl/myeshop_grafana:${{ env.WORK_BRANCH_NAME }}_latest
 
   pull_main_latest_and_restart_server_on_test_machine:
     needs: build_and_push_to_dockerhub
