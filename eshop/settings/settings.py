@@ -27,11 +27,20 @@ INSTALLED_APPS: List[Type[IAppConfig]] = [
 
 
 def init_logging() -> None:
-    from logging import config
+    import yaml
+    import logging
+    from logging import config as logging_config
 
-    logs_dir = BASE_DIR / 'logs'
-    logs_dir.mkdir(exist_ok=True)
-    config.dictConfig(LOGGING_CONFIG)
+    LOGGING_CONFIG_YAML_FILENAME = 'logging_config.yaml'
+    LOGGIN_CONFIG_YAML_FILE_PATH = BASE_DIR / 'settings' / LOGGING_CONFIG_YAML_FILENAME
+
+    with open(LOGGIN_CONFIG_YAML_FILE_PATH, 'r') as file:
+        config = yaml.safe_load(file.read())
+
+    logging_config.dictConfig(config)
+
+    logger = logging.getLogger('settings')
+    logger.info('%s was used to configure logging', LOGGING_CONFIG_YAML_FILENAME)
 
 
 def import_all_models_in_project() -> None:
@@ -93,58 +102,6 @@ class Settings(BaseSettings):
 
 
 SETTINGS = Settings()
-
-LOGGING_CONFIG = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters':
-        {
-            'default_formatter': {
-                'format': '%(asctime)s:[%(levelname)s] %(message)s',
-            },
-            'json':
-                {
-                    '()':
-                        "pythonjsonlogger.jsonlogger.JsonFormatter",
-                    'format':
-                        "%(asctime)s %(levelname)s %(name)s %(pathname)s %(lineno)s %(funcName)s %(message)s %(extra)s %(exc_info)s",    # noqa
-                },
-        },
-    'handlers':
-        {
-            'stream_handler': {
-                'level': 'DEBUG',
-                'class': 'logging.StreamHandler',
-                'formatter': 'default_formatter',
-            },
-            'json_stream_handler': {
-                'level': 'DEBUG',
-                'class': 'logging.StreamHandler',
-                'formatter': 'json',
-            },
-            'json_rotatating_file_handler':
-                {
-                    'level': 'WARNING',
-                    'class': 'logging.handlers.RotatingFileHandler',
-                    'filename': 'logs/logs.jsonl',
-                    'maxBytes': 1000,
-                    'backupCount': 0,
-                    'formatter': 'json',
-                },
-        },
-    'loggers':
-        {
-            '':
-                {
-                    'handlers': [
-                        'json_stream_handler',
-                        'json_rotatating_file_handler',
-                    ],
-                    'level': 'DEBUG',
-                    'propagate': True,
-                },
-        },
-}
 
 DB_URL = URL.create(
     drivername='postgresql',
