@@ -6,13 +6,11 @@ services:
       context: .
       target: build_for_prod
     image: rwwwrl/myeshop_web_app:local_prod
-    container_name: web_app
 
   nginx:
     build:
       context: deploy/nginx
     image: rwwwrl/myeshop_nginx:local_prod
-    container_name: nginx
 
   prometheus:
     build:
