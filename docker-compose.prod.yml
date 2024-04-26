@@ -38,7 +38,7 @@ services:
     depends_on:
       - minio
 
-  loke_write:
+  loki_write:
     image: rwwwrl/myeshop_loki:main_latest
     container_name: loki_write
     command: "-config.file=/etc/loki/config.yaml -target=write -config.expand-env=true"
