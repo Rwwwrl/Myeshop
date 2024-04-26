@@ -29,6 +29,16 @@ services:
     depends_on:
       - web_app
 
+
+  promtail:
+    image: rwwwrl/myeshop_promtail:main_latest
+    container_name: promtail
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -config.file=/etc/promtail/config.yaml
+    depends_on:
+      - nginx
+
   postgres_db:
     image: postgres:14
     container_name: postgres_db
