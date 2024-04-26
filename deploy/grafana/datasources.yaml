@@ -5,3 +5,12 @@ datasources:
     type: prometheus
     access: proxy
     url: http://prometheus:9090
+
+  - name: Loki
+    type: loki
+    access: proxy
+    url: http://loki_read:3100
+    jsonData:
+      httpHeaderName1: "X-Scope-OrgID"
+    secureJsonData:
+      httpHeaderValue1: "tenant1"

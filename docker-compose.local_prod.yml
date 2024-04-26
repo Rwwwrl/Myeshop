@@ -31,3 +31,13 @@ services:
     build:
       context: deploy/minio
     image: rwwwrl/myeshop_minio:local_prod
+
+  loki_read:
+    build:
+      context: deploy/loki
+    image: rwwwrl/myeshop_loki:local_prod
+
+  loki_write:
+    build:
+      context: deploy/loki
+    image: rwwwrl/myeshop_loki:local_prod
