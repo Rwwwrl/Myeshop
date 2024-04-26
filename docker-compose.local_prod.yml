@@ -21,8 +21,13 @@ services:
     build:
       context: deploy/grafana
     image: rwwwrl/myeshop_grafana:local_prod
-  
+
   promtail:
     build:
       context: deploy/promtail
     image: rwwwrl/myeshop_promtail:local_prod
+
+  minio:
+    build:
+      context: deploy/minio
+    image: rwwwrl/myeshop_minio:local_prod

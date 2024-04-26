@@ -102,6 +102,8 @@ jobs:
               - 'deploy/grafana/**'
             promtail_docker_context:
               - 'deploy/promtail/**'
+            minio_docker_context:
+              - 'deploy/minio/**'
 
       - name: Build and push to docker hub web app
         uses: docker/build-push-action@v5
@@ -145,6 +147,14 @@ jobs:
           context: "{{ defaultContext }}:deploy/promtail"
           push: true
           tags: rwwwrl/myeshop_promtail:${{ env.WORK_BRANCH_NAME }}_latest
+
+      - name: Build and push to docker hub minio
+        if: steps.changes.outputs.minio_docker_context == 'true'
+        uses: docker/build-push-action@v5
+        with:
+          context: "{{ defaultContext }}:deploy/minio"
+          push: true
+          tags: rwwwrl/myeshop_minio:${{ env.WORK_BRANCH_NAME }}_latest
 
   pull_main_latest_and_restart_server_on_test_machine:
     needs: build_and_push_to_dockerhub
