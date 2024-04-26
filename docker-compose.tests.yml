@@ -4,7 +4,6 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
       target: build_for_run_pytest
     image: app_build_for_run_pytest
     command: pytest -c pytest.ini

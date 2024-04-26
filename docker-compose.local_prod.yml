@@ -4,20 +4,40 @@ services:
   web_app:
     build:
       context: .
-      dockerfile: Dockerfile
       target: build_for_prod
     image: rwwwrl/myeshop_web_app:local_prod
-    container_name: myeshop_web_app_local_prod
 
   nginx:
     build:
       context: deploy/nginx
-      dockerfile: Dockerfile
     image: rwwwrl/myeshop_nginx:local_prod
-    container_name: myeshop_nginx_local_prod
+
+  loki_read:
+    build:
+      context: deploy/loki
+    image: rwwwrl/myeshop_loki:local_prod
+
+  loki_write:
+    build:
+      context: deploy/loki
+    image: rwwwrl/myeshop_loki:local_prod
+
+  minio:
+    build:
+      context: deploy/minio
+    image: rwwwrl/myeshop_minio:local_prod
+
+  promtail:
+    build:
+      context: deploy/promtail
+    image: rwwwrl/myeshop_promtail:local_prod
 
   prometheus:
     build:
       context: deploy/prometheus
-      dockerfile: Dockerfile
-    image: rwwwrl/myeshop_prometheus
+    image: rwwwrl/myeshop_prometheus:local_prod
+
+  grafana:
+    build:
+      context: deploy/grafana
+    image: rwwwrl/myeshop_grafana:local_prod

@@ -10,5 +10,4 @@ if __name__ == '__main__':
         reload=False,
         uds='/usr/uvicorn_socket_folder/uvicorn.sock',
         workers=workers,
-        access_log='-',
     )
