@@ -24,7 +24,6 @@ services:
       - uvicorn_socket_folder:/usr/uvicorn_socket_folder
     ports:
       - 80:80
-      - 3100:3100
       - 3000:3000
     depends_on:
       - web_app
