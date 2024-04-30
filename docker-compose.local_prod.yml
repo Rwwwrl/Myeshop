@@ -10,6 +10,7 @@ services:
   nginx:
     build:
       context: deploy/nginx
+      target: local_prod_build
     image: rwwwrl/myeshop_nginx:local_prod
 
   loki_read:

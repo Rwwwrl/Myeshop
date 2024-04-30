@@ -131,6 +131,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: "{{ defaultContext }}:deploy/nginx"
+          target: prod_build
           push: true
           tags: rwwwrl/myeshop_nginx:${{ env.WORK_BRANCH_NAME }}_latest
 
