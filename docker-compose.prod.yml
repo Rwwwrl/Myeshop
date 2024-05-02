@@ -7,8 +7,8 @@ services:
     environment:
       - DB_HOST=postgres_db
       - DB_NAME=${POSTGRES_DB_NAME}
-      - DB_USER_LOGIN=${POSTGRES_DB_NAME}
-      - DB_USER_PASSWORD=${POSTGRES_DB_USER_LOGIN}
+      - DB_USER_LOGIN=${POSTGRES_DB_USER_LOGIN}
+      - DB_USER_PASSWORD=${POSTGRES_DB_USER_PASSWORD}
       - USER_IDENTITY_SERVICE_SECRET=${USER_IDENTITY_SERVICE_SECRET}
     container_name: web_app
     volumes:
