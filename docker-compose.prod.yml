@@ -31,17 +31,6 @@ services:
     depends_on:
       - web_app
 
-  # ВАЖНО: запускается только для создания сертификатов
-  # certbot:
-  #   image: certbot/certbot
-  #   depends_on:
-  #     - nginx
-  #   container_name: certbot
-  #   volumes:
-  #     - certbot_letsencrypt:/etc/letsencrypt
-  #     - certbot_www:/var/www/certbot
-  #   command: certonly --webroot --webroot-path=/var/www/certbot --email lesh.solowiew@yandex.ru --agree-tos --no-eff-email -d myeshoponcontainers.site
-
   loki_read:
     image: rwwwrl/myeshop_loki:main_latest
     container_name: loki_read
