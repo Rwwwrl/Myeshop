@@ -197,14 +197,14 @@ jobs:
               - 'eshop/migrations/versions/*.py'
 
       - name: Stop current running server
-        run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo docker-compose -f docker-compose.prod.yml down"
+        run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo make down_prod"
 
       - name: Git pull main
         if: steps.changes.outputs.docker_compose_prod_yaml == 'true'
         run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && git pull origin main"
 
       - name: Pull latest docker images
-        run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo docker-compose -f docker-compose.prod.yml pull"
+        run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo make dpull"
 
       - name: Docker prune
         run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo docker system prune -f"
@@ -214,4 +214,4 @@ jobs:
         run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo docker-compose -f docker-compose.prod.yml run web_app alembic upgrade head"
 
       - name: Start server
-        run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo docker-compose -f docker-compose.prod.yml up -d"
+        run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo make up_prod"
