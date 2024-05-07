@@ -8,9 +8,11 @@ RUN rm /etc/nginx/conf.d/default.conf
 
 FROM base_build as local_prod_build
 
-COPY local_prod_nginx.conf /etc/nginx/nginx.conf
+COPY local_prod_build/nginx.conf /etc/nginx/nginx.conf
 
 
 FROM base_build as prod_build
 
-COPY prod_nginx.conf /etc/nginx/nginx.conf
+EXPOSE 443
+
+COPY prod_build/nginx.conf /etc/nginx/nginx.conf
