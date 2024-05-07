@@ -7,3 +7,5 @@ services:
       target: build_for_run_pytest
     image: app_build_for_run_pytest
     command: pytest -c pytest.ini
+    volumes:
+      - ./eshop/:/usr/code/myeshop/eshop/
