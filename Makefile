@@ -43,3 +43,19 @@ up_tests:
 
 down_tests:
 	docker-compose -f docker-compose.tests.yml down
+
+
+# UTILS
+create_or_renew_ssl_certificates:
+	docker-compose -f docker-compose.ssl_certificates.yml build
+	docker-compose -f docker-compose.ssl_certificates.yml up -d
+	@sleep 3
+	@echo
+	@echo "INFO: certbot logs:"
+	@docker logs certbot
+	@echo
+	docker-compose -f docker-compose.ssl_certificates.yml down
+	@# TODO, пусть это будет пока что просто ввиде предупреждающей строки
+	@echo
+	@echo "INFO: если запущен prod nginx контейнер, то его нужно перезапустить, чтобы подтянуть новые сертификаты.\nВыполните 'sudo docker exec -it nginx nginx -s reload'."
+	@echo

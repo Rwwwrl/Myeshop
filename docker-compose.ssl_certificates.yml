@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+
+  nginx:
+    build:
+      context: deploy/nginx
+      target: to_create_ssl_certificates_build
+    container_name: nging_ssl_certificates
+    volumes:
+      - certbot_letsencrypt:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    ports:
+      - 80:80
+
+  # ВАЖНО: запускается только для создания сертификатов
+  certbot:
+    image: certbot/certbot
+    depends_on:
+      - nginx
+    container_name: certbot
+    volumes:
+      - certbot_letsencrypt:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    command: certonly --webroot --webroot-path=/var/www/certbot --force-renewal --email lesh.solowiew@yandex.ru --agree-tos --no-eff-email -d myeshoponcontainers.site
+
+volumes:
+  certbot_letsencrypt:
+  certbot_www:
