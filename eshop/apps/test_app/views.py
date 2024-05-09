@@ -48,6 +48,18 @@ def book__get(id: hints.BookId) -> BookDTO:
     return BookDTO(title=result['title'], author_name=result['author_name'])
 
 
+class ToTestLoggingSerializationInnerDTO(DTO):
+
+    value1: str
+    value2: int
+
+
+class ToTestLoggingSerializationDTO(DTO):
+    value1: str
+    value2: int
+    inner_dto: ToTestLoggingSerializationInnerDTO
+
+
 @api_router.get('/test/')
 def test() -> dict:
     import logging
@@ -61,5 +73,16 @@ def test() -> dict:
         1 / 0
     except ZeroDivisionError:
         logger.exception('some exception info')
+
+    dto = ToTestLoggingSerializationDTO(
+        value1='value1',
+        value2=10,
+        inner_dto=ToTestLoggingSerializationInnerDTO(
+            value1='value1_inner',
+            value2=20,
+        ),
+    )
+
+    logger.debug('invalid dto: %s', dto)
 
     return {"hello": "world"}
