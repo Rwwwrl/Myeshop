@@ -13,7 +13,6 @@ services:
     ports:
       - 80:80
 
-  # ВАЖНО: запускается только для создания сертификатов
   certbot:
     image: certbot/certbot
     depends_on:
