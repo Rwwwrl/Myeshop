@@ -14,7 +14,7 @@ def main() -> NoReturn:
     uvicorn.run(
         app='eshop.settings:MAIN_APP',
         reload=False,
-        uds=UVICORN_SOCKET_PATH,
+        uds=UVICORN_SOCKET_PATH.as_posix(),
         workers=workers,
     )
 
