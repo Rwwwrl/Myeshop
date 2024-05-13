@@ -29,9 +29,9 @@ jobs:
         with:
           filters: |
             nginx_docker_context:
-              - 'deploy/nginx/prod_build|Dockerfile'
+              - 'deploy/nginx/@(prod_build|Dockerfile)'
             nginx_sll_certificates_build_docker_context:
-              - 'deploy/nginx/to_create_ssl_certificates_build|Dockerfile'
+              - 'deploy/nginx/@(to_create_ssl_certificates_build|Dockerfile)'
             prometheus_docker_context:
               - 'deploy/prometheus/**'
             grafana_docker_context:
