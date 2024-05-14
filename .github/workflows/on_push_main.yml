@@ -135,8 +135,6 @@ jobs:
         id: changes
         with:
           filters: |
-            docker_compose_prod_yaml:
-              - 'docker-compose.prod.yml'
             migrations_files:
               - 'eshop/migrations/versions/*.py'
 
@@ -144,7 +142,6 @@ jobs:
         run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo make down_prod"
 
       - name: Git pull main
-        if: steps.changes.outputs.docker_compose_prod_yaml == 'true'
         run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && git pull origin main"
 
       - name: Pull latest docker images
