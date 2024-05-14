@@ -24,7 +24,7 @@ down_local_prod:
 
 # PROD
 dpull:
-	docker-compose -p prod -f docker-compose.base_prod.yml docker-compose.prod.yml pull
+	docker-compose -p prod -f docker-compose.base_prod.yml -f docker-compose.prod.yml pull
 
 up_prod:
 	docker-compose -p prod -f docker-compose.base_prod.yml -f docker-compose.prod.yml up -d
