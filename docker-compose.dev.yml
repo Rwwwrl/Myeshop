@@ -17,9 +17,9 @@ services:
       - ./eshop/:/usr/code/myeshop/eshop/
     environment:
       - DB_HOST=postgres_db
-      - DB_NAME=${DB_NAME}
-      - DB_USER_LOGIN=${DB_USER_LOGIN}
-      - DB_USER_PASSWORD=${DB_USER_PASSWORD}
+      - DB_NAME=${POSTGRES_DB_NAME}
+      - DB_USER_LOGIN=${POSTGRES_DB_USER_LOGIN}
+      - DB_USER_PASSWORD=${POSTGRES_DB_USER_PASSWORD}
       - USER_IDENTITY_SERVICE_SECRET=${USER_IDENTITY_SERVICE_SECRET}
     depends_on:
       postgres_db:
@@ -30,13 +30,13 @@ services:
     container_name: postgres_db_dev
     restart: always
     environment:
-      - POSTGRES_USER=${DB_USER_LOGIN}
-      - POSTGRES_PASSWORD=${DB_USER_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_DB=${POSTGRES_DB_NAME}
+      - POSTGRES_USER=${POSTGRES_DB_USER_LOGIN}
+      - POSTGRES_PASSWORD=${POSTGRES_DB_USER_PASSWORD}
     volumes:
       - postgres_db_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER_LOGIN}" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_DB_USER_LOGIN}" ]
       interval: 1s
       timeout: 3s
       retries: 30
