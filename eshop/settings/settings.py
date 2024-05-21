@@ -12,9 +12,8 @@ import pydantic
 
 from sqlalchemy import URL
 from sqlalchemy.engine import create_engine
-from sqlalchemy.orm import DeclarativeBase as SqlalchemyDeclarativeBase
 
-from eshop.apps.test_app.app_config import TestAppConfig
+from test_app.app_config import TestAppConfig
 
 from framework.fastapi.app_config import IAppConfig
 

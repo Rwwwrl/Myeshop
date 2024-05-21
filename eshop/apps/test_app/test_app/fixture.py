@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
 
+from test_app.models import Author, Book
+
 from eshop import settings
-from eshop.apps.test_app.models import Author, Book
 
 
 def create_data() -> None:
