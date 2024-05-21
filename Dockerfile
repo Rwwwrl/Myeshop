@@ -12,13 +12,14 @@ WORKDIR /usr/code/myeshop
 COPY eshop eshop
 COPY requirements requirements
 COPY setup.py setup.py
-COPY alembic.ini alembic.ini
 
 RUN pip install -e eshop/apps/user_identity && \
     pip install -e eshop/apps/user_identity_cqrs_contract && \
     pip install -e eshop/apps/test_app && \
     pip install -e eshop/framework && \
     pip install -e .
+
+COPY alembic.ini alembic.ini
 
 # build for run pytest stage
 FROM build as build_for_run_pytest
