@@ -33,8 +33,11 @@ target_metadata = APP_CONFIG_CLS.get_sqlalchemy_base().metadata
 # ... etc.
 
 
-def include_object(object, name, type_, reflected, compare_to):
-    return object.schema == target_metadata.schema
+def include_name(name, type_, parent_names):
+    if type_ == "schema":
+        return name == target_metadata.schema
+    else:
+        return True
 
 
 def run_migrations_offline() -> None:
@@ -54,7 +57,8 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
-        include_object=include_object,
+        include_schemas=True,
+        include_name=include_name,
     )
 
     with context.begin_transaction():
@@ -76,7 +80,7 @@ def run_migrations_online() -> None:
             target_metadata=target_metadata,
             version_table_schema=target_metadata.schema,
             include_schemas=True,
-            include_object=include_object,
+            include_name=include_name,
         )
 
         connection.execute(CreateSchema(name=target_metadata.schema, if_not_exists=True))
