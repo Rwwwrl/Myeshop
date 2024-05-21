@@ -42,11 +42,6 @@ def init_logging() -> None:
     logger.info('%s was used to configure logging', LOGGING_CONFIG_YAML_FILENAME)
 
 
-def import_all_models_in_project() -> None:
-    for app_config in INSTALLED_APPS:
-        app_config.import_models()
-
-
 def import_http_views() -> None:
     for app_config in INSTALLED_APPS:
         app_config.import_http_views()
@@ -109,11 +104,6 @@ DB_URL = URL.create(
     username=SETTINGS.db.login,
     password=SETTINGS.db.password,
 )
-
-
-class SQLALCHEMY_BASE(SqlalchemyDeclarativeBase):
-    pass
-
 
 SQLALCHEMY_ENGINE = create_engine(url=DB_URL)
 
