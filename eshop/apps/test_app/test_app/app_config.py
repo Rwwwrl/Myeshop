@@ -1,3 +1,5 @@
+from typing import Type
+
 from fastapi import APIRouter
 
 from sqlalchemy.orm import DeclarativeBase
@@ -16,7 +18,7 @@ class TestAppConfig(IAppConfig):
         return api_router
 
     @classmethod
-    def get_sqlalchemy_base(cls) -> DeclarativeBase:
+    def get_sqlalchemy_base(cls) -> Type[DeclarativeBase]:
         from .models import Base
 
         return Base
