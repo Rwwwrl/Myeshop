@@ -1,14 +1,17 @@
-from sqlalchemy import ForeignKey, Integer
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import ForeignKey, Integer, MetaData
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-from eshop import settings
-from eshop.apps.test_app import hints
-from eshop.apps.test_app.app_config import TestAppConfig
+from test_app import hints
+from test_app.app_config import TestAppConfig
 
 
-class Author(settings.SQLALCHEMY_BASE):
+class Base(DeclarativeBase):
+    metadata = MetaData(schema=TestAppConfig.name)
 
-    __tablename__ = f'{TestAppConfig.name}__author'
+
+class Author(Base):
+
+    __tablename__ = 'author'
 
     id: Mapped[hints.AuthorId] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column()
@@ -16,9 +19,9 @@ class Author(settings.SQLALCHEMY_BASE):
     books: Mapped[list['Book']] = relationship(back_populates='author')
 
 
-class Book(settings.SQLALCHEMY_BASE):
+class Book(Base):
 
-    __tablename__ = f'{TestAppConfig.name}__book'
+    __tablename__ = 'book'
 
     id: Mapped[hints.BookId] = mapped_column(Integer, primary_key=True)
     title: Mapped[str] = mapped_column()

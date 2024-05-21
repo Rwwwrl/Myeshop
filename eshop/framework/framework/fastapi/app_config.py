@@ -3,6 +3,8 @@ from typing import ClassVar
 
 from fastapi import APIRouter
 
+from sqlalchemy.orm import DeclarativeBase
+
 
 class IAppConfig:
 
@@ -15,6 +17,10 @@ class IAppConfig:
 
     @abc.abstractclassmethod
     def get_api_router(cls) -> APIRouter:
+        raise NotImplementedError
+
+    @classmethod
+    def get_sqlalchemy_base(cls) -> DeclarativeBase:
         raise NotImplementedError
 
     @abc.abstractclassmethod
