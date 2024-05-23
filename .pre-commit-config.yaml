@@ -15,3 +15,10 @@ repos:
         language: system
         types: [python]
         args: ['--config=setup.cfg']
+
+      - id: import-linter
+        name: import-linter
+        entry: import-linter
+        language: system
+        types: [python]
+        args: ['--config=setup.cfg']

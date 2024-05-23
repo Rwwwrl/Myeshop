@@ -32,10 +32,36 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - name: setup linter
         run: pip install -r deploy/ci/linter/flake8_requirements.txt
+
       - name: run linter
         run: flake8 --config=setup.cfg $(git diff origin/${{ github.event.pull_request.base.ref }} --name-only --diff-filter=d | grep -E '.+\.py$')
+
+  run_import_linter:
+    needs: get_changes
+    runs-on: ubuntu-latest
+    if: ${{ needs.get_changes.outputs.any_python_file == 'true' }}
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image for tests
+        uses: docker/build-push-action@v5
+        with:
+          load: true
+          push: false
+          target: build_for_running_import_linter
+          tags: web_app:import_linter
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Run import-linter
+        uses: addnab/docker-run-action@v3
+        with:
+          image: web_app:import_linter
+          run: lint-imports --config=setup.cfg
 
   run_tests:
     needs: get_changes

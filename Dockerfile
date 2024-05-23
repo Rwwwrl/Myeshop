@@ -21,6 +21,15 @@ RUN pip install -e eshop/apps/user_identity && \
 
 COPY alembic.ini alembic.ini
 
+# build for running import-linter
+FROM build as build_for_running_import_linter
+
+COPY setup.cfg setup.cfg
+COPY deploy/ci/linter/import_linter.txt deploy/ci/linter/import_linter.txt
+
+RUN pip install -r deploy/ci/linter/import_linter.txt
+
+
 # build for run pytest stage
 FROM build as build_for_run_pytest
 
