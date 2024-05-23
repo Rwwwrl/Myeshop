@@ -29,6 +29,10 @@ services:
   prometheus:
     image: rwwwrl/myeshop_prometheus:main_latest
 
+  postgres_db:
+    ports:
+      - 15432:5432
+
   grafana:
     image: rwwwrl/myeshop_grafana:main_latest
 

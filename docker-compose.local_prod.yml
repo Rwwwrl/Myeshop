@@ -41,6 +41,10 @@ services:
       context: deploy/prometheus
     image: rwwwrl/myeshop_prometheus:local_prod
 
+  postgres_db:
+    ports:
+      - 15432:5432
+
   grafana:
     build:
       context: deploy/grafana
