@@ -1,4 +1,8 @@
+from typing import Type
+
 from fastapi import APIRouter
+
+from sqlalchemy.orm import DeclarativeBase
 
 from framework.fastapi.app_config import IAppConfig
 
@@ -12,6 +16,12 @@ class TestAppConfig(IAppConfig):
         from .api_router import api_router
 
         return api_router
+
+    @classmethod
+    def get_sqlalchemy_base(cls) -> Type[DeclarativeBase]:
+        from .models import Base
+
+        return Base
 
     @classmethod
     def import_models(cls) -> None:

@@ -135,8 +135,10 @@ jobs:
         id: changes
         with:
           filters: |
-            migrations_files:
-              - 'eshop/migrations/versions/*.py'
+            test_app_migrations_files:
+              - 'eshop/apps/test_app/test_app/migrations/*.py'
+            user_identity_migrations_files:
+              - 'eshop/apps/test_app/test_app/migrations/*.py'
 
       - name: Stop current running server
         run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo make down_prod"
@@ -150,9 +152,13 @@ jobs:
       - name: Docker prune
         run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo docker system prune -f"
 
-      - name: Alembic upgrade head
-        if: steps.changes.outputs.migrations_files == 'true'
-        run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo docker-compose -f docker-compose.prod.yml run web_app alembic upgrade head"
+      - name: test_app alembic upgrade head
+        if: steps.changes.outputs.test_app_migrations_files == 'true'
+        run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo docker-compose -p prod -f docker-compose.base_prod.yml -f docker-compose.prod.yml run web_app alembic --name test_app upgrade head"
+
+      - name: user_identity alembic upgrade head
+        if: steps.changes.outputs.user_identity_migrations_files == 'true'
+        run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo docker-compose -p prod -f docker-compose.base_prod.yml -f docker-compose.prod.yml run web_app alembic --name user_identity upgrade head"
 
       - name: Start server
         run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo make up_prod"

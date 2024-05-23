@@ -12,9 +12,8 @@ import pydantic
 
 from sqlalchemy import URL
 from sqlalchemy.engine import create_engine
-from sqlalchemy.orm import DeclarativeBase as SqlalchemyDeclarativeBase
 
-from eshop.apps.test_app.app_config import TestAppConfig
+from test_app.app_config import TestAppConfig
 
 from framework.fastapi.app_config import IAppConfig
 
@@ -41,11 +40,6 @@ def init_logging() -> None:
 
     logger = logging.getLogger('settings')
     logger.info('%s was used to configure logging', LOGGING_CONFIG_YAML_FILENAME)
-
-
-def import_all_models_in_project() -> None:
-    for app_config in INSTALLED_APPS:
-        app_config.import_models()
 
 
 def import_http_views() -> None:
@@ -110,11 +104,6 @@ DB_URL = URL.create(
     username=SETTINGS.db.login,
     password=SETTINGS.db.password,
 )
-
-
-class SQLALCHEMY_BASE(SqlalchemyDeclarativeBase):
-    pass
-
 
 SQLALCHEMY_ENGINE = create_engine(url=DB_URL)
 

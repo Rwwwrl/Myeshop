@@ -1,8 +1,9 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from test_app import hints
+
 from eshop import settings
-from eshop.apps.test_app import hints
 
 from framework.ddd.dto import DTO
 

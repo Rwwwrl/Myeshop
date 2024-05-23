@@ -2,10 +2,14 @@ from logging.config import fileConfig
 
 from alembic import context
 
+from sqlalchemy import create_engine, pool
+from sqlalchemy.schema import CreateSchema
+
+from test_app.app_config import TestAppConfig
+
 from eshop import settings
 
-from sqlalchemy import create_engine
-from sqlalchemy import pool
+APP_CONFIG_CLS = TestAppConfig
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -20,13 +24,20 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-settings.import_all_models_in_project()
-target_metadata = settings.SQLALCHEMY_BASE.metadata
+APP_CONFIG_CLS.import_models()
+target_metadata = APP_CONFIG_CLS.get_sqlalchemy_base().metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
+
+
+def include_name(name, type_, parent_names):
+    if type_ == "schema":
+        return name == target_metadata.schema
+    else:
+        return True
 
 
 def run_migrations_offline() -> None:
@@ -46,6 +57,8 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        include_schemas=True,
+        include_name=include_name,
     )
 
     with context.begin_transaction():
@@ -62,7 +75,15 @@ def run_migrations_online() -> None:
     engine = create_engine(url=settings.DB_URL, poolclass=pool.NullPool)
 
     with engine.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata)
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata,
+            version_table_schema=target_metadata.schema,
+            include_schemas=True,
+            include_name=include_name,
+        )
+
+        connection.execute(CreateSchema(name=target_metadata.schema, if_not_exists=True))
 
         with context.begin_transaction():
             context.run_migrations()
