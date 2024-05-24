@@ -20,7 +20,7 @@ def index():
 def settings__get():
     from eshop.settings import SETTINGS
 
-    return {'db_name': SETTINGS.db.name}
+    return {'db_name': SETTINGS.postgres.name}
 
 
 class BookDTO(DTO):
