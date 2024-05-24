@@ -53,11 +53,11 @@ def authenticate(user_name: hints.UserName, plain_password: hints.PlainPassword)
 def login(username: hints.UserName, password: hints.PlainPassword) -> hints.JWTToken:
     user = authenticate(user_name=username, plain_password=password)
     jwt_encoder_decoder = dependency_container.jwt_encoder_decoder_factory()
-    expire_at = datetime.now(tz=pytz.UTC) + settings.SETTINGS.user_identity_service_settings.token_life_time_duration
+    expire_at = datetime.now(tz=pytz.UTC) + settings.SETTINGS.user_identity_service.token_life_time_duration
     return jwt_encoder_decoder.encode(
         user_id=user.id,
         expire_at=expire_at,
-        secret=settings.SETTINGS.user_identity_service_settings.secret,
+        secret=settings.SETTINGS.user_identity_service.secret,
     )
 
 

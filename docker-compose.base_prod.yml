@@ -4,11 +4,11 @@ services:
   web_app:
     command: python deploy/uvicorn/uvicorn_run.py
     environment:
-      - DB_HOST=postgres_db
-      - DB_NAME=${POSTGRES_DB_NAME}
-      - DB_USER_LOGIN=${POSTGRES_DB_USER_LOGIN}
-      - DB_USER_PASSWORD=${POSTGRES_DB_USER_PASSWORD}
-      - USER_IDENTITY_SERVICE_SECRET=${USER_IDENTITY_SERVICE_SECRET}
+      - POSTGRES__HOST=postgres_db
+      - POSTGRES__NAME=${POSTGRES__NAME}
+      - POSTGRES__LOGIN=${POSTGRES__LOGIN}
+      - POSTGRES__PASSWORD=${POSTGRES__PASSWORD}
+      - USER_IDENTITY_SERVICE__SECRET=${USER_IDENTITY_SERVICE__SECRET}
     volumes:
       - uvicorn_socket_folder:/usr/uvicorn_socket_folder
     container_name: web_app
@@ -60,13 +60,13 @@ services:
     image: postgres:14
     container_name: postgres_db
     environment:
-      - POSTGRES_USER=${POSTGRES_DB_USER_LOGIN}
-      - POSTGRES_PASSWORD=${POSTGRES_DB_USER_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB_NAME}
+      - POSTGRES_USER=${POSTGRES__LOGIN}
+      - POSTGRES_PASSWORD=${POSTGRES__PASSWORD}
+      - POSTGRES_DB=${POSTGRES__NAME}
     volumes:
       - postgres_db_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_DB_USER_LOGIN}" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES__LOGIN}" ]
       interval: 1s
       timeout: 3s
       retries: 30

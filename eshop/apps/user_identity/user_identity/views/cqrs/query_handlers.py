@@ -16,6 +16,6 @@ class UserFromJWTTokenQueryHandler(IQueryHandler):
         jwt_encoder_decoder = dependency_container.jwt_encoder_decoder_factory()
         user_id = jwt_encoder_decoder.decode(
             token=query.jwt_token,
-            secret=settings.SETTINGS.user_identity_service_settings.secret,
+            secret=settings.SETTINGS.user_identity_service.secret,
         )
         return UserDTO(id=user_id)

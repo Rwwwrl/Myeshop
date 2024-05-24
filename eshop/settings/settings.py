@@ -3,12 +3,12 @@ from datetime import timedelta
 from pathlib import Path
 from typing import List, Type
 
-import decouple
-
 from fastapi import FastAPI
 from fastapi.security import OAuth2PasswordBearer
 
 import pydantic
+
+import pydantic_settings
 
 from sqlalchemy import URL
 from sqlalchemy.engine import create_engine
@@ -71,38 +71,37 @@ MAIN_APP = FastAPI(lifespan=lifespan)
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-class BaseSettings(pydantic.BaseModel, frozen=True):
-    pass
+class PostgresSettings(pydantic.BaseModel):
+    name: str
+    host: str
+    login: str
+    password: str
 
 
-class DatabaseSettings(BaseSettings):
+class UserIdentityServiceSettings(pydantic.BaseModel):
 
-    name: str = decouple.config('DB_NAME')
-    host: str = decouple.config('DB_HOST')
-    login: str = decouple.config('DB_USER_LOGIN')
-    password: str = decouple.config('DB_USER_PASSWORD')
-
-
-class UserIdentityServiceSettings(BaseSettings):
-
-    secret: str = decouple.config('USER_IDENTITY_SERVICE_SECRET')
+    secret: str
     token_life_time_duration: timedelta = timedelta(minutes=5)
 
 
-class Settings(BaseSettings):
+class Settings(pydantic_settings.BaseSettings):
+    model_config = pydantic_settings.SettingsConfigDict(
+        case_sensitive=False,
+        env_nested_delimiter='__',
+    )
 
-    db: DatabaseSettings = DatabaseSettings()
-    user_identity_service_settings: UserIdentityServiceSettings = UserIdentityServiceSettings()
+    postgres: PostgresSettings
+    user_identity_service: UserIdentityServiceSettings
 
 
 SETTINGS = Settings()
 
 DB_URL = URL.create(
     drivername='postgresql',
-    database=SETTINGS.db.name,
-    host=SETTINGS.db.host,
-    username=SETTINGS.db.login,
-    password=SETTINGS.db.password,
+    database=SETTINGS.postgres.name,
+    host=SETTINGS.postgres.host,
+    username=SETTINGS.postgres.login,
+    password=SETTINGS.postgres.password,
 )
 
 SQLALCHEMY_ENGINE = create_engine(url=DB_URL)
