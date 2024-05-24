@@ -4,14 +4,22 @@ repos:
     hooks:
       - id: yapf
         name: yapf
-        entry: yapf
+        entry: env -i PATH=../env/bin python -m yapf
         language: system
         types: [python]
-        args: ['--style=setup.cfg', '--in-place']
+        args: ["--style=setup.cfg", "--in-place"]
 
       - id: flake8
         name: flake8
-        entry: flake8
+        entry: env -i PATH=../env/bin python -m flake8
         language: system
         types: [python]
-        args: ['--config=setup.cfg']
+        args: ["--config=setup.cfg"]
+
+      - id: import-linter
+        name: import-linter
+        entry: lint-imports
+        language: system
+        types: [python]
+        pass_filenames: false
+        args: ["--config=setup.cfg"]
