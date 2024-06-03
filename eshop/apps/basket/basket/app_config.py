@@ -17,11 +17,13 @@ class BasketAppConfig(IAppConfig):
 
     @classmethod
     def get_sqlalchemy_base(cls) -> Type[DeclarativeBase]:
-        raise NotImplementedError
+        from .domain.models.base import Base
+
+        return Base
 
     @classmethod
     def import_models(cls) -> None:
-        raise NotImplementedError
+        exec('from .domain.models import *')
 
     @classmethod
     def import_http_views(cls) -> None:
