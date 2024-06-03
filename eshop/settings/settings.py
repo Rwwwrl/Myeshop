@@ -15,7 +15,7 @@ from sqlalchemy.engine import create_engine
 
 from test_app.app_config import TestAppConfig
 
-from framework.fastapi.app_config import IAppConfig
+from framework.app_config import IAppConfig
 
 from user_identity.app_config import UserIdentityAppConfig
 

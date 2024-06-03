@@ -4,7 +4,7 @@ from fastapi import APIRouter
 
 from sqlalchemy.orm import DeclarativeBase
 
-from framework.fastapi.app_config import IAppConfig
+from framework.app_config import IAppConfig
 
 
 class TestAppConfig(IAppConfig):
