@@ -8,6 +8,8 @@ up_dev:
 down_dev:
 	docker-compose -p dev -f docker-compose.dev.yml down
 
+restart_dev:
+	docker-compose -p dev -f docker-compose.dev.yml restart
 
 
 # LOCAL PROD
