@@ -16,6 +16,7 @@ COPY setup.py setup.py
 RUN pip install -e eshop/apps/user_identity && \
     pip install -e eshop/apps/user_identity_cqrs_contract && \
     pip install -e eshop/apps/basket && \
+    pip install -e eshop/apps/basket_cqrs_contract && \
     pip install -e eshop/apps/test_app && \
     pip install -e eshop/framework && \
     pip install -e .
