@@ -7,12 +7,11 @@ from sqlalchemy.orm import Session
 from eshop import settings
 
 from framework.ddd.dto import DTO
+from framework.fastapi.dependencies.get_use_from_request import get_user_from_http_request
 
 from user_identity import hints
 from user_identity.api_router import api_router
 from user_identity.domain.models.user.user_repository import UserRepository
-
-from user_identity_cqrs_contract.query import UserIdFromJWTTokenQuery
 
 __all__ = ('profile_view__get', )
 
@@ -24,9 +23,7 @@ class ProfileDTO(DTO):
 
 
 @api_router.get('/profile/')
-def profile_view__get(jwt_token: Annotated[hints.JWTToken, Depends(settings.OAUTH2_SCHEME)]) -> ProfileDTO:
-    user_id = UserIdFromJWTTokenQuery(jwt_token=jwt_token).fetch().id
-
+def profile_view__get(user_id: Annotated[hints.UserId, Depends(get_user_from_http_request)]) -> ProfileDTO:
     with Session(settings.SQLALCHEMY_ENGINE) as session:
         user = UserRepository(session=session).get_by_id(id=user_id)
 
