@@ -4,12 +4,12 @@ import abc
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .query import Query, QueryResponse
+    from .query import Query, QueryResponseType
 
 
 class ICQRSBus(abc.ABC):
     @abc.abstractmethod
-    def fetch(self, query: Query) -> QueryResponse:
+    def fetch(self, query: Query) -> QueryResponseType:
         raise NotImplementedError
 
 
@@ -20,7 +20,7 @@ class HandlerRaisedAnError(Exception):
 
 
 class CQRSBus(ICQRSBus):
-    def fetch(self, query: Query) -> QueryResponse:
+    def fetch(self, query: Query) -> QueryResponseType:
         from .query.registry import query_registry
 
         handler_cls = query_registry.get_query_handler_cls(query_cls=query.__class__)

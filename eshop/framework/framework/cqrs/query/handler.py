@@ -1,12 +1,12 @@
 import abc
 from typing import Type
 
-from .query import Query, QueryResponse
+from .query import Query, QueryResponseType
 
 
 class IQueryHandler(abc.ABC):
     @abc.abstractmethod
-    def handle(self, query: Query) -> QueryResponse:
+    def handle(self, query: Query) -> QueryResponseType:
         raise NotImplementedError
 
 

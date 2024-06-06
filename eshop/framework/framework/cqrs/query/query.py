@@ -1,43 +1,36 @@
 import abc
-from typing import ClassVar, Type, TypeVar
+from typing import Generic, Type, TypeVar, _GenericAlias as GenericType
 
-from pydantic import BaseModel
+import attrs
 
 from ..cqrs_bus import CQRSBusSingletoneFactory
 
-QueryResponse = TypeVar('QueryResponse')
+QueryResponseType = TypeVar('QueryResponseType')
+
+# TODO:
+# attrs используется только потому что в pydantic есть проблема (https://github.com/pydantic/pydantic/issues/8410),
+# которая не дает также красиво получать QueryResponseType из дженерика
 
 
-class IQuery(BaseModel, abc.ABC, frozen=True):
+@attrs.define
+class IQuery(Generic[QueryResponseType], abc.ABC):
 
-    _response_type: ClassVar[Type[QueryResponse]]
+    # более красивое решение - указывать тип ответа через Generic, но
+    # с pydantic моделью это пока что невозможно.
 
     @abc.abstractmethod
-    def fetch(self) -> QueryResponse:
+    def fetch(self) -> QueryResponseType:
         raise NotImplementedError
-
-    @abc.abstractclassmethod
-    def get_response_type(cls) -> Type[QueryResponse]:
-        raise NotImplementedError
-
-
-class Query(IQuery):
-    def fetch(self) -> QueryResponse:
-        bus = CQRSBusSingletoneFactory.create()
-        return bus.fetch(query=self)
 
     @classmethod
-    def get_response_type(cls) -> Type[QueryResponse]:
-        return cls._response_type
+    def __response_type__(cls) -> Type[QueryResponseType]:
+        for base in cls.__orig_bases__:
+            if type(base) is GenericType and base.__args__:
+                return base.__args__[0]
 
 
-def query(response_type: Type[QueryResponse]):
-    # TODO приходится накидывать декоратор, а не получать response_type через genericи, т.к.
-    # c pydantic.BaseModel это не работает
-    # https://github.com/pydantic/pydantic/issues/8410
-
-    def inner(query_cls: Type[IQuery]) -> Type[IQuery]:
-        query_cls._response_type = response_type
-        return query_cls
-
-    return inner
+@attrs.define
+class Query(IQuery[QueryResponseType]):
+    def fetch(self) -> QueryResponseType:
+        bus = CQRSBusSingletoneFactory.create()
+        return bus.fetch(query=self)
