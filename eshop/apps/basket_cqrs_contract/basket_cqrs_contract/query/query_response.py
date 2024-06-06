@@ -15,7 +15,7 @@ class BasketItemDTO(DTO):
     picture_url: hints.PictureUrl
 
 
-class BasketDTO(DTO):
+class CustomerBasketDTO(DTO):
     id: hints.CustomerBasketId
     buyer_id: hints.CustomerId
     basket_items: List[BasketItemDTO]

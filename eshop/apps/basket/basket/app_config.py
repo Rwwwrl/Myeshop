@@ -31,4 +31,4 @@ class BasketAppConfig(IAppConfig):
 
     @classmethod
     def import_cqrs_handlers(cls) -> None:
-        raise NotImplementedError
+        exec('from .views.cqrs import *')

@@ -4,11 +4,11 @@ from basket_cqrs_contract import hints
 
 from framework.cqrs.query.query import Query
 
-from .query_response import BasketDTO
+from .query_response import CustomerBasketDTO
 
 __all__ = ('BasketByIdQuery', )
 
 
 @define
-class BasketByIdQuery(Query[BasketDTO]):
+class BasketByIdQuery(Query[CustomerBasketDTO]):
     id: hints.CustomerBasketId
