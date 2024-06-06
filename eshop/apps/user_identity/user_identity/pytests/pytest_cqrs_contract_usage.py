@@ -1,3 +1,5 @@
+import attrs
+
 import pytest
 
 from pytest_check import check
@@ -14,11 +16,11 @@ from user_identity_cqrs_contract.query.query_response import (
 class TestUserIdFromJWTTokenQuery:
     def test_query(self):
         with check:
-            assert UserIdFromJWTTokenQuery.model_fields.get('jwt_token', None)
-            assert UserIdFromJWTTokenQuery.model_fields['jwt_token'].annotation == JWTToken
+            assert hasattr(attrs.fields(UserIdFromJWTTokenQuery), 'jwt_token')
+            assert attrs.fields(UserIdFromJWTTokenQuery).jwt_token.type == JWTToken
 
     def test_response(self):
-        response_type = UserIdFromJWTTokenQuery.get_response_type()
+        response_type = UserIdFromJWTTokenQuery.__response_type__()
 
         with check:
             assert response_type == UserDTO
