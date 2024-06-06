@@ -37,6 +37,12 @@ FROM build as build_for_run_pytest
 
 COPY pytest.ini pytest.ini
 
+ENV POSTGRES__NAME=blabla
+ENV POSTGRES__HOST=blabla
+ENV POSTGRES__LOGIN=blabla
+ENV POSTGRES__PASSWORD=blabla
+ENV USER_IDENTITY_SERVICE__SECRET=blabla
+
 RUN pip install -r requirements/for_run_tests.txt
 
 # build for prod
