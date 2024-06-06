@@ -25,11 +25,11 @@ class TestAppConfig(IAppConfig):
 
     @classmethod
     def import_models(cls) -> None:
-        exec('from .models import *')
+        from . import models    # noqa
 
     @classmethod
     def import_http_views(cls) -> None:
-        exec('from .views import *')
+        from . import views    # noqa
 
     @classmethod
     def import_cqrs_handlers(cls) -> None:

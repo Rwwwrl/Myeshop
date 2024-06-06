@@ -23,7 +23,7 @@ class BasketAppConfig(IAppConfig):
 
     @classmethod
     def import_models(cls) -> None:
-        exec('from .domain.models import *')
+        from .domain import models    # noqa
 
     @classmethod
     def import_http_views(cls) -> None:
@@ -31,4 +31,4 @@ class BasketAppConfig(IAppConfig):
 
     @classmethod
     def import_cqrs_handlers(cls) -> None:
-        exec('from .views.cqrs import *')
+        from .views import cqrs    # noqa
