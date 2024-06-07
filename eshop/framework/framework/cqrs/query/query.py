@@ -1,11 +1,23 @@
+from __future__ import annotations
+
 import abc
-from typing import Generic, Optional, Type, TypeVar, _GenericAlias as GenericType
+from typing import (
+    Generic,
+    Optional,
+    TYPE_CHECKING,
+    Type,
+    TypeVar,
+    _GenericAlias as GenericType,
+)
 
 import attrs
 
 from ..cqrs_bus import CQRSBusSingletoneFactory, ICQRSBus
 
 QueryResponseType = TypeVar('QueryResponseType')
+
+if TYPE_CHECKING:
+    from .handler import IQueryHandler
 
 # TODO:
 # attrs используется только потому что в pydantic есть проблема (https://github.com/pydantic/pydantic/issues/8410),
@@ -22,6 +34,10 @@ class IQuery(Generic[QueryResponseType], abc.ABC):
     def fetch(self, bus: Optional[ICQRSBus] = None) -> QueryResponseType:
         raise NotImplementedError
 
+    @abc.abstractclassmethod
+    def handler(cls, handler_cls: Type[IQueryHandler]) -> Type[IQueryHandler]:
+        raise NotImplementedError
+
     @classmethod
     def __response_type__(cls) -> Type[QueryResponseType]:
         for base in cls.__orig_bases__:
@@ -36,3 +52,11 @@ class Query(IQuery[QueryResponseType]):
             bus = CQRSBusSingletoneFactory.create()
 
         return bus.fetch(query=self)
+
+    @classmethod
+    def handler(cls, handler_cls: Type[IQueryHandler]) -> Type[IQueryHandler]:
+        from framework.cqrs.registry import registry
+
+        registry.register(cls, handler_cls)
+
+        return handler_cls
