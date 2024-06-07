@@ -21,7 +21,7 @@ class BasketItem(BasketAppConfig.get_sqlalchemy_base()):
     __tablename__ = 'basket_item'
 
     id: Mapped[hints.BasketItemId] = mapped_column(INTEGER, primary_key=True)
-    basket_id: Mapped[hints.CustomerBasketId] = mapped_column(ForeignKey('customer_basket.id'))
+    basket_buyer_id: Mapped[hints.CustomerId] = mapped_column(ForeignKey('customer_basket.buyer_id'))
     product_id: Mapped[hints.ProductId] = mapped_column(INTEGER)
     product_name: Mapped[hints.ProductName] = mapped_column(VARCHAR(50))
     unit_price: Mapped[hints.Price] = mapped_column(DECIMAL)

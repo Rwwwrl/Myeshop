@@ -16,7 +16,6 @@ class CustomerBasket(BasketAppConfig.get_sqlalchemy_base()):
 
     __tablename__ = 'customer_basket'
 
-    id: Mapped[hints.CustomerBasketId] = mapped_column(INTEGER, primary_key=True)
-    buyer_id: Mapped[hints.CustomerId] = mapped_column(INTEGER)
+    buyer_id: Mapped[hints.CustomerId] = mapped_column(INTEGER, primary_key=True)
 
     basket_items: Mapped[List[BasketItem]] = relationship(back_populates='basket')
