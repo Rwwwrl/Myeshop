@@ -2,30 +2,26 @@ from __future__ import annotations
 
 import abc
 from typing import (
-    Generic,
     Optional,
     TYPE_CHECKING,
     Type,
     TypeVar,
-    _GenericAlias as GenericType,
+    final,
 )
 
 import attrs
 
-from ..cqrs_bus import CQRSBusSingletoneFactory, ICQRSBus
+from ..request import BaseRequest, IRequest
 
 if TYPE_CHECKING:
     from .handler import ICommandHandler
+    from ..cqrs_bus import ICQRSBus
 
 CommandResponseType = TypeVar('CommandResponseType')
 
-# TODO:
-# attrs используется только потому что в pydantic есть проблема (https://github.com/pydantic/pydantic/issues/8410),
-# которая не дает также красиво получать QueryResponseType из дженерика
-
 
 @attrs.define
-class ICommand(Generic[CommandResponseType], abc.ABC):
+class ICommand(IRequest[CommandResponseType], abc.ABC):
 
     # более красивое решение - указывать тип ответа через Generic, но
     # с pydantic моделью это пока что невозможно.
@@ -34,20 +30,13 @@ class ICommand(Generic[CommandResponseType], abc.ABC):
     def execute(self, bus: Optional[ICQRSBus] = None) -> CommandResponseType:
         raise NotImplementedError
 
-    @abc.abstractclassmethod
-    def handler(cls, handler: ICommandHandler) -> ICommandHandler:
-        raise NotImplementedError
-
-    @classmethod
-    def __response_type__(cls) -> Type[CommandResponseType]:
-        for base in cls.__orig_bases__:
-            if type(base) is GenericType and base.__args__:
-                return base.__args__[0]
-
 
 @attrs.define
-class Command(ICommand[CommandResponseType]):
+class Command(ICommand[CommandResponseType], BaseRequest):
+    @final
     def execute(self, bus: Optional[ICQRSBus] = None) -> CommandResponseType:
+        from ..cqrs_bus import CQRSBusSingletoneFactory
+
         if not bus:
             bus = CQRSBusSingletoneFactory.create()
 
@@ -55,8 +44,8 @@ class Command(ICommand[CommandResponseType]):
 
     @classmethod
     def handler(cls, handler_cls: Type[ICommandHandler]) -> Type[ICommandHandler]:
-        from framework.cqrs.registry import registry
+        from ..registry import get_registry
 
-        registry.register(cls, handler_cls)
+        get_registry().register(request_cls=cls, request_handler_cls=handler_cls)
 
         return handler_cls
