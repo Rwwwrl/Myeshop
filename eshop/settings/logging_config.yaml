@@ -19,3 +19,8 @@ loggers:
     level: INFO
     handlers: [json_stream_handler]
     propogate: true
+
+  "CQRSBus":
+    level: DEBUG
+    handlers: [json_stream_handler]
+    propogate: true
