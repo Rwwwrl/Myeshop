@@ -7,9 +7,9 @@ from basket.domain.models.customer_basket import (
     CustomerBasket as CustomerBasketORM,
     CustomerBasketRepository,
 )
-from basket.views.cqrs.query_handlers import BasketByIdQueryHandler
+from basket.views.cqrs.query_handlers import CustomerBasketQueryHandler
 
-from basket_cqrs_contract.query import BasketByIdQuery
+from basket_cqrs_contract.query import CustomerBasketQuery
 from basket_cqrs_contract.query.query_response import BasketItemDTO, CustomerBasketDTO
 
 from framework.for_pytests.test_class import TestClass
@@ -17,21 +17,20 @@ from framework.for_pytests.use_case import UseCase
 
 
 class UseCaseBasketByIdQueryHandler__handle(UseCase):
-    query: BasketByIdQuery
+    query: CustomerBasketQuery
     mock_customer_basket_repository_get_by_id_return_value: CustomerBasketORM
     expected_result: CustomerBasketDTO
 
 
 @pytest.fixture(scope='session')
 def use_case_basket_by_id_query_handler__handle() -> UseCaseBasketByIdQueryHandler__handle:
-    query = BasketByIdQuery(id=1)
+    query = CustomerBasketQuery(customer_id=1)
     mock_repository_get_by_id_return_value = CustomerBasketORM(
-        id=1,
         buyer_id=10,
         basket_items=[
             BasketItemORM(
                 id=1,
-                basket_id=1,
+                basket_buyer_id=10,
                 product_id=2,
                 product_name='product_name1',
                 unit_price=10,
@@ -40,7 +39,7 @@ def use_case_basket_by_id_query_handler__handle() -> UseCaseBasketByIdQueryHandl
             ),
             BasketItemORM(
                 id=2,
-                basket_id=1,
+                basket_buyer_id=10,
                 product_id=3,
                 product_name='product_name2',
                 unit_price=15,
@@ -51,12 +50,10 @@ def use_case_basket_by_id_query_handler__handle() -> UseCaseBasketByIdQueryHandl
     )
 
     expected_result = CustomerBasketDTO(
-        id=1,
         buyer_id=10,
         basket_items=[
             BasketItemDTO(
                 id=1,
-                basket_id=1,
                 product_id=2,
                 product_name='product_name1',
                 unit_price=10,
@@ -65,7 +62,6 @@ def use_case_basket_by_id_query_handler__handle() -> UseCaseBasketByIdQueryHandl
             ),
             BasketItemDTO(
                 id=2,
-                basket_id=1,
                 product_id=3,
                 product_name='product_name2',
                 unit_price=15,
@@ -82,8 +78,8 @@ def use_case_basket_by_id_query_handler__handle() -> UseCaseBasketByIdQueryHandl
     )
 
 
-class TestBasketByIdQueryHandler__handle(TestClass[BasketByIdQueryHandler.handle]):
-    @patch.object(CustomerBasketRepository, 'get_by_id')
+class TestBasketByIdQueryHandler__handle(TestClass[CustomerBasketQueryHandler.handle]):
+    @patch.object(CustomerBasketRepository, 'get_by_buyer_id')
     def test(
         self,
         mock__customer_basket_repository__get_by_id: Mock,
@@ -95,5 +91,5 @@ class TestBasketByIdQueryHandler__handle(TestClass[BasketByIdQueryHandler.handle
             use_case.mock_customer_basket_repository_get_by_id_return_value
         )
 
-        result = BasketByIdQueryHandler().handle(query=use_case.query)
+        result = CustomerBasketQueryHandler().handle(query=use_case.query)
         assert use_case.expected_result == result

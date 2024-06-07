@@ -5,17 +5,17 @@ from basket.domain.models.customer_basket import (
     CustomerBasketRepository,
 )
 
-from basket_cqrs_contract.query import BasketByIdQuery
+from basket_cqrs_contract.query import CustomerBasketQuery
 from basket_cqrs_contract.query.query_response import BasketItemDTO, CustomerBasketDTO
 
 from framework.cqrs.query.handler import IQueryHandler
 from framework.sqlalchemy.session_factory import session_factory
 
-__all__ = ('BasketByIdQueryHandler', )
+__all__ = ('CustomerBasketQueryHandler', )
 
 
-@BasketByIdQuery.handler
-class BasketByIdQueryHandler(IQueryHandler):
+@CustomerBasketQuery.handler
+class CustomerBasketQueryHandler(IQueryHandler):
     @staticmethod
     def _to_dto(customer_basket_orm: CustomerBasketORM) -> CustomerBasketDTO:
         basket_items: List[BasketItemDTO] = []
@@ -23,7 +23,6 @@ class BasketByIdQueryHandler(IQueryHandler):
             basket_items.append(
                 BasketItemDTO(
                     id=basket_item_orm.id,
-                    basket_id=basket_item_orm.basket_id,
                     product_id=basket_item_orm.product_id,
                     product_name=basket_item_orm.product_name,
                     unit_price=basket_item_orm.unit_price,
@@ -33,13 +32,12 @@ class BasketByIdQueryHandler(IQueryHandler):
             )
 
         return CustomerBasketDTO(
-            id=customer_basket_orm.id,
             buyer_id=customer_basket_orm.buyer_id,
             basket_items=basket_items,
         )
 
-    def handle(self, query: BasketByIdQuery) -> CustomerBasketDTO:
+    def handle(self, query: CustomerBasketQuery) -> CustomerBasketDTO:
         with session_factory() as session:
             customer_basket_repository = CustomerBasketRepository(session=session)
-            customer_basket_orm = customer_basket_repository.get_by_id(id=query.id)
+            customer_basket_orm = customer_basket_repository.get_by_buyer_id(id=query.customer_id)
             return self._to_dto(customer_basket_orm)

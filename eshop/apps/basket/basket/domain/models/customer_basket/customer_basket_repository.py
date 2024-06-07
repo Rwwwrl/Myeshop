@@ -15,7 +15,7 @@ class CustomerBasketRepository:
     def __init__(self, session: Session):
         self._session = session
 
-    def get_by_id(self, id: hints.CustomerBasketId) -> CustomerBasket:
+    def get_by_buyer_id(self, buyer_id: hints.CustomerId) -> CustomerBasket:
         # yapf: disable
         stmt = select(
             CustomerBasket,
@@ -24,7 +24,7 @@ class CustomerBasketRepository:
         ).join(
             BasketItem,
         ).where(
-            CustomerBasket.id == id,
+            CustomerBasket.buyer_id == buyer_id,
         ).options(
             selectinload(
                 CustomerBasket.basket_items,
@@ -34,6 +34,6 @@ class CustomerBasketRepository:
         customer_basket = self._session.scalar(stmt)
 
         if customer_basket is None:
-            raise NotFoundError(f'id = {id}')
+            raise NotFoundError(f'buyer_id = {buyer_id}')
 
         return customer_basket

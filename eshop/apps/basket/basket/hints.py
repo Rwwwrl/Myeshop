@@ -4,7 +4,6 @@ from typing import NewType
 
 CustomerId = NewType('CustomerId', int)
 
-CustomerBasketId = NewType('CustomerBasketId', int)
 BasketItemId = NewType('BasketItemId', int)
 ProductId = NewType('ProductId', int)
 

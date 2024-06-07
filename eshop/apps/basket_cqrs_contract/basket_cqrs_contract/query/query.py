@@ -6,9 +6,9 @@ from framework.cqrs.query.query import Query
 
 from .query_response import CustomerBasketDTO
 
-__all__ = ('BasketByIdQuery', )
+__all__ = ('CustomerBasketQuery', )
 
 
 @define
-class BasketByIdQuery(Query[CustomerBasketDTO]):
-    id: hints.CustomerBasketId
+class CustomerBasketQuery(Query[CustomerBasketDTO]):
+    customer_id: hints.CustomerId
