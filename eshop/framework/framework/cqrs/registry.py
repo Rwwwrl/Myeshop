@@ -1,41 +1,41 @@
-from typing import Dict, Type, Union
+from typing import Dict, Type
 
-from .command import ICommand, ICommandHandler
-from .query import IQuery, IQueryHandler
-
-Key = Union[Type[ICommand], Type[IQuery]]
-Value = Union[Type[ICommandHandler], Type[IQueryHandler]]
-
-_Registry = Dict[Key, Value]
+from .command import ICommand
+from .query import IQuery
+from .request import IRequest, IRequestHandler
 
 
-class AlreadyRegistred(Exception):
+class RequestHandlerAlreadyRegistered(Exception):
     pass
 
 
-class IsNotRegistered(Exception):
+class RequestHandlerHasNotRegistered(Exception):
     pass
 
 
 class Registry:
     def __init__(self):
-        self._data: _Registry = {}
+        self._storage: Dict[Type[IRequest], Type[IRequestHandler]] = {}
 
-    def _ensure_key_has_not_been_registred(self, key: Key) -> None:
-        if key in self._data:
-            raise AlreadyRegistred
+    def _ensure_request_handlers_has_not_been_registered(self, request_cls: Type[IRequest]) -> None:
+        if request_cls in self._storage:
+            raise RequestHandlerAlreadyRegistered(request_cls)
 
-    def register(self, key: Key, value: Value) -> None:
-        if issubclass(key, (ICommand, IQuery)):
-            self._ensure_key_has_not_been_registred(key)
+    def register(self, request_cls: Type[IRequest], request_handler_cls: Type[IRequestHandler]) -> None:
+        if issubclass(request_cls, (ICommand, IQuery)):
+            self._ensure_request_handlers_has_not_been_registered(request_cls=request_cls)
 
-        self._data[key] = value
+        self._storage[request_cls] = request_handler_cls
 
-    def __getitem__(self, key: Key) -> Value:
+    def get_handler_cls(self, request_cls: Type[IRequest]) -> Type[IRequestHandler]:
         try:
-            return self._data[key]
+            return self._storage[request_cls]
         except KeyError:
-            raise IsNotRegistered(str(key))
+            raise RequestHandlerHasNotRegistered(request_cls)
 
 
-registry = Registry()
+_registry = Registry()
+
+
+def get_registry() -> Registry:
+    return _registry

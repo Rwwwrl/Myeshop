@@ -4,6 +4,8 @@ import abc
 from logging import getLogger
 from typing import TYPE_CHECKING
 
+from . import registry
+
 if TYPE_CHECKING:
     from .query import Query, QueryResponseType
 
@@ -25,14 +27,11 @@ class CQRSBus(ICQRSBus):
     _logger = getLogger('CQRSBus')
 
     def fetch(self, query: Query) -> QueryResponseType:
-        from .query.registry import query_registry
-
         self._logger.debug('start processing query %s', query)
 
-        handler_cls = query_registry.get_query_handler_cls(query_cls=query.__class__)
-        handler = handler_cls()
+        handler_cls = registry.get_registry().get_handler_cls(request_cls=type(query))
         try:
-            result = handler.handle(query=query)
+            result = handler_cls().handle(query=query)
         except Exception as e:
             self._logger.debug('query %s was completed with an error', query)
             raise HandlerRaisedAnError(original_exception=e)
