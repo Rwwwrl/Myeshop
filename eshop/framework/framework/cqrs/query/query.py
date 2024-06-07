@@ -1,9 +1,9 @@
 import abc
-from typing import Generic, Type, TypeVar, _GenericAlias as GenericType
+from typing import Generic, Optional, Type, TypeVar, _GenericAlias as GenericType
 
 import attrs
 
-from ..cqrs_bus import CQRSBusSingletoneFactory
+from ..cqrs_bus import CQRSBusSingletoneFactory, ICQRSBus
 
 QueryResponseType = TypeVar('QueryResponseType')
 
@@ -19,7 +19,7 @@ class IQuery(Generic[QueryResponseType], abc.ABC):
     # с pydantic моделью это пока что невозможно.
 
     @abc.abstractmethod
-    def fetch(self) -> QueryResponseType:
+    def fetch(self, bus: Optional[ICQRSBus] = None) -> QueryResponseType:
         raise NotImplementedError
 
     @classmethod
@@ -31,6 +31,8 @@ class IQuery(Generic[QueryResponseType], abc.ABC):
 
 @attrs.define
 class Query(IQuery[QueryResponseType]):
-    def fetch(self) -> QueryResponseType:
-        bus = CQRSBusSingletoneFactory.create()
+    def fetch(self, bus: Optional[ICQRSBus] = None) -> QueryResponseType:
+        if not bus:
+            bus = CQRSBusSingletoneFactory.create()
+
         return bus.fetch(query=self)
