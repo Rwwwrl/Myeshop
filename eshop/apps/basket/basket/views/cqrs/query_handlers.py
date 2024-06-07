@@ -8,13 +8,13 @@ from basket.domain.models.customer_basket import (
 from basket_cqrs_contract.query import BasketByIdQuery
 from basket_cqrs_contract.query.query_response import BasketItemDTO, CustomerBasketDTO
 
-from framework.cqrs.query.handler import IQueryHandler, query_handler
+from framework.cqrs.query.handler import IQueryHandler
 from framework.sqlalchemy.session_factory import session_factory
 
 __all__ = ('BasketByIdQueryHandler', )
 
 
-@query_handler(BasketByIdQuery)
+@BasketByIdQuery.handler
 class BasketByIdQueryHandler(IQueryHandler):
     @staticmethod
     def _to_dto(customer_basket_orm: CustomerBasketORM) -> CustomerBasketDTO:
