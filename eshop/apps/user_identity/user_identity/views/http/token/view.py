@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 
 from eshop import settings
 
-from framework.ddd.dto import DTO
+from framework.common.dto import DTO
 
 from user_identity import hints
 from user_identity.api_router import api_router

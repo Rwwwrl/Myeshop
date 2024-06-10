@@ -2,7 +2,7 @@ from typing import List
 
 from basket_cqrs_contract import hints
 
-from framework.ddd.dto import DTO
+from framework.common.dto import DTO
 
 
 class BasketItemDTO(DTO):

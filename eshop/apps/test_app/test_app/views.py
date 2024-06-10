@@ -2,7 +2,7 @@ from sqlalchemy import select
 
 from test_app import hints
 
-from framework.ddd.dto import DTO
+from framework.common.dto import DTO
 from framework.sqlalchemy.session_factory import session_factory
 
 from .api_router import api_router

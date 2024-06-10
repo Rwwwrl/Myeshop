@@ -1,4 +1,4 @@
-from framework.ddd.dto import DTO
+from framework.common.dto import DTO
 
 from user_identity_cqrs_contract.hints import UserId
 

@@ -6,10 +6,10 @@ import mock
 
 import pytest
 
+from framework.common.dto import DTO
 from framework.cqrs import registry
 from framework.cqrs.cqrs_bus import CQRSBus
 from framework.cqrs.query import IQuery, IQueryHandler, Query
-from framework.ddd.dto import DTO
 from framework.for_pytests.test_class import TestClass
 from framework.for_pytests.use_case import UseCase
 
