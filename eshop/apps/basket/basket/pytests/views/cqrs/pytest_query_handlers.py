@@ -2,7 +2,7 @@ from mock import Mock, patch
 
 import pytest
 
-from basket.domain.models.basketitem import BasketItem as BasketItemORM
+from basket.domain.models.basket_item import BasketItem as BasketItemORM
 from basket.domain.models.customer_basket import (
     CustomerBasket as CustomerBasketORM,
     CustomerBasketRepository,

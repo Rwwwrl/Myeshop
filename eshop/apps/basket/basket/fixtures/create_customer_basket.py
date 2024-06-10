@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from basket.domain.models.basketitem import BasketItem
+from basket.domain.models.basket_item import BasketItem
 from basket.domain.models.customer_basket import CustomerBasket
 
 from eshop import settings

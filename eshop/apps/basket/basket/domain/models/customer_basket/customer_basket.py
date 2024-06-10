@@ -9,7 +9,7 @@ from basket import hints
 from basket.app_config import BasketAppConfig
 
 if TYPE_CHECKING:
-    from ..basketitem import BasketItem
+    from ..basket_item import BasketItem
 
 
 class CustomerBasket(BasketAppConfig.get_sqlalchemy_base()):

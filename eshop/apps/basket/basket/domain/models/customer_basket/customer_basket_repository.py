@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session, selectinload
 from basket import hints
 
 from .customer_basket import CustomerBasket
-from ..basketitem import BasketItem
+from ..basket_item import BasketItem
 
 
 class NotFoundError(Exception):
