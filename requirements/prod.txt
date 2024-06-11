@@ -19,4 +19,5 @@ basket
 basket_cqrs_contract
 test_app
 framework
+api_gateway
 myeshop

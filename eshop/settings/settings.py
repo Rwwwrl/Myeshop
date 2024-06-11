@@ -15,6 +15,8 @@ from sqlalchemy.engine import create_engine
 
 from test_app.app_config import TestAppConfig
 
+from api_gateway.app_config import ApiGatewayAppConfig
+
 from framework.app_config import IAppConfig
 
 from user_identity.app_config import UserIdentityAppConfig
@@ -42,6 +44,10 @@ def init_logging() -> None:
     logger.info('%s was used to configure logging', LOGGING_CONFIG_YAML_FILENAME)
 
 
+def init_api_gateway() -> None:
+    ApiGatewayAppConfig.init()
+
+
 def import_http_views() -> None:
     for app_config in INSTALLED_APPS:
         app_config.import_http_views()
@@ -59,6 +65,7 @@ def import_cqrs_controllers() -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    init_api_gateway()
     import_http_views()
     include_routes()
     import_cqrs_controllers()
