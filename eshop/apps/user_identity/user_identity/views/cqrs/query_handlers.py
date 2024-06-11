@@ -1,6 +1,6 @@
 from eshop import settings
 
-from framework.cqrs.query.handler import IQueryHandler, query_handler
+from framework.cqrs.query.handler import IQueryHandler
 
 from user_identity.dependency_container import dependency_container
 
@@ -10,7 +10,7 @@ from user_identity_cqrs_contract.query.query_response import UserDTO
 __all__ = ('UserFromJWTTokenQueryHandler', )
 
 
-@query_handler(UserIdFromJWTTokenQuery)
+@UserIdFromJWTTokenQuery.handler
 class UserFromJWTTokenQueryHandler(IQueryHandler):
     def handle(self, query: UserIdFromJWTTokenQuery) -> UserDTO:
         jwt_encoder_decoder = dependency_container.jwt_encoder_decoder_factory()

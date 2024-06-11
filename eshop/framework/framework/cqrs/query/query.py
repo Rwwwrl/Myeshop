@@ -1,43 +1,48 @@
+from __future__ import annotations
+
 import abc
-from typing import ClassVar, Type, TypeVar
+from typing import (
+    Optional,
+    TYPE_CHECKING,
+    Type,
+    TypeVar,
+    final,
+)
 
-from pydantic import BaseModel
+from attrs import define
 
-from ..cqrs_bus import CQRSBusSingletoneFactory
+from ..request import BaseRequest, IRequest
 
-QueryResponse = TypeVar('QueryResponse')
+QueryResponseType = TypeVar('QueryResponseType')
+
+if TYPE_CHECKING:
+    from .handler import IQueryHandler
+    from ..cqrs_bus import ICQRSBus
 
 
-class IQuery(BaseModel, abc.ABC, frozen=True):
-
-    _response_type: ClassVar[Type[QueryResponse]]
-
+@define
+class IQuery(IRequest[QueryResponseType], abc.ABC):
     @abc.abstractmethod
-    def fetch(self) -> QueryResponse:
-        raise NotImplementedError
-
-    @abc.abstractclassmethod
-    def get_response_type(cls) -> Type[QueryResponse]:
+    def fetch(self, bus: Optional[ICQRSBus] = None) -> QueryResponseType:
         raise NotImplementedError
 
 
-class Query(IQuery):
-    def fetch(self) -> QueryResponse:
-        bus = CQRSBusSingletoneFactory.create()
+@define
+class Query(IQuery[QueryResponseType], BaseRequest):
+    @final
+    def fetch(self, bus: Optional[ICQRSBus] = None) -> QueryResponseType:
+        from ..cqrs_bus import CQRSBusSingletoneFactory
+
+        if not bus:
+            bus = CQRSBusSingletoneFactory.create()
+
         return bus.fetch(query=self)
 
+    @final
     @classmethod
-    def get_response_type(cls) -> Type[QueryResponse]:
-        return cls._response_type
+    def handler(cls, handler_cls: Type[IQueryHandler]) -> Type[IQueryHandler]:
+        from ..registry import get_registry
 
+        get_registry().register(request_cls=cls, request_handler_cls=handler_cls)
 
-def query(response_type: Type[QueryResponse]):
-    # TODO приходится накидывать декоратор, а не получать response_type через genericи, т.к.
-    # c pydantic.BaseModel это не работает
-    # https://github.com/pydantic/pydantic/issues/8410
-
-    def inner(query_cls: Type[IQuery]) -> Type[IQuery]:
-        query_cls._response_type = response_type
-        return query_cls
-
-    return inner
+        return handler_cls

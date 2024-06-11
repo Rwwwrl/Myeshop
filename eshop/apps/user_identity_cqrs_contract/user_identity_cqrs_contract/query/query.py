@@ -1,4 +1,6 @@
-from framework.cqrs.query.query import Query, query
+from attrs import define
+
+from framework.cqrs.query.query import Query
 
 from user_identity_cqrs_contract.hints import JWTToken
 
@@ -7,7 +9,7 @@ from .query_response import UserDTO
 __all__ = ('UserIdFromJWTTokenQuery', )
 
 
-@query(UserDTO)
-class UserIdFromJWTTokenQuery(Query):
+@define
+class UserIdFromJWTTokenQuery(Query[UserDTO]):
 
     jwt_token: JWTToken

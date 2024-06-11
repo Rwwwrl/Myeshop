@@ -4,7 +4,7 @@ from fastapi import APIRouter
 
 from sqlalchemy.orm import DeclarativeBase
 
-from framework.fastapi.app_config import IAppConfig
+from framework.app_config import IAppConfig
 
 
 class UserIdentityAppConfig(IAppConfig):
@@ -25,12 +25,14 @@ class UserIdentityAppConfig(IAppConfig):
 
     @classmethod
     def import_models(cls) -> None:
+        from .domain import models    # noqa
+
         exec('from .domain.models import *')
 
     @classmethod
     def import_http_views(cls) -> None:
-        exec('from .views.http import *')
+        from .views import http    # noqa
 
     @classmethod
     def import_cqrs_handlers(cls) -> None:
-        exec('from .views.cqrs import *')
+        from .views import cqrs    # noqa

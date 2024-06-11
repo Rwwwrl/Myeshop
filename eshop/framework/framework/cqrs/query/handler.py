@@ -1,20 +1,15 @@
+from __future__ import annotations
+
 import abc
-from typing import Type
+from typing import TYPE_CHECKING
 
-from .query import Query, QueryResponse
+from ..request import IRequestHandler
+
+if TYPE_CHECKING:
+    from .query import Query, QueryResponseType
 
 
-class IQueryHandler(abc.ABC):
+class IQueryHandler(IRequestHandler, abc.ABC):
     @abc.abstractmethod
-    def handle(self, query: Query) -> QueryResponse:
+    def handle(self, query: Query) -> QueryResponseType:
         raise NotImplementedError
-
-
-def query_handler(query_cls: Type[Query]):
-    from .registry import query_registry
-
-    def inner(query_handler_cls: Type[IQueryHandler]):
-        query_registry.register_query(query_cls=query_cls, query_handler_cls=query_handler_cls)
-        return query_handler_cls
-
-    return inner

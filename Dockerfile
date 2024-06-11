@@ -15,6 +15,8 @@ COPY setup.py setup.py
 
 RUN pip install -e eshop/apps/user_identity && \
     pip install -e eshop/apps/user_identity_cqrs_contract && \
+    pip install -e eshop/apps/basket && \
+    pip install -e eshop/apps/basket_cqrs_contract && \
     pip install -e eshop/apps/test_app && \
     pip install -e eshop/framework && \
     pip install -e .
@@ -34,6 +36,12 @@ RUN pip install -r deploy/ci/linter/import_linter.txt
 FROM build as build_for_run_pytest
 
 COPY pytest.ini pytest.ini
+
+ENV POSTGRES__NAME=blabla
+ENV POSTGRES__HOST=blabla
+ENV POSTGRES__LOGIN=blabla
+ENV POSTGRES__PASSWORD=blabla
+ENV USER_IDENTITY_SERVICE__SECRET=blabla
 
 RUN pip install -r requirements/for_run_tests.txt
 

@@ -1,4 +1,5 @@
 pip==23.0.1
+attrs==23.2.0
 uvicorn==0.27.1
 fastapi==0.110.0
 alembic==1.13.1
@@ -14,6 +15,8 @@ dependency-injector==4.41.0
 python-json-logger==2.0.7
 user_identity
 user_identity_cqrs_contract
+basket
+basket_cqrs_contract
 test_app
 framework
 myeshop

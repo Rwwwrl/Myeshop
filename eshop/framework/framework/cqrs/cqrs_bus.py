@@ -1,25 +1,43 @@
 from __future__ import annotations
 
 import abc
+from logging import getLogger
 from typing import TYPE_CHECKING
 
+from . import registry
+
 if TYPE_CHECKING:
-    from .query import Query, QueryResponse
+    from .query import Query, QueryResponseType
+
+
+class HandlerRaisedAnError(Exception):
+    def __init__(self, *args, original_exception: Exception, **kwargs):
+        self._original_exception_cls_name = original_exception.__class__.__name__
+        self._original_exception_message = str(original_exception)
 
 
 class ICQRSBus(abc.ABC):
     @abc.abstractmethod
-    def fetch(self, query: Query) -> QueryResponse:
+    def fetch(self, query: Query) -> QueryResponseType:
         raise NotImplementedError
 
 
 class CQRSBus(ICQRSBus):
-    def fetch(self, query: Query) -> QueryResponse:
-        from .query.registry import query_registry
 
-        handler_cls = query_registry.get_query_handler_cls(query_cls=query.__class__)
-        handler = handler_cls()
-        return handler.handle(query=query)
+    _logger = getLogger('CQRSBus')
+
+    def fetch(self, query: Query) -> QueryResponseType:
+        self._logger.debug('start processing query %s', query)
+
+        handler_cls = registry.get_registry().get_handler_cls(request_cls=type(query))
+        try:
+            result = handler_cls().handle(query=query)
+        except Exception as e:
+            self._logger.debug('query %s was completed with an error', query)
+            raise HandlerRaisedAnError(original_exception=e)
+        else:
+            self._logger.debug('query %s was succesfully completed', query)
+            return result
 
 
 class CQRSBusSingletoneFactory:
