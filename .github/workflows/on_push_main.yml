@@ -156,16 +156,15 @@ jobs:
 
       - name: test_app alembic upgrade head
         if: steps.changes.outputs.test_app_migrations_files == 'true'
-        run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo docker-compose -p prod -f docker-compose.base_prod.yml -f docker-compose.prod.yml run web_app alembic --name test_app upgrade head"
+        run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo make test_app_alembic_upgrade_head"
 
       - name: user_identity alembic upgrade head
         if: steps.changes.outputs.user_identity_migrations_files == 'true'
-        run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo docker-compose -p prod -f docker-compose.base_prod.yml -f docker-compose.prod.yml run web_app alembic --name user_identity upgrade head"
+        run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo make user_identity_alembic_upgrade_head"
 
       - name: basket alembic upgrade head
         if: steps.changes.outputs.basket_migrations_files == 'true'
-        run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo docker-compose -p prod -f docker-compose.base_prod.yml -f docker-compose.prod.yml run web_app alembic --name basket upgrade head"
-
+        run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo make basket_upgrade_alembic_head"
 
       - name: Start server
         run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo make up_prod"

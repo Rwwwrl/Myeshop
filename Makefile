@@ -34,6 +34,14 @@ up_prod:
 down_prod:
 	docker-compose --env-file .env.prod -p prod -f docker-compose.base_prod.yml -f docker-compose.prod.yml down
 
+test_app_alembic_upgrade_head:
+	docker-compose --env-file .env.prod -p prod -f docker-compose.base_prod.yml -f docker-compose.prod.yml run web_app alembic --name test_app upgrade head
+
+user_identity_alembic_upgrade_head:
+	docker-compose --env-file .env.prod -p prod -f docker-compose.base_prod.yml -f docker-compose.prod.yml run web_app alembic --name user_identity upgrade head
+
+basket_upgrade_alembic_head:
+	docker-compose --env-file .env.prod -p prod -f docker-compose.base_prod.yml -f docker-compose.prod.yml run web_app alembic --name basket upgrade head
 
 
 # TESTS
