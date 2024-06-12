@@ -17,6 +17,7 @@ user_identity
 user_identity_cqrs_contract
 basket
 basket_cqrs_contract
+catalog
 test_app
 framework
 api_gateway
