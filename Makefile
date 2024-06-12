@@ -43,6 +43,8 @@ user_identity_alembic_upgrade_head:
 basket_upgrade_alembic_head:
 	docker-compose --env-file .env.prod -p prod -f docker-compose.base_prod.yml -f docker-compose.prod.yml run web_app alembic --name basket upgrade head
 
+catalog_upgrade_alembic_head:
+	docker-compose --env-file .env.prod -p prod -f docker-compose.base_prod.yml -f docker-compose.prod.yml run web_app alembic --name catalog upgrade head
 
 # TESTS
 build_tests:

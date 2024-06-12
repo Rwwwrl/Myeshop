@@ -17,11 +17,13 @@ class CatalogAppConfig(IAppConfig):
 
     @classmethod
     def get_sqlalchemy_base(cls) -> Type[DeclarativeBase]:
-        pass
+        from .domain.base import Base
+
+        return Base
 
     @classmethod
     def import_models(cls) -> None:
-        pass
+        from .domain import models    # noqa
 
     @classmethod
     def import_http_views(cls) -> None:

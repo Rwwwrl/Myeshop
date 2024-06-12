@@ -17,6 +17,8 @@ from test_app.app_config import TestAppConfig
 
 from api_gateway.app_config import ApiGatewayAppConfig
 
+from catalog.app_config import CatalogAppConfig
+
 from framework.app_config import IAppConfig
 
 from user_identity.app_config import UserIdentityAppConfig
@@ -24,6 +26,7 @@ from user_identity.app_config import UserIdentityAppConfig
 INSTALLED_APPS: List[Type[IAppConfig]] = [
     TestAppConfig,
     UserIdentityAppConfig,
+    CatalogAppConfig,
 ]
 
 
