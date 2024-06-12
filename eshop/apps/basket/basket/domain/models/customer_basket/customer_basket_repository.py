@@ -23,8 +23,6 @@ class CustomerBasketRepository:
             CustomerBasket,
         ).select_from(
             CustomerBasket,
-        ).join(
-            BasketItem,
         ).where(
             CustomerBasket.buyer_id == buyer_id,
         ).options(
