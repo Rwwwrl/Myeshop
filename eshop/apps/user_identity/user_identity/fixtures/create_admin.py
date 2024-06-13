@@ -8,7 +8,7 @@ def create_admin():
     with session_factory() as session:
         hashed_password = dependency_container.password_hasher_factory().hash(plain_password='1234')
 
-        user = User(name='admin', hashed_password=hashed_password)
+        user = User(id=1, name='admin', hashed_password=hashed_password)
         session.add(user)
 
         session.commit()

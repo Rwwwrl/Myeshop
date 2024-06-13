@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends
 
 from framework.common.dto import DTO
-from framework.fastapi.dependencies.get_use_from_request import get_user_from_http_request
+from framework.fastapi.dependencies.get_user_from_request import get_user_from_http_request
 from framework.sqlalchemy.session_factory import session_factory
 
 from user_identity import hints

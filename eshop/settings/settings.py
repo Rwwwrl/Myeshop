@@ -15,6 +15,10 @@ from sqlalchemy.engine import create_engine
 
 from test_app.app_config import TestAppConfig
 
+from api_gateway.app_config import ApiGatewayAppConfig
+
+from catalog.app_config import CatalogAppConfig
+
 from framework.app_config import IAppConfig
 
 from user_identity.app_config import UserIdentityAppConfig
@@ -22,6 +26,7 @@ from user_identity.app_config import UserIdentityAppConfig
 INSTALLED_APPS: List[Type[IAppConfig]] = [
     TestAppConfig,
     UserIdentityAppConfig,
+    CatalogAppConfig,
 ]
 
 
@@ -42,6 +47,10 @@ def init_logging() -> None:
     logger.info('%s was used to configure logging', LOGGING_CONFIG_YAML_FILENAME)
 
 
+def init_api_gateway() -> None:
+    ApiGatewayAppConfig.init()
+
+
 def import_http_views() -> None:
     for app_config in INSTALLED_APPS:
         app_config.import_http_views()
@@ -59,6 +68,7 @@ def import_cqrs_controllers() -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    init_api_gateway()
     import_http_views()
     include_routes()
     import_cqrs_controllers()
@@ -74,6 +84,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 class PostgresSettings(pydantic.BaseModel):
     name: str
     host: str
+    port: int
     login: str
     password: str
 
@@ -100,6 +111,7 @@ DB_URL = URL.create(
     drivername='postgresql',
     database=SETTINGS.postgres.name,
     host=SETTINGS.postgres.host,
+    port=SETTINGS.postgres.port,
     username=SETTINGS.postgres.login,
     password=SETTINGS.postgres.password,
 )

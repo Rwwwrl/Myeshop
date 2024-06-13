@@ -18,7 +18,10 @@ RUN pip install -e eshop/apps/user_identity && \
     pip install -e eshop/apps/basket && \
     pip install -e eshop/apps/basket_cqrs_contract && \
     pip install -e eshop/apps/test_app && \
+    pip install -e eshop/apps/catalog && \
+    pip install -e eshop/apps/catalog_cqrs_contract && \
     pip install -e eshop/framework && \
+    pip install -e eshop/api_gateway && \
     pip install -e .
 
 COPY alembic.ini alembic.ini
@@ -39,6 +42,7 @@ COPY pytest.ini pytest.ini
 
 ENV POSTGRES__NAME=blabla
 ENV POSTGRES__HOST=blabla
+ENV POSTGRES__PORT=12345
 ENV POSTGRES__LOGIN=blabla
 ENV POSTGRES__PASSWORD=blabla
 ENV USER_IDENTITY_SERVICE__SECRET=blabla

@@ -141,6 +141,8 @@ jobs:
               - 'eshop/apps/test_app/test_app/migrations/*.py'
             basket_migrations_files:
               - 'eshop/apps/basket/basket/migrations/*.py'
+            catalog_migrations_files:
+              - 'eshop/apps/catalog/catalog/migrations/*.py'
 
       - name: Stop current running server
         run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo make down_prod"
@@ -165,6 +167,10 @@ jobs:
       - name: basket alembic upgrade head
         if: steps.changes.outputs.basket_migrations_files == 'true'
         run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo make basket_upgrade_alembic_head"
+
+      - name: catalog alembic upgrade head
+        if: steps.changes.outputs.catalog_migrations_files == 'true'
+        run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo make catalog_upgrade_alembic_head"
 
       - name: Start server
         run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo make up_prod"
