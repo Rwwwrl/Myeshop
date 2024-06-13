@@ -84,6 +84,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 class PostgresSettings(pydantic.BaseModel):
     name: str
     host: str
+    port: int
     login: str
     password: str
 
@@ -110,6 +111,7 @@ DB_URL = URL.create(
     drivername='postgresql',
     database=SETTINGS.postgres.name,
     host=SETTINGS.postgres.host,
+    port=SETTINGS.postgres.port,
     username=SETTINGS.postgres.login,
     password=SETTINGS.postgres.password,
 )
