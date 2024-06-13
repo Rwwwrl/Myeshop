@@ -5,6 +5,9 @@ build_dev:
 up_dev:
 	docker-compose --env-file .env.dev -p dev -f docker-compose.dev.yml up -d
 
+up_postgres_db_dev:
+	docker-compose --env-file .env.dev -p dev -f docker-compose.dev.yml up -d postgres_db
+
 down_dev:
 	docker-compose --env-file .env.dev -p dev -f docker-compose.dev.yml down
 
