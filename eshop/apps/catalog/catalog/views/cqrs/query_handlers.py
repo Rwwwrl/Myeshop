@@ -1,3 +1,5 @@
+from typing import List
+
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
@@ -6,7 +8,7 @@ from catalog.domain.models import (
     CatalogItem as CatalogItemORM,
 )
 
-from catalog_cqrs_contract.query import CatalogItemByIdQuery
+from catalog_cqrs_contract.query import CatalogItemByIdsQuery
 from catalog_cqrs_contract.query.query_response import (
     CatalogBrandDTO,
     CatalogItemDTO,
@@ -16,33 +18,29 @@ from catalog_cqrs_contract.query.query_response import (
 from framework.cqrs.query import IQueryHandler
 from framework.sqlalchemy.session_factory import session_factory
 
+__all__ = ("CatalogItemByIdQueryHandler", )
+
 
 class NotFoundError(Exception):
     pass
 
 
-@CatalogItemByIdQuery.handler
+@CatalogItemByIdsQuery.handler
 class CatalogItemByIdQueryHandler(IQueryHandler):
     @staticmethod
-    def _fetch_from_db(id: hints.CatalogItemId) -> CatalogItemORM:
+    def _fetch_from_db(ids: List[hints.CatalogItemId]) -> List[CatalogItemORM]:
         with session_factory() as session:
             # yapf: disable
             stmt = select(
                 CatalogItemORM,
             ).where(
-                CatalogItemORM.id == id,
+                CatalogItemORM.id.in_(ids),
             ).options(
-                (
-                    joinedload(CatalogItemORM.catalog_brand),
-                    joinedload(CatalogItemORM.catalog_type),
-                ),
+                joinedload(CatalogItemORM.catalog_brand),
+                joinedload(CatalogItemORM.catalog_type),
             )
             # yapf: enable
-            catalog_item_orm = session.scalar(stmt)
-            if not catalog_item_orm:
-                raise NotFoundError(f'id = {id}')
-
-            return catalog_item_orm
+            return session.scalars(stmt).all()
 
     @staticmethod
     def _to_dto(catalog_item_orm: CatalogItemORM) -> CatalogItemDTO:
@@ -67,5 +65,5 @@ class CatalogItemByIdQueryHandler(IQueryHandler):
             ),
         )
 
-    def handle(self, query: CatalogItemByIdQuery) -> CatalogItemDTO:
-        return self._to_dto(catalog_item_orm=self._fetch_from_db(id=query.id))
+    def handle(self, query: CatalogItemByIdsQuery) -> CatalogItemDTO:
+        return [self._to_dto(ci) for ci in self._fetch_from_db(ids=query.ids)]

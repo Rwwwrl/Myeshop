@@ -1,3 +1,5 @@
+from typing import List
+
 from attrs import define
 
 from catalog_cqrs_contract import hints
@@ -6,10 +8,10 @@ from framework.cqrs.query.query import Query
 
 from .query_response import CatalogItemDTO
 
-__all__ = ('CatalogItemByIdQuery', )
+__all__ = ('CatalogItemByIdsQuery', )
 
 
 @define
-class CatalogItemByIdQuery(Query[CatalogItemDTO]):
+class CatalogItemByIdsQuery(Query[CatalogItemDTO]):
 
-    id: hints.CatalogItemId
+    ids: List[hints.CatalogItemId]

@@ -31,4 +31,4 @@ class CatalogAppConfig(IAppConfig):
 
     @classmethod
     def import_cqrs_handlers(cls) -> None:
-        pass
+        from .views import cqrs    # noqa
