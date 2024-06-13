@@ -17,6 +17,7 @@ services:
       - ./eshop/:/usr/code/myeshop/eshop/
     environment:
       - POSTGRES__HOST=postgres_db
+      - POSTGRES__PORT=${POSTGRES__PORT}
       - POSTGRES__NAME=${POSTGRES__NAME}
       - POSTGRES__LOGIN=${POSTGRES__LOGIN}
       - POSTGRES__PASSWORD=${POSTGRES__PASSWORD}
