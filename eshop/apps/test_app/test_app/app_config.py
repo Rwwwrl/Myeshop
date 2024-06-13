@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Optional, Type
 
 from fastapi import APIRouter
 
@@ -12,13 +12,13 @@ class TestAppConfig(IAppConfig):
     name = 'test_app'
 
     @classmethod
-    def get_api_router(cls) -> APIRouter:
+    def get_api_router(cls) -> Optional[APIRouter]:
         from .api_router import api_router
 
         return api_router
 
     @classmethod
-    def get_sqlalchemy_base(cls) -> Type[DeclarativeBase]:
+    def get_sqlalchemy_base(cls) -> Optional[Type[DeclarativeBase]]:
         from .models import Base
 
         return Base

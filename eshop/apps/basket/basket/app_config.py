@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Optional, Type
 
 from fastapi import APIRouter
 
@@ -12,11 +12,11 @@ class BasketAppConfig(IAppConfig):
     name = 'basket'
 
     @classmethod
-    def get_api_router(cls) -> APIRouter:
-        raise NotImplementedError
+    def get_api_router(cls) -> Optional[APIRouter]:
+        return None
 
     @classmethod
-    def get_sqlalchemy_base(cls) -> Type[DeclarativeBase]:
+    def get_sqlalchemy_base(cls) -> Optional[Type[DeclarativeBase]]:
         from .domain.models.base import Base
 
         return Base
@@ -27,7 +27,7 @@ class BasketAppConfig(IAppConfig):
 
     @classmethod
     def import_http_views(cls) -> None:
-        raise NotImplementedError
+        pass
 
     @classmethod
     def import_cqrs_handlers(cls) -> None:

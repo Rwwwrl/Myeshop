@@ -17,6 +17,8 @@ from test_app.app_config import TestAppConfig
 
 from api_gateway.app_config import ApiGatewayAppConfig
 
+from basket.app_config import BasketAppConfig
+
 from catalog.app_config import CatalogAppConfig
 
 from framework.app_config import IAppConfig
@@ -26,6 +28,7 @@ from user_identity.app_config import UserIdentityAppConfig
 INSTALLED_APPS: List[Type[IAppConfig]] = [
     TestAppConfig,
     UserIdentityAppConfig,
+    BasketAppConfig,
     CatalogAppConfig,
 ]
 
@@ -47,18 +50,21 @@ def init_logging() -> None:
     logger.info('%s was used to configure logging', LOGGING_CONFIG_YAML_FILENAME)
 
 
-def init_api_gateway() -> None:
-    ApiGatewayAppConfig.init()
-
-
 def import_http_views() -> None:
     for app_config in INSTALLED_APPS:
         app_config.import_http_views()
 
+    ApiGatewayAppConfig.import_http_views()
+
 
 def include_routes() -> None:
     for app_config in INSTALLED_APPS:
-        MAIN_APP.include_router(app_config.get_api_router())
+        router = app_config.get_api_router()
+        if router:
+            MAIN_APP.include_router(router)
+
+    for router in ApiGatewayAppConfig.get_api_routers():
+        MAIN_APP.include_router(router)
 
 
 def import_cqrs_controllers() -> None:
@@ -68,7 +74,6 @@ def import_cqrs_controllers() -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    init_api_gateway()
     import_http_views()
     include_routes()
     import_cqrs_controllers()

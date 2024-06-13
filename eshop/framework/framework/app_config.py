@@ -1,5 +1,5 @@
 import abc
-from typing import ClassVar, Type
+from typing import ClassVar, Optional, Type
 
 from fastapi import APIRouter
 
@@ -16,11 +16,11 @@ class IAppConfig:
         raise NotImplementedError
 
     @abc.abstractclassmethod
-    def get_api_router(cls) -> APIRouter:
+    def get_api_router(cls) -> Optional[APIRouter]:
         raise NotImplementedError
 
     @classmethod
-    def get_sqlalchemy_base(cls) -> Type[DeclarativeBase]:
+    def get_sqlalchemy_base(cls) -> Optional[Type[DeclarativeBase]]:
         raise NotImplementedError
 
     @abc.abstractclassmethod

@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Optional, Type
 
 from fastapi import APIRouter
 
@@ -12,13 +12,13 @@ class UserIdentityAppConfig(IAppConfig):
     name = 'user_identity'
 
     @classmethod
-    def get_api_router(cls) -> APIRouter:
+    def get_api_router(cls) -> Optional[APIRouter]:
         from .api_router import api_router
 
         return api_router
 
     @classmethod
-    def get_sqlalchemy_base(cls) -> Type[DeclarativeBase]:
+    def get_sqlalchemy_base(cls) -> Optional[Type[DeclarativeBase]]:
         from .domain.models.base import Base
 
         return Base
@@ -26,8 +26,6 @@ class UserIdentityAppConfig(IAppConfig):
     @classmethod
     def import_models(cls) -> None:
         from .domain import models    # noqa
-
-        exec('from .domain.models import *')
 
     @classmethod
     def import_http_views(cls) -> None:
