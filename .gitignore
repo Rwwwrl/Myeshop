@@ -15,3 +15,4 @@
 # secret
 .env
 .env.*
+!.env.*.example
