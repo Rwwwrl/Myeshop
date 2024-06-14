@@ -10,8 +10,8 @@ from framework.common.dto import DTO
 from framework.cqrs import registry
 from framework.cqrs.cqrs_bus import CQRSBus
 from framework.cqrs.query import IQuery, IQueryHandler, Query
+from framework.for_pytests.test_case import TestCase
 from framework.for_pytests.test_class import TestClass
-from framework.for_pytests.use_case import UseCase
 
 
 class MockQueryResponse(DTO):
@@ -40,15 +40,15 @@ def patch_registry():
     patch.stop()
 
 
-class FetchUseCase(UseCase):
+class FetchTestCase(TestCase['TestCQRSBus__fetch']):
 
     query: IQuery
     query_result: Any
 
 
 @pytest.fixture(scope='session')
-def fetch_use_case() -> FetchUseCase:
-    return FetchUseCase(
+def fetch_use_case() -> FetchTestCase:
+    return FetchTestCase(
         query=MockQuery(arg=10),
         query_result=MockQueryResponse(value=10),
     )
@@ -57,7 +57,7 @@ def fetch_use_case() -> FetchUseCase:
 class TestCQRSBus__fetch(TestClass[CQRSBus.fetch]):
     def test(
         self,
-        fetch_use_case: FetchUseCase,
+        fetch_use_case: FetchTestCase,
         patch_registry: None,
     ):
         cqrs_bus = CQRSBus()

@@ -12,18 +12,18 @@ from basket.views.cqrs.query_handlers import CustomerBasketQueryHandler
 from basket_cqrs_contract.query import CustomerBasketQuery
 from basket_cqrs_contract.query.query_response import BasketItemDTO, CustomerBasketDTO
 
+from framework.for_pytests.test_case import TestCase
 from framework.for_pytests.test_class import TestClass
-from framework.for_pytests.use_case import UseCase
 
 
-class UseCaseBasketByIdQueryHandler__handle(UseCase):
+class BasketByIdQueryHandler__handleTestCase(TestCase['TestBasketByIdQueryHandler__handle']):
     query: CustomerBasketQuery
     mock_customer_basket_repository_get_by_id_return_value: CustomerBasketORM
     expected_result: CustomerBasketDTO
 
 
 @pytest.fixture(scope='session')
-def use_case_basket_by_id_query_handler__handle() -> UseCaseBasketByIdQueryHandler__handle:
+def use_case_basket_by_id_query_handler__handle() -> BasketByIdQueryHandler__handleTestCase:
     query = CustomerBasketQuery(customer_id=1)
     mock_repository_get_by_id_return_value = CustomerBasketORM(
         buyer_id=10,
@@ -71,7 +71,7 @@ def use_case_basket_by_id_query_handler__handle() -> UseCaseBasketByIdQueryHandl
         ],
     )
 
-    return UseCaseBasketByIdQueryHandler__handle(
+    return BasketByIdQueryHandler__handleTestCase(
         query=query,
         mock_customer_basket_repository_get_by_id_return_value=mock_repository_get_by_id_return_value,
         expected_result=expected_result,
@@ -83,7 +83,7 @@ class TestBasketByIdQueryHandler__handle(TestClass[CustomerBasketQueryHandler.ha
     def test(
         self,
         mock__customer_basket_repository__get_by_id: Mock,
-        use_case_basket_by_id_query_handler__handle: UseCaseBasketByIdQueryHandler__handle,
+        use_case_basket_by_id_query_handler__handle: BasketByIdQueryHandler__handleTestCase,
     ):
         use_case = use_case_basket_by_id_query_handler__handle
 
