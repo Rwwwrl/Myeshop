@@ -4,10 +4,6 @@ from typing import Annotated, Dict, List, Set
 from fastapi import status
 from fastapi.responses import Response
 
-from pydantic import BaseModel
-
-from api_gateway import hints
-
 from basket_cqrs_contract.command import UpdateCustomerBasketCommand
 from basket_cqrs_contract.command.command import BasketItemDTO
 
@@ -21,15 +17,15 @@ from framework.fastapi.http_exceptions import BadRequestException, InternalServe
 
 import user_identity_cqrs_contract.hints
 
-from .dto import UpdateBasketRequestData, UpdateBasketRequestItemData
+from .dto import ProductId, UpdateBasketRequestData, UpdateBasketRequestItemData
 from ..api_router import api_router
 
 __all__ = ('update_basket', )
 
 
-class BasketReferToNonExisingProducts(Exception, BaseModel):
-
-    invalid_product_ids: List[hints.ProductId]
+class BasketReferToNonExisingProducts(Exception):
+    def __init__(self, *args, invalid_product_ids: List[ProductId], **kwargs):
+        self.invalid_product_ids = invalid_product_ids
 
 
 def _normalize_request_data(request_data: UpdateBasketRequestData) -> UpdateBasketRequestData:
@@ -37,7 +33,7 @@ def _normalize_request_data(request_data: UpdateBasketRequestData) -> UpdateBask
     группируем дату по `product_id` во избежание дубликатов
     """
 
-    product_it_to_quantity: Dict[hints.ProductId, int] = defaultdict(float)
+    product_it_to_quantity: Dict[int, int] = defaultdict(float)
 
     for basket_item in request_data.basket_items:
         product_it_to_quantity[basket_item.product_id] += basket_item.quantity
@@ -55,9 +51,9 @@ def _normalize_request_data(request_data: UpdateBasketRequestData) -> UpdateBask
 
 def _ensure_basket_refer_to_existing_products(
     request_data: UpdateBasketRequestData,
-    existing_products_ids: Set[hints.ProductId],
+    existing_products_ids: Set[ProductId],
 ) -> None:
-    invalid_product_ids: List[hints.ProductId] = []
+    invalid_product_ids: List[int] = []
 
     for product_id in [bi.product_id for bi in request_data.basket_items]:
         if product_id not in existing_products_ids:
@@ -71,6 +67,21 @@ def _ensure_basket_refer_to_existing_products(
 @api_router.put(
     '/basket/',
     status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_200_OK: {
+            'description': 'success',
+        },
+        status.HTTP_401_UNAUTHORIZED: {
+            'description': 'unauthorized',
+        },
+        status.HTTP_400_BAD_REQUEST: {
+            'description': 'basket refer to non-existing products',
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR:
+            {
+                'description': 'failed to update basket due to UpdateCustomerBasketCommand failed',
+            },
+    },
 )
 def update_basket(
     request_data: UpdateBasketRequestData,
@@ -91,7 +102,7 @@ def update_basket(
     try:
         _ensure_basket_refer_to_existing_products(
             request_data=request_data,
-            existing_products_ids=set(item.id for item in catalog_items),
+            existing_products_ids=set(ProductId(item.id) for item in catalog_items),
         )
     except BasketReferToNonExisingProducts as e:
         raise BadRequestException(

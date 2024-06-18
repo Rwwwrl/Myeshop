@@ -1,17 +1,17 @@
-from typing import List, final
-
-from api_gateway import hints
+from typing import List, NewType, final
 
 from framework.common.dto import DTO
+
+ProductId = NewType('ProductId', int)
 
 
 @final
 class UpdateBasketRequestItemData(DTO):
-    product_id: hints.ProductId
+    product_id: int
     quantity: int
 
 
 @final
 class UpdateBasketRequestData(DTO):
-    buyer_id: hints.UserId
+    buyer_id: int
     basket_items: List[UpdateBasketRequestItemData]
