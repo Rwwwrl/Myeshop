@@ -12,6 +12,6 @@ __all__ = ('CatalogItemByIdsQuery', )
 
 
 @define
-class CatalogItemByIdsQuery(Query[CatalogItemDTO]):
+class CatalogItemByIdsQuery(Query[List[CatalogItemDTO]]):
 
     ids: List[hints.CatalogItemId]
