@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import APIRouter
 
 
@@ -6,15 +8,13 @@ class ApiGatewayAppConfig:
     name = 'api_gateway'
 
     @classmethod
-    def get_api_router(cls) -> APIRouter:
-        from .api_router import api_router
+    def get_api_routers(cls) -> List[APIRouter]:
+        from api_gateway.mediator.views.http.basket.api_router import api_router as basket_api_router
 
-        return api_router
+        return [
+            basket_api_router,
+        ]
 
     @classmethod
     def import_http_views(cls) -> None:
-        raise NotImplementedError
-
-    @classmethod
-    def init(cls) -> None:
-        cls.import_http_views()
+        from api_gateway.mediator.views import http    # noqa
