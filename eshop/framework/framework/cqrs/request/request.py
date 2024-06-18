@@ -1,12 +1,23 @@
 from __future__ import annotations
 
 import abc
-from typing import (Generic, TYPE_CHECKING, Type, TypeVar, _GenericAlias as GenericType, final)
+from typing import (
+    ClassVar,
+    Generic,
+    TYPE_CHECKING,
+    Tuple,
+    Type,
+    TypeVar,
+    _GenericAlias as GenericType,
+    final,
+)
 
 from attrs import define
 
 if TYPE_CHECKING:
     from .handler import IRequestHandler
+
+    from framework.cqrs.exceptions import PossibleExpectedError
 
 RequestResponseType = TypeVar('RequestResponseType')
 
@@ -21,13 +32,23 @@ class IRequest(Generic[RequestResponseType], abc.ABC):
     def handler(cls, handler_cls: IRequestHandler) -> Type[IRequestHandler]:
         raise NotImplementedError
 
+    @property
     @classmethod
+    @abc.abstractmethod
+    def __possible_exceptions__() -> Tuple[Type[PossibleExpectedError]]:
+        raise NotImplementedError
+
+    @classmethod
+    @abc.abstractmethod
     def __response_type__(cls) -> Type[RequestResponseType]:
         raise NotImplementedError
 
 
 @define
 class BaseRequest(IRequest[RequestResponseType]):
+
+    __possible_exceptions__: ClassVar[Tuple[Type[PossibleExpectedError]]] = tuple()
+
     @final
     @classmethod
     def __response_type__(cls) -> Type[RequestResponseType]:
