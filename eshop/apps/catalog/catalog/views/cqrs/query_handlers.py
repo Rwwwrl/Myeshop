@@ -8,7 +8,7 @@ from catalog.domain.models import (
     CatalogItem as CatalogItemORM,
 )
 
-from catalog_cqrs_contract.query import CatalogItemByIdsQuery
+from catalog_cqrs_contract.query import CatalogItemsByIdsQuery
 from catalog_cqrs_contract.query.query_response import (
     CatalogBrandDTO,
     CatalogItemDTO,
@@ -25,7 +25,7 @@ class NotFoundError(Exception):
     pass
 
 
-@CatalogItemByIdsQuery.handler
+@CatalogItemsByIdsQuery.handler
 class CatalogItemByIdQueryHandler(IQueryHandler):
     @staticmethod
     def _fetch_from_db(ids: List[hints.CatalogItemId]) -> List[CatalogItemORM]:
@@ -65,5 +65,5 @@ class CatalogItemByIdQueryHandler(IQueryHandler):
             ),
         )
 
-    def handle(self, query: CatalogItemByIdsQuery) -> CatalogItemDTO:
+    def handle(self, query: CatalogItemsByIdsQuery) -> CatalogItemDTO:
         return [self._to_dto(ci) for ci in self._fetch_from_db(ids=query.ids)]

@@ -8,10 +8,10 @@ from framework.cqrs.query.query import Query
 
 from .query_response import CatalogItemDTO
 
-__all__ = ('CatalogItemByIdsQuery', )
+__all__ = ('CatalogItemsByIdsQuery', )
 
 
 @define
-class CatalogItemByIdsQuery(Query[List[CatalogItemDTO]]):
+class CatalogItemsByIdsQuery(Query[List[CatalogItemDTO]]):
 
     ids: List[hints.CatalogItemId]
