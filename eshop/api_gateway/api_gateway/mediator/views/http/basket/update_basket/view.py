@@ -8,10 +8,10 @@ from basket_cqrs_contract.command import UpdateCustomerBasketCommand
 from basket_cqrs_contract.command.command import BasketItemDTO
 
 import catalog_cqrs_contract.hints
-from catalog_cqrs_contract.query import CatalogItemByIdsQuery
+from catalog_cqrs_contract.query import CatalogItemsByIdsQuery
 from catalog_cqrs_contract.query.query_response import CatalogItemDTO
 
-from framework.cqrs.cqrs_bus import CQRSException
+from framework.cqrs.exceptions import CQRSException
 from framework.fastapi.dependencies.get_user_from_request import get_user_from_http_request
 from framework.fastapi.http_exceptions import BadRequestException, InternalServerError
 
@@ -63,37 +63,18 @@ def _ensure_basket_refer_to_existing_products(
         raise BasketReferToNonExisingProducts(invalid_product_ids=invalid_product_ids)
 
 
-# TODO добавить статусы ошибок
-@api_router.put(
-    '/basket/',
-    status_code=status.HTTP_200_OK,
-    responses={
-        status.HTTP_200_OK: {
-            'description': 'success',
-        },
-        status.HTTP_401_UNAUTHORIZED: {
-            'description': 'unauthorized',
-        },
-        status.HTTP_400_BAD_REQUEST: {
-            'description': 'basket refer to non-existing products',
-        },
-        status.HTTP_500_INTERNAL_SERVER_ERROR:
-            {
-                'description': 'failed to update basket due to UpdateCustomerBasketCommand failed',
-            },
-    },
-)
+@api_router.put('/basket/')
 def update_basket(
     request_data: UpdateBasketRequestData,
     user_id: Annotated[user_identity_cqrs_contract.hints.UserId, get_user_from_http_request],
-) -> None:
+) -> Response:
     if not request_data.basket_items:
         raise BadRequestException(detail='basket must have at least one basket item')
 
     request_data = _normalize_request_data(request_data=request_data)
     request_data_product_ids: List[int] = [bi.product_id for bi in request_data.basket_items]
 
-    catalog_items = CatalogItemByIdsQuery(ids=request_data_product_ids).fetch()
+    catalog_items = CatalogItemsByIdsQuery(ids=request_data_product_ids).fetch()
     catalog_items_identity_map: Dict[catalog_cqrs_contract.hints.CatalogItemId, CatalogItemDTO] = {
         item.id: item
         for item in catalog_items
@@ -125,6 +106,8 @@ def update_basket(
     try:
         UpdateCustomerBasketCommand(buyer_id=user_id, basket_items=basket_updated_basket_items).execute()
     except CQRSException:
-        raise InternalServerError(detail='failed to update basket due to UpdateCustomerBasketCommand failed')
+        raise InternalServerError(
+            detail=f'failed to update basket due to {UpdateCustomerBasketCommand.__name__} failed',
+        )
 
     return Response(status_code=status.HTTP_200_OK)
