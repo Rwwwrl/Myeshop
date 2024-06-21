@@ -76,3 +76,17 @@ class TestUpdateCustomerBasketCommand(ITestCommandContract[UpdateCustomerBasketC
         # мы не используем ответ от команды
         pass
 
+
+class TestCustomerBasketQuery(ITestQueryContract[CustomerBasketQuery]):
+    def test_query_contract(self) -> None:
+        with check:
+            assert_attribute(CustomerBasketQuery, 'customer_id', basket_cqrs_contract.hints.CustomerId)
+
+    def test_query_response_contract(self) -> None:
+        response_type = CustomerBasketQuery.__response_type__()
+
+        with check:
+            assert response_type == CustomerBasketDTO
+
+            assert_attribute(CustomerBasketDTO, 'basket_items', List[BasketItemDTO])
+            assert_attribute(BasketItemDTO, 'id', basket_cqrs_contract.hints.BasketItemId)
