@@ -10,6 +10,7 @@ from pytest_check import check
 from framework.for_pytests.test_class import TestClass
 
 QueryClsTypeVar = TypeVar('QueryClsTypeVar')
+CommandClsTypeVar = TypeVar('CommandClsTypeVar')
 
 
 class ITestQueryContract(abc.ABC, TestClass[QueryClsTypeVar]):
@@ -25,6 +26,25 @@ class ITestQueryContract(abc.ABC, TestClass[QueryClsTypeVar]):
 
     @abc.abstractmethod
     def test_query_response_contract(self) -> None:
+        """
+        тестируем контракт ответа
+        """
+        raise NotImplementedError
+
+
+class ITestCommandContract(abc.ABC, TestClass[CommandClsTypeVar]):
+    """
+    Базовый класс для тестирования контракта команды
+    """
+    @abc.abstractmethod
+    def test_command_contract(self) -> None:
+        """
+        тестируем контракт самой квери
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def test_command_response_contract(self) -> None:
         """
         тестируем контракт ответа
         """
