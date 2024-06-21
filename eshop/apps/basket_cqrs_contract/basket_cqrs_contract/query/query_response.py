@@ -1,10 +1,11 @@
-from typing import List
+from typing import List, final
 
 from basket_cqrs_contract import hints
 
 from framework.common.dto import DTO
 
 
+@final
 class BasketItemDTO(DTO):
     id: hints.BasketItemId
     product_id: hints.ProductId
@@ -14,6 +15,7 @@ class BasketItemDTO(DTO):
     picture_url: hints.PictureUrl
 
 
+@final
 class CustomerBasketDTO(DTO):
     buyer_id: hints.CustomerId
     basket_items: List[BasketItemDTO]
