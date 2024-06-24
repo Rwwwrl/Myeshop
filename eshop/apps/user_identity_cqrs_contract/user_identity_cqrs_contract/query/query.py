@@ -1,4 +1,4 @@
-from typing import Final
+from typing import Final, final
 
 from attrs import define
 
@@ -12,6 +12,7 @@ from .query_response import UserDTO
 __all__ = ('UserIdFromJWTTokenQuery', )
 
 
+@final
 class InvalidJwtTokenError(PossibleExpectedError):
     pass
 
