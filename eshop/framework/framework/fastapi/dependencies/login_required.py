@@ -7,6 +7,7 @@ from user_identity_cqrs_contract import hints
 from .get_user_from_request import get_user_from_http_request
 
 
+# TODO возможно нужно переделать в декоратор
 def login_required(user_id: Annotated[hints.UserId, Depends(get_user_from_http_request)]) -> None:
     # синтаксический сахар:
     # мне хотелось иметь зависимость, обозначающую, что для запроса пользователь должен быть авторизован.

@@ -1,5 +1,6 @@
 import abc
 from datetime import datetime
+from typing import final
 
 from jose import JWTError, jwt
 
@@ -20,6 +21,7 @@ class IJWTEncoderDecoder(abc.ABC):
         raise NotImplementedError
 
 
+@final
 class JoseJWTEncoderDecoder(IJWTEncoderDecoder):
     def __init__(self):
         self._algorithm = 'HS256'
@@ -42,7 +44,7 @@ class JoseJWTEncoderDecoder(IJWTEncoderDecoder):
                 ],
             )
         except JWTError as e:
-            raise DecodeError(str(e))
+            raise DecodeError(e)
 
         try:
             user_id = int(payload['sub'])

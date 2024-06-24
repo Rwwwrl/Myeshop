@@ -40,8 +40,9 @@ class Command(ICommand[CommandResponseType], BaseRequest):
         if not bus:
             bus = CQRSBusSingletoneFactory.create()
 
-        return bus.fetch(query=self)
+        return bus.execute(command=self)
 
+    @final
     @classmethod
     def handler(cls, handler_cls: Type[ICommandHandler]) -> Type[ICommandHandler]:
         from ..registry import get_registry
