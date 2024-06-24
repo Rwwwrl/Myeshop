@@ -7,7 +7,7 @@ ProductId = NewType('ProductId', int)
 
 @final
 class UpdateBasketRequestItemData(DTO):
-    product_id: int
+    product_id: ProductId
     quantity: int
 
 
