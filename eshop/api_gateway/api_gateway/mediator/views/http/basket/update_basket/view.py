@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import Annotated, Dict, List, Set
 
-from fastapi import status
+from fastapi import Depends, status
 from fastapi.responses import Response
 
 from basket_cqrs_contract.command import UpdateCustomerBasketCommand
@@ -66,7 +66,10 @@ def _ensure_basket_refer_to_existing_products(
 @api_router.put('/basket/')
 def update_basket(
     request_data: UpdateBasketRequestData,
-    user_id: Annotated[user_identity_cqrs_contract.hints.UserId, get_user_from_http_request],
+    user_id: Annotated[
+        user_identity_cqrs_contract.hints.UserId,
+        Depends(get_user_from_http_request),
+    ],
 ) -> Response:
     if not request_data.basket_items:
         raise BadRequestException(detail='basket must have at least one basket item')

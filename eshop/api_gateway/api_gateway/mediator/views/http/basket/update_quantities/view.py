@@ -1,6 +1,6 @@
 from typing import Annotated, Dict, List
 
-from fastapi import Response, status
+from fastapi import Depends, Response, status
 
 import basket_cqrs_contract.command.command
 import basket_cqrs_contract.hints
@@ -24,7 +24,10 @@ __all__ = ('update_quantities', )
 @api_router.put('/basket/basket_items/')
 def update_quantities(
     request_data: UpdateBasketItemsRequest,
-    user_id: Annotated[user_identity_cqrs_contract.hints.UserId, get_user_from_http_request],
+    user_id: Annotated[
+        user_identity_cqrs_contract.hints.UserId,
+        Depends(get_user_from_http_request),
+    ],
 ) -> Response:
     if not request_data.updates:
         raise BadRequestException(detail='no updates sent')
