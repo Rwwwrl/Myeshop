@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 
 from pydantic import BaseModel
 
@@ -14,7 +14,12 @@ __all__ = ('CustomerBasketORM', )
 
 
 class BasketItem(BaseModel):
-    id: hints.BasketItemId
+    # None в случае, если объет находится в стадии "Transient"
+    #
+    # не является глобальным идентификатором! значение уникально
+    # в рамках одной корзины
+    id: Union[hints.BasketItemId, None]
+
     product_id: hints.ProductId
     product_name: hints.ProductName
     unit_price: hints.Price

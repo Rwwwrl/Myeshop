@@ -7,7 +7,6 @@ from framework.common.dto import DTO
 
 @final
 class BasketItemDTO(DTO):
-    # None в случае, если объет находится в стадии "Transient"
     id: Union[hints.BasketItemId, None]
     product_id: hints.ProductId
     product_name: hints.ProductName
