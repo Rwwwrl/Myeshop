@@ -1,6 +1,6 @@
-from typing import List, Union
+from typing import List, Set, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 from sqlalchemy import INTEGER
 from sqlalchemy.orm import Mapped, mapped_column
@@ -29,6 +29,36 @@ class BasketItem(BaseModel):
 
 class Data(BaseModel):
     basket_items: List[BasketItem]
+
+    # TODO подумать, возможно эти констрейнты лучше вынести на уровень бд
+    @field_validator('basket_items')
+    @classmethod
+    def basket_item_id_unique(cls, value: List[BasketItem]) -> List[BasketItem]:
+        checked_ids: Set[hints.BasketItemId] = set([])
+        for basket_item in value:
+            if basket_item.id is None:
+                continue
+
+            if basket_item.id in checked_ids:
+                raise ValueError(f'basket item id must be unique, duplicated id = {basket_item.id}')
+
+            checked_ids.add(basket_item.id)
+
+        return value
+
+    @field_validator('basket_items')
+    @classmethod
+    def product_id_unique(cls, value: List[BasketItem]) -> List[BasketItem]:
+        checked_ids: Set[hints.ProductId] = set([])
+        for basket_item in value:
+            if basket_item.product_id in checked_ids:
+                raise ValueError(
+                    f'basket item product_id must be unique, duplicated product_id = {basket_item.product_id}',
+                )
+
+            checked_ids.add(basket_item.product_id)
+
+        return value
 
 
 class CustomerBasketORM(BasketAppConfig.get_sqlalchemy_base()):
