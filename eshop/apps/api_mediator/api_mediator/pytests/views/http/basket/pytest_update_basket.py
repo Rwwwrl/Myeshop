@@ -8,9 +8,9 @@ import pytest
 
 from typing_extensions import TypedDict
 
-from api_gateway.mediator.views.http.basket.api_router import api_router
-from api_gateway.mediator.views.http.basket.update_basket import update_basket
-from api_gateway.mediator.views.http.basket.update_basket.dto import (
+from api_mediator.views.http.basket.api_router import api_router
+from api_mediator.views.http.basket.update_basket import update_basket
+from api_mediator.views.http.basket.update_basket.dto import (
     UpdateBasketRequestData,
     UpdateBasketRequestItemData,
 )
@@ -341,7 +341,7 @@ def test_case_500_failed_to_update_basket_due_to_UpdateCustomerBasketCommand_fai
 
 class TestUrlToView(TestClass[update_basket]):
     def test(self):
-        expected_url = '/api_gateway/basket/basket/'
+        expected_url = '/api_mediator/basket/basket/'
         fact_url = api_router.url_path_for(update_basket.__name__)
         assert fact_url == expected_url
 

@@ -15,7 +15,7 @@ from sqlalchemy.engine import create_engine
 
 from test_app.app_config import TestAppConfig
 
-from api_gateway.app_config import ApiGatewayAppConfig
+from api_mediator.app_config import ApiMediatorAppConfig
 
 from basket.app_config import BasketAppConfig
 
@@ -54,7 +54,7 @@ def import_http_views() -> None:
     for app_config in INSTALLED_APPS:
         app_config.import_http_views()
 
-    ApiGatewayAppConfig.import_http_views()
+    ApiMediatorAppConfig.import_http_views()
 
 
 def include_routes() -> None:
@@ -63,7 +63,7 @@ def include_routes() -> None:
         if router:
             MAIN_APP.include_router(router)
 
-    for router in ApiGatewayAppConfig.get_api_routers():
+    for router in ApiMediatorAppConfig.get_api_routers():
         MAIN_APP.include_router(router)
 
 

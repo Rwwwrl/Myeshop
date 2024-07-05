@@ -20,8 +20,8 @@ RUN pip install -e eshop/apps/user_identity && \
     pip install -e eshop/apps/test_app && \
     pip install -e eshop/apps/catalog && \
     pip install -e eshop/apps/catalog_cqrs_contract && \
+    pip install -e eshop/apps/api_mediator && \
     pip install -e eshop/framework && \
-    pip install -e eshop/api_gateway && \
     pip install -e .
 
 COPY alembic.ini alembic.ini
