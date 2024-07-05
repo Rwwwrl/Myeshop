@@ -136,13 +136,13 @@ jobs:
         with:
           filters: |
             test_app_migrations_files:
-              - 'eshop/apps/test_app/test_app/migrations/*.py'
+              - 'eshop/apps/test_app/test_app/migrations/versions/*.py'
             user_identity_migrations_files:
-              - 'eshop/apps/test_app/test_app/migrations/*.py'
+              - 'eshop/apps/test_app/test_app/migrations/versions/*.py'
             basket_migrations_files:
-              - 'eshop/apps/basket/basket/migrations/*.py'
+              - 'eshop/apps/basket/basket/migrations/versions/*.py'
             catalog_migrations_files:
-              - 'eshop/apps/catalog/catalog/migrations/*.py'
+              - 'eshop/apps/catalog/catalog/migrations/versions/*.py'
 
       - name: Stop current running server
         run: ssh yandex-cloud-test-stand "cd ~/projects/my_eshoponcontainer && sudo make down_prod"
