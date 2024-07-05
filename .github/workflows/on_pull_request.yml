@@ -25,7 +25,7 @@ jobs:
             basket_migrations_files:
               - 'eshop/apps/basket/basket/migrations/*.py'
 
-  run_flake8_linter:
+  run_print_changes:
     needs: get_changes
     runs-on: ubuntu-latest
     steps:
