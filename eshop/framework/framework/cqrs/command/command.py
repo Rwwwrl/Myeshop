@@ -17,15 +17,13 @@ if TYPE_CHECKING:
     from .handler import ICommandHandler
     from ..cqrs_bus import ICQRSBus
 
+    CommandHandlerTypeVar = TypeVar('CommandHandlerTypeVar', bound=ICommandHandler)
+
 CommandResponseType = TypeVar('CommandResponseType')
 
 
 @attrs.define
 class ICommand(IRequest[CommandResponseType], abc.ABC):
-
-    # более красивое решение - указывать тип ответа через Generic, но
-    # с pydantic моделью это пока что невозможно.
-
     @abc.abstractmethod
     def execute(self, bus: Optional[ICQRSBus] = None) -> CommandResponseType:
         raise NotImplementedError
@@ -44,7 +42,7 @@ class Command(ICommand[CommandResponseType], BaseRequest):
 
     @final
     @classmethod
-    def handler(cls, handler_cls: Type[ICommandHandler]) -> Type[ICommandHandler]:
+    def handler(cls, handler_cls: Type[CommandHandlerTypeVar]) -> Type[CommandHandlerTypeVar]:
         from ..registry import get_registry
 
         get_registry().register(request_cls=cls, request_handler_cls=handler_cls)

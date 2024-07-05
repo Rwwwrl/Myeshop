@@ -19,6 +19,8 @@ if TYPE_CHECKING:
     from .handler import IQueryHandler
     from ..cqrs_bus import ICQRSBus
 
+    QueryHandlerTypeVar = TypeVar('QueryHandlerTypeVar', bound=IQueryHandler)
+
 
 @define
 class IQuery(IRequest[QueryResponseType], abc.ABC):
@@ -40,7 +42,7 @@ class Query(IQuery[QueryResponseType], BaseRequest):
 
     @final
     @classmethod
-    def handler(cls, handler_cls: Type[IQueryHandler]) -> Type[IQueryHandler]:
+    def handler(cls, handler_cls: Type[QueryHandlerTypeVar]) -> Type[QueryHandlerTypeVar]:
         from ..registry import get_registry
 
         get_registry().register(request_cls=cls, request_handler_cls=handler_cls)

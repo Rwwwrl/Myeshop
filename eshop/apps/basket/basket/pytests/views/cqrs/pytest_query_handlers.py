@@ -2,15 +2,18 @@ from mock import Mock, patch
 
 import pytest
 
-from basket.domain.models.basket_item import BasketItem as BasketItemORM
-from basket.domain.models.customer_basket import (
-    CustomerBasket as CustomerBasketORM,
-    CustomerBasketRepository,
+from basket.infrastructure.persistence.postgres.customer_basket import (
+    CustomerBasketORM,
+    PostgresCustomerBasketRepository,
+)
+from basket.infrastructure.persistence.postgres.customer_basket.customer_basket_orm import (
+    BasketItem,
+    Data,
 )
 from basket.views.cqrs.query_handlers import CustomerBasketQueryHandler
 
+from basket_cqrs_contract.customer_basket_dto import BasketItemDTO, CustomerBasketDTO
 from basket_cqrs_contract.query import CustomerBasketQuery
-from basket_cqrs_contract.query.query_response import BasketItemDTO, CustomerBasketDTO
 
 from framework.for_pytests.test_case import TestCase
 from framework.for_pytests.test_class import TestClass
@@ -23,38 +26,38 @@ class BasketByIdQueryHandler__handleTestCase(TestCase['TestBasketByIdQueryHandle
 
 
 @pytest.fixture(scope='session')
-def use_case_basket_by_id_query_handler__handle() -> BasketByIdQueryHandler__handleTestCase:
+def test_case_basket_by_id_query_handler__handle() -> BasketByIdQueryHandler__handleTestCase:
     query = CustomerBasketQuery(customer_id=1)
     mock_repository_get_by_id_return_value = CustomerBasketORM(
-        buyer_id=10,
-        basket_items=[
-            BasketItemORM(
-                id=1,
-                basket_buyer_id=10,
-                product_id=2,
-                product_name='product_name1',
-                unit_price=10,
-                quantity=3,
-                picture_url='picture_url1',
-            ),
-            BasketItemORM(
-                id=2,
-                basket_buyer_id=10,
-                product_id=3,
-                product_name='product_name2',
-                unit_price=15,
-                quantity=2,
-                picture_url='picture_url2',
-            ),
-        ],
+        buyer_id=1,
+        data=Data(
+            basket_items=[
+                BasketItem(
+                    id=1,
+                    product_id=1,
+                    product_name='product_name1',
+                    unit_price=10,
+                    quantity=3,
+                    picture_url='picture_url1',
+                ),
+                BasketItem(
+                    id=2,
+                    product_id=2,
+                    product_name='product_name2',
+                    unit_price=15,
+                    quantity=2,
+                    picture_url='picture_url2',
+                ),
+            ],
+        ),
     )
 
     expected_result = CustomerBasketDTO(
-        buyer_id=10,
+        buyer_id=1,
         basket_items=[
             BasketItemDTO(
                 id=1,
-                product_id=2,
+                product_id=1,
                 product_name='product_name1',
                 unit_price=10,
                 quantity=3,
@@ -62,7 +65,7 @@ def use_case_basket_by_id_query_handler__handle() -> BasketByIdQueryHandler__han
             ),
             BasketItemDTO(
                 id=2,
-                product_id=3,
+                product_id=2,
                 product_name='product_name2',
                 unit_price=15,
                 quantity=2,
@@ -79,17 +82,21 @@ def use_case_basket_by_id_query_handler__handle() -> BasketByIdQueryHandler__han
 
 
 class TestBasketByIdQueryHandler__handle(TestClass[CustomerBasketQueryHandler.handle]):
-    @patch.object(CustomerBasketRepository, 'get_by_buyer_id')
+    @patch.object(PostgresCustomerBasketRepository, 'get_by_buyer_id')
     def test(
         self,
-        mock__customer_basket_repository__get_by_id: Mock,
-        use_case_basket_by_id_query_handler__handle: BasketByIdQueryHandler__handleTestCase,
+        mock__customer_basket_repository__get_by_buyer_id: Mock,
+        test_case_basket_by_id_query_handler__handle: BasketByIdQueryHandler__handleTestCase,
     ):
-        use_case = use_case_basket_by_id_query_handler__handle
+        test_case = test_case_basket_by_id_query_handler__handle
 
-        mock__customer_basket_repository__get_by_id.return_value = (
-            use_case.mock_customer_basket_repository_get_by_id_return_value
+        mock__customer_basket_repository__get_by_buyer_id.return_value = (
+            test_case.mock_customer_basket_repository_get_by_id_return_value
         )
 
-        result = CustomerBasketQueryHandler().handle(query=use_case.query)
-        assert use_case.expected_result == result
+        result = CustomerBasketQueryHandler().handle(query=test_case.query)
+        assert result == test_case.expected_result
+
+        mock__customer_basket_repository__get_by_buyer_id.assert_called_once_with(
+            buyer_id=test_case.query.customer_id,
+        )
