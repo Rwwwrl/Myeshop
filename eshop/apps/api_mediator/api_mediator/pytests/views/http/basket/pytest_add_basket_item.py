@@ -8,8 +8,8 @@ import pytest
 
 from typing_extensions import TypedDict
 
-from api_gateway.mediator.views.http.basket.add_basket_item import add_basket_item
-from api_gateway.mediator.views.http.basket.add_basket_item.dto import AddBasketItemRequest
+from api_mediator.views.http.basket.add_basket_item import add_basket_item
+from api_mediator.views.http.basket.add_basket_item.dto import AddBasketItemRequest
 
 from basket_cqrs_contract.command import UpdateCustomerBasketCommand
 from basket_cqrs_contract.customer_basket_dto import BasketItemDTO, CustomerBasketDTO

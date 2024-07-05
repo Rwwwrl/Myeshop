@@ -53,10 +53,8 @@ catalog_upgrade_alembic_head:
 build_tests:
 	docker-compose -p tests -f docker-compose.tests.yml build
 
-up_tests:
+run_tests:
 	docker-compose -p tests -f docker-compose.tests.yml up
-
-down_tests:
 	docker-compose -p tests -f docker-compose.tests.yml down
 
 
