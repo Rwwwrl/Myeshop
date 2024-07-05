@@ -29,8 +29,10 @@ jobs:
     needs: get_changes
     runs-on: ubuntu-latest
     steps:
-      - name: print is changed
-        run: echo ${{ needs.get_changes.outputs.basket_migrations_files == 'true' }}
+      - name: basket migrations changed
+        run: echo ${{ needs.get_changes.outputs.basket_migrations_files }}
+      - name: any python file changed
+        run: echo ${{ needs.get_changes.outputs.any_python_file }}
 
   # run_flake8_linter:
   #   needs: get_changes
