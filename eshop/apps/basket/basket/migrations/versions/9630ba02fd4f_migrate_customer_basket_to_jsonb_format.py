@@ -119,7 +119,7 @@ def pull_data_from_db_and_transfer_to_new_format(connection: Connection) -> Tupl
         )
 
     basket_pk_to_basket_items_in_old_format: Dict[
-        hints.CustomerBasketPK,
+        int,
         List[old_format.BasketItemDBEntry],
     ] = defaultdict(list)
     for entry in basket_item_entrys_in_old_format:
@@ -205,19 +205,19 @@ def upgrade() -> None:
         schema='basket',
     )
 
-    connection.execute(text('TRUNCATE basket.customer_basket;'))
-
-    connection.execute(
-        statement=text(
-            """
-            INSERT INTO basket.customer_basket (buyer_id, data) VALUES (:buyer_id, :data);
-            """,
-        ),
-        parameters=[{
-            'buyer_id': entry.buyer_id,
-            'data': entry.data,
-        } for entry in customer_baskets_in_new_format],
-    )
+    if customer_baskets_in_new_format:
+        connection.execute(text('TRUNCATE basket.customer_basket;'))
+        connection.execute(
+            statement=text(
+                """
+                INSERT INTO basket.customer_basket (buyer_id, data) VALUES (:buyer_id, :data);
+                """,
+            ),
+            parameters=[{
+                'buyer_id': entry.buyer_id,
+                'data': entry.data,
+            } for entry in customer_baskets_in_new_format],
+        )
 
     op.alter_column(
         table_name='customer_basket',
@@ -264,49 +264,50 @@ def downgrade() -> None:
         schema='basket',
     )
 
-    connection.execute(
-        statement=text(
-            """
-            INSERT INTO basket.customer_basket (buyer_id) VALUES (:buyer_id);
-            """,
-        ),
-        parameters=[{
-            'buyer_id': entry.buyer_id,
-        } for entry in customer_baskets_in_old_format],
-    )
+    if customer_baskets_in_old_format:
+        connection.execute(
+            statement=text(
+                """
+                INSERT INTO basket.customer_basket (buyer_id) VALUES (:buyer_id);
+                """,
+            ),
+            parameters=[{
+                'buyer_id': entry.buyer_id,
+            } for entry in customer_baskets_in_old_format],
+        )
 
-    connection.execute(
-        statement=text(
-            """
-            INSERT INTO basket.basket_item (id,
-                                            basket_buyer_id,
-                                            product_id,
-                                            product_name,
-                                            unit_price,
-                                            quantity,
-                                            picture_url)
-            VALUES (:id, :basket_buyer_id, :product_id, :product_name, :unit_price, :quantity, :picture_url);
-            """,
-        ),
-        parameters=[
-            {
-                'id': entry.id,
-                'basket_buyer_id': entry.basket_buyer_id,
-                'product_id': entry.product_id,
-                'product_name': entry.product_name,
-                'unit_price': entry.unit_price,
-                'quantity': entry.quantity,
-                'picture_url': entry.picture_url,
-            } for entry in basket_items_in_old_format
-        ],
-    )
+        connection.execute(
+            statement=text(
+                """
+                INSERT INTO basket.basket_item (id,
+                                                basket_buyer_id,
+                                                product_id,
+                                                product_name,
+                                                unit_price,
+                                                quantity,
+                                                picture_url)
+                VALUES (:id, :basket_buyer_id, :product_id, :product_name, :unit_price, :quantity, :picture_url);
+                """,
+            ),
+            parameters=[
+                {
+                    'id': entry.id,
+                    'basket_buyer_id': entry.basket_buyer_id,
+                    'product_id': entry.product_id,
+                    'product_name': entry.product_name,
+                    'unit_price': entry.unit_price,
+                    'quantity': entry.quantity,
+                    'picture_url': entry.picture_url,
+                } for entry in basket_items_in_old_format
+            ],
+        )
 
-    basket_item_id_seq_current_value = max(basket_items_in_old_format, key=attrgetter('id')).id
-    connection.execute(
-        statement=text(
-            """
-            SELECT setval('basket.basket_item_id_seq', :basket_item_id_seq_current_value, true);
-            """,
-        ),
-        parameters={'basket_item_id_seq_current_value': basket_item_id_seq_current_value},
-    )
+        basket_item_id_seq_current_value = max(basket_items_in_old_format, key=attrgetter('id')).id
+        connection.execute(
+            statement=text(
+                """
+                SELECT setval('basket.basket_item_id_seq', :basket_item_id_seq_current_value, true);
+                """,
+            ),
+            parameters={'basket_item_id_seq_current_value': basket_item_id_seq_current_value},
+        )
