@@ -22,6 +22,15 @@ jobs:
               - 'eshop/**'
             dependency_versions:
               - 'requirements/prod.txt'
+            basket_migrations_files:
+              - 'eshop/apps/basket/basket/migrations/*.py'
+
+  run_flake8_linter:
+    needs: get_changes
+    runs-on: ubuntu-latest
+    steps:
+      - name: print is changed
+        run: echo ${{ needs.get_changes.outputs.basket_migrations_files == 'true' }}
 
   run_flake8_linter:
     needs: get_changes
