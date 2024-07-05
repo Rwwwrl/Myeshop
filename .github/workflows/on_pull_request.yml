@@ -24,7 +24,7 @@ jobs:
             dependency_versions:
               - 'requirements/prod.txt'
             basket_migrations_files:
-              - 'eshop/apps/basket/basket/migrations/*.py'
+              - 'eshop/apps/basket/basket/migrations/**/*.py'
 
   run_print_changes:
     needs: get_changes
