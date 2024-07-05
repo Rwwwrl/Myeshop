@@ -14,6 +14,7 @@ from basket.infrastructure.persistence.postgres.customer_basket.customer_basket_
     BasketItem,
     Data,
 )
+from basket.views.cqrs import command_handlers
 from basket.views.cqrs.command_handlers import UpdateCustomerBasketCommandHandler
 
 from basket_cqrs_contract.command import UpdateCustomerBasketCommand
@@ -93,17 +94,18 @@ def test_case_success() -> TestCaseSucess:
 
 
 class TestUpdateCustomerBasketCommandHandler__handle(TestClass[UpdateCustomerBasketCommandHandler]):
-    @patch(
-        'basket.views.cqrs.command_handlers.session_factory',
-        new=Mock(return_value=SqlalchemySessionMock()),
-    )
+    @patch.object(command_handlers, 'session_factory')
     @patch.object(PostgresCustomerBasketRepository, 'save')
     def test_case_success(
         self,
         mock__postgres_customer_basket_repository__save: Mock,
+        mock__session_factory: Mock,
         test_case_success: TestCaseSucess,
     ):
         test_case = test_case_success
+
+        sqlalchemy_session_mock = SqlalchemySessionMock()
+        mock__session_factory.return_value = sqlalchemy_session_mock
 
         UpdateCustomerBasketCommandHandler().handle(command=test_case.command)
 
@@ -118,4 +120,4 @@ class TestUpdateCustomerBasketCommandHandler__handle(TestClass[UpdateCustomerBas
         assert call_kwargs__customer_basket_orm_arg.buyer_id == expected_customer_basket_orm_arg.buyer_id
         assert call_kwargs__customer_basket_orm_arg.data == expected_customer_basket_orm_arg.data
 
-        SqlalchemySessionMock.commit.assert_called_once()
+        sqlalchemy_session_mock.commit.assert_called_once()
