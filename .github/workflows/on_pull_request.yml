@@ -10,6 +10,7 @@ jobs:
       any_python_file: ${{ steps.changes.outputs.any_python_file }}
       eshop: ${{ steps.changes.outputs.eshop }}
       dependency_versions: ${{ steps.changes.outputs.dependency_versions }}
+      basket_migrations_files: ${{ steps.changes.outputs.basket_migrations_files }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
