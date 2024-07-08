@@ -17,6 +17,7 @@ class InvalidJwtTokenError(PossibleExpectedError):
     pass
 
 
+@final
 @define
 class UserIdFromJWTTokenQuery(Query[UserDTO]):
 
