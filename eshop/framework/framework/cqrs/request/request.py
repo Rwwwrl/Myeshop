@@ -19,6 +19,17 @@ if TYPE_CHECKING:
 
     from framework.cqrs.exceptions import PossibleExpectedError
 
+    IRequestHandlerTypeVar = TypeVar('IRequestHandlerTypeVar', bound=IRequestHandler)
+
+__all__ = (
+    'IRequest',
+    'ISyncRequest',
+    'IAsyncRequest',
+    'BaseRequest',
+    'BaseSyncRequest',
+    'BaseAsyncRequest',
+)
+
 RequestResponseType = TypeVar('RequestResponseType')
 
 # TODO:
@@ -27,11 +38,14 @@ RequestResponseType = TypeVar('RequestResponseType')
 
 
 @define
-class IRequest(Generic[RequestResponseType], abc.ABC):
+class IRequest(abc.ABC):
     @abc.abstractclassmethod
-    def handler(cls, handler_cls: IRequestHandler) -> Type[IRequestHandler]:
+    def handler(cls, handler_cls: Type[IRequestHandlerTypeVar]) -> Type[IRequestHandlerTypeVar]:
         raise NotImplementedError
 
+
+@define
+class ISyncRequest(IRequest, Generic[RequestResponseType], abc.ABC):
     @property
     @classmethod
     @abc.abstractmethod
@@ -45,7 +59,24 @@ class IRequest(Generic[RequestResponseType], abc.ABC):
 
 
 @define
-class BaseRequest(IRequest[RequestResponseType]):
+class IAsyncRequest(IRequest):
+    pass
+
+
+@define
+class BaseRequest(IRequest):
+    @final
+    @classmethod
+    def handler(cls, handler_cls: Type[IRequestHandlerTypeVar]) -> Type[IRequestHandlerTypeVar]:
+        from framework.cqrs.registry import get_registry
+
+        get_registry().register(request_cls=cls, request_handler_cls=handler_cls)
+
+        return handler_cls
+
+
+@define
+class BaseSyncRequest(ISyncRequest[RequestResponseType], BaseRequest):
 
     __possible_exceptions__: ClassVar[Tuple[Type[PossibleExpectedError]]] = tuple()
 
@@ -55,3 +86,8 @@ class BaseRequest(IRequest[RequestResponseType]):
         for base in cls.__orig_bases__:
             if type(base) is GenericType and base.__args__:
                 return base.__args__[0]
+
+
+@define
+class BaseAsyncRequest(IAsyncRequest):
+    pass

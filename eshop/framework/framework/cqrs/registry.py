@@ -1,6 +1,6 @@
-from typing import Dict, Type
+from typing import Dict, Type, final
 
-from .command import ICommand
+from .command import IAsyncCommand, ISyncCommand
 from .query import IQuery
 from .request import IRequest, IRequestHandler
 
@@ -13,6 +13,7 @@ class RequestHandlerHasNotRegistered(Exception):
     pass
 
 
+@final
 class Registry:
     def __init__(self):
         self._storage: Dict[Type[IRequest], Type[IRequestHandler]] = {}
@@ -22,7 +23,7 @@ class Registry:
             raise RequestHandlerAlreadyRegistered(request_cls)
 
     def register(self, request_cls: Type[IRequest], request_handler_cls: Type[IRequestHandler]) -> None:
-        if issubclass(request_cls, (ICommand, IQuery)):
+        if issubclass(request_cls, (ISyncCommand, IAsyncCommand, IQuery)):
             self._ensure_request_handlers_has_not_been_registered(request_cls=request_cls)
 
         self._storage[request_cls] = request_handler_cls
