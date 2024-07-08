@@ -4,12 +4,8 @@ from pytest_check import check
 
 from framework.for_pytests.for_testing_cqrs_contract_usage import ITestQueryContract, assert_attribute
 
-from user_identity_cqrs_contract.hints import JWTToken
+from user_identity_cqrs_contract.hints import JWTToken, UserId
 from user_identity_cqrs_contract.query.query import UserIdFromJWTTokenQuery
-from user_identity_cqrs_contract.query.query_response import (
-    UserDTO,
-    UserId,
-)
 
 
 @pytest.mark.cqrs_contract_usage
@@ -22,5 +18,4 @@ class TestUserIdFromJWTTokenQuery(ITestQueryContract[UserIdFromJWTTokenQuery]):
         response_type = UserIdFromJWTTokenQuery.__response_type__()
 
         with check:
-            assert response_type == UserDTO
-            assert_attribute(UserDTO, 'id', UserId)
+            assert response_type == UserId
