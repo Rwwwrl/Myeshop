@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import abc
 from logging import getLogger
-from typing import TYPE_CHECKING, cast
+from typing import List, TYPE_CHECKING, cast
 
 from . import registry
 from .command import ICommandHandler
@@ -12,6 +12,7 @@ from .query import IQueryHandler
 if TYPE_CHECKING:
     from .query import IQuery, QueryResponseType
     from .command import ISyncCommand, CommandResponseType, IAsyncCommand
+    from .event import IEvent
 
 
 class ICQRSBus(abc.ABC):
@@ -25,6 +26,10 @@ class ICQRSBus(abc.ABC):
 
     @abc.abstractmethod
     def sync_execute(self, command: ISyncCommand) -> CommandResponseType:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def publish(self, event: IEvent) -> None:
         raise NotImplementedError
 
 
@@ -73,6 +78,25 @@ class CQRSBus(ICQRSBus):
         else:
             self._logger.debug('command %s was succesfully completed', command)
             return result
+
+    def publish(self, event: IEvent) -> None:
+        self._logger.debug('start processing event %s', event)
+
+        exceptions: List[UnexpectedError] = []
+
+        for handler_cls in registry.get_registry().get_event_handlers_cls(event=type(event)):
+            try:
+                handler_cls().handle(event=event)
+            except Exception as e:
+                self._logger.debug('event handler %s ended with an error during handle event %s', handler_cls, event)
+                exceptions.append(UnexpectedError(original_exception=e))
+                continue
+            else:
+                self._logger.debug('event handler %s successfully handle event %s', handler_cls, event)
+
+        if exceptions:
+            self._logger.debug('event %s processing produced errors %s', event, exceptions)
+            raise ExceptionGroup(f'event {event} processing produced errors', exceptions)
 
 
 class CQRSBusSingletoneFactory:
