@@ -1,2 +1,2 @@
-from .query import IQuery, Query, QueryResponseType
-from .handler import IQueryHandler
+from .query import *
+from .handler import *

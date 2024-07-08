@@ -6,12 +6,12 @@ from typing import TYPE_CHECKING
 from ..request import IRequestHandler
 
 if TYPE_CHECKING:
-    from .query import IQuery, QueryResponseType
+    from .event import IEvent
 
-__all__ = ('IQueryHandler', )
+__all__ = ('IEventHandler', )
 
 
-class IQueryHandler(IRequestHandler, abc.ABC):
+class IEventHandler(IRequestHandler, abc.ABC):
     @abc.abstractmethod
-    def handle(self, query: IQuery) -> QueryResponseType:
+    def handle(self, event: IEvent) -> None:
         raise NotImplementedError
