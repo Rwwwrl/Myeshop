@@ -4,7 +4,7 @@ from fastapi import APIRouter
 
 from sqlalchemy.orm import DeclarativeBase
 
-from framework.app_config import IAppConfig
+from framework.iapp_config import IAppConfig
 
 
 class BasketAppConfig(IAppConfig):
