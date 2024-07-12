@@ -7,8 +7,6 @@ from typing import (
     final,
 )
 
-from attrs import define
-
 from ..request import BaseAsyncRequest, IAsyncRequest
 
 if TYPE_CHECKING:
@@ -20,14 +18,12 @@ __all__ = (
 )
 
 
-@define
 class IAsyncCommand(IAsyncRequest, abc.ABC):
     @abc.abstractmethod
     def execute(self, bus: Optional[ICQRSBus] = None) -> None:
         raise NotImplementedError
 
 
-@define
 class AsyncCommand(IAsyncCommand, BaseAsyncRequest):
     @final
     def execute(self, bus: Optional[ICQRSBus] = None) -> None:
