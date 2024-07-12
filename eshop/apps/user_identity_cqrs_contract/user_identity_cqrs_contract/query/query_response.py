@@ -1,8 +1,9 @@
 from framework.common.dto import DTO
 
-from user_identity_cqrs_contract.hints import UserId
+from user_identity_cqrs_contract import hints
 
 
 class UserDTO(DTO):
 
-    id: UserId
+    id: hints.UserId
+    name: hints.UserName
