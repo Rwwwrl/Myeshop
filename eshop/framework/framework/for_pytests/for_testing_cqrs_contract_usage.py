@@ -7,13 +7,17 @@ from pydantic import BaseModel
 
 from pytest_check import check
 
+from framework.cqrs.command import ISyncCommand
+from framework.cqrs.event import IEvent
+from framework.cqrs.query import IQuery
 from framework.for_pytests.test_class import TestClass
 
-QueryClsTypeVar = TypeVar('QueryClsTypeVar')
-CommandClsTypeVar = TypeVar('CommandClsTypeVar')
+QueryTypeVar = TypeVar('QueryTypeVar', bound=IQuery)
+SyncCommandTypeVar = TypeVar('SyncCommandTypeVar', bound=ISyncCommand)
+EventTypeVar = TypeVar('EventTypeVar', bound=IEvent)
 
 
-class ITestQueryContract(abc.ABC, TestClass[QueryClsTypeVar]):
+class ITestQueryContract(abc.ABC, TestClass[QueryTypeVar]):
     """
     Базовый класс для тестирования контракта квери
     """
@@ -32,7 +36,7 @@ class ITestQueryContract(abc.ABC, TestClass[QueryClsTypeVar]):
         raise NotImplementedError
 
 
-class ITestCommandContract(abc.ABC, TestClass[CommandClsTypeVar]):
+class ITestSyncCommandContract(abc.ABC, TestClass[SyncCommandTypeVar]):
     """
     Базовый класс для тестирования контракта команды
     """
@@ -47,6 +51,18 @@ class ITestCommandContract(abc.ABC, TestClass[CommandClsTypeVar]):
     def test_command_response_contract(self) -> None:
         """
         тестируем контракт ответа
+        """
+        raise NotImplementedError
+
+
+class ITestEventContract(abc.ABC, TestClass[EventTypeVar]):
+    """
+    Базовый класс для тестирования контракта команды
+    """
+    @abc.abstractmethod
+    def test_event_contract(self) -> None:
+        """
+        тестируем контракт самой квери
         """
         raise NotImplementedError
 

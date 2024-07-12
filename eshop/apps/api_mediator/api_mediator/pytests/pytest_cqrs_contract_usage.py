@@ -14,8 +14,8 @@ from catalog_cqrs_contract.query import CatalogItemsByIdsQuery
 from catalog_cqrs_contract.query.query_response import CatalogItemDTO
 
 from framework.for_pytests.for_testing_cqrs_contract_usage import (
-    ITestCommandContract,
     ITestQueryContract,
+    ITestSyncCommandContract,
     assert_attribute,
 )
 
@@ -37,7 +37,7 @@ class TestCatalogItemByIdsQuery(ITestQueryContract[CatalogItemsByIdsQuery]):
             assert_attribute(CatalogItemDTO, 'picture_url', str)
 
 
-class TestUpdateCustomerBasketCommand(ITestCommandContract[UpdateCustomerBasketCommand]):
+class TestUpdateCustomerBasketCommand(ITestSyncCommandContract[UpdateCustomerBasketCommand]):
     def test_command_contract(self) -> None:
         with check:
             assert_attribute(
