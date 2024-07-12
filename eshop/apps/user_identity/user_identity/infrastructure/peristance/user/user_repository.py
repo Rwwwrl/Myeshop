@@ -5,8 +5,10 @@ from user_identity import hints
 
 from .user import UserORM
 
+__all__ = ('UserRepository', )
 
-class NotFoundInDB(Exception):
+
+class NotFoundError(Exception):
     pass
 
 
@@ -19,7 +21,7 @@ class UserRepository:
 
         user = self._session.scalar(stmt)
         if not user:
-            raise NotFoundInDB
+            raise NotFoundError(f'user with id = {id} does not exist')
 
         return user
 
@@ -28,6 +30,6 @@ class UserRepository:
 
         user = self._session.scalar(stmt)
         if not user:
-            raise NotFoundInDB
+            raise NotFoundError(f'user with name = {name} does not exist')
 
         return user

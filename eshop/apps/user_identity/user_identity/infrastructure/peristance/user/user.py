@@ -4,6 +4,8 @@ from sqlalchemy.orm import Mapped, mapped_column
 from user_identity import hints
 from user_identity.app_config import UserIdentityAppConfig
 
+__all__ = ('UserORM', )
+
 
 class UserORM(UserIdentityAppConfig.get_sqlalchemy_base()):
 
