@@ -5,7 +5,7 @@ from fastapi import Depends, Response, status
 import basket_cqrs_contract.hints
 from basket_cqrs_contract.command import UpdateCustomerBasketCommand
 from basket_cqrs_contract.customer_basket_dto import BasketItemDTO, CustomerBasketDTO
-from basket_cqrs_contract.query.query import CustomerBasketQuery
+from basket_cqrs_contract.query import CustomerBasketQuery
 
 from framework.cqrs.exceptions import CQRSException
 from framework.fastapi.dependencies.get_user_from_request import get_user_from_http_request
