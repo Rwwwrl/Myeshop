@@ -1,3 +1,5 @@
+from typing import Dict, Optional
+
 from pydantic import BaseModel
 
 
@@ -11,3 +13,4 @@ class ExpectedHttpResponseException(BaseModel, frozen=True):
 
     status_code: int
     detail: str
+    headers: Optional[Dict[str, str]] = None
