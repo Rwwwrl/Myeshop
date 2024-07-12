@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from user_identity import hints
 
-from .user import User
+from .user import UserORM
 
 
 class NotFoundInDB(Exception):
@@ -14,8 +14,8 @@ class UserRepository:
     def __init__(self, session: Session):
         self._session = session
 
-    def get_by_id(self, id: hints.UserId) -> User:
-        stmt = select(User).where(User.id == id)
+    def get_by_id(self, id: hints.UserId) -> UserORM:
+        stmt = select(UserORM).where(UserORM.id == id)
 
         user = self._session.scalar(stmt)
         if not user:
@@ -23,8 +23,8 @@ class UserRepository:
 
         return user
 
-    def get_by_name(self, name: hints.UserName) -> User:
-        stmt = select(User).where(User.name == name)
+    def get_by_name(self, name: hints.UserName) -> UserORM:
+        stmt = select(UserORM).where(UserORM.name == name)
 
         user = self._session.scalar(stmt)
         if not user:

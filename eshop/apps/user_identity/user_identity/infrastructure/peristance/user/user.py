@@ -5,7 +5,7 @@ from user_identity import hints
 from user_identity.app_config import UserIdentityAppConfig
 
 
-class User(UserIdentityAppConfig.get_sqlalchemy_base()):
+class UserORM(UserIdentityAppConfig.get_sqlalchemy_base()):
 
     __tablename__ = 'user'
 
