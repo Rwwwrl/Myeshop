@@ -1,12 +1,10 @@
-from sqlalchemy.orm import Session
-
 from test_app.models import Author, Book
 
-from eshop import settings
+from framework.sqlalchemy.session import Session
 
 
 def create_data() -> None:
-    with Session(settings.SQLALCHEMY_ENGINE) as session:
+    with Session() as session:
         author1 = Author(name='author_name')
         book1 = Book(title='title1', author=author1)
         book2 = Book(title='title2', author=author1)

@@ -3,7 +3,7 @@ from sqlalchemy import select
 from test_app import hints
 
 from framework.common.dto import DTO
-from framework.sqlalchemy.session_factory import session_factory
+from framework.sqlalchemy.session import Session
 
 from .api_router import api_router
 from .models import Author, Book
@@ -29,7 +29,7 @@ class BookDTO(DTO):
 
 @api_router.get('/book/{id}/')
 def book__get(id: hints.BookId) -> BookDTO:
-    with session_factory() as session:
+    with Session() as session:
         # yapf: disable
         stmt = select(
             Book.title.label('title'),

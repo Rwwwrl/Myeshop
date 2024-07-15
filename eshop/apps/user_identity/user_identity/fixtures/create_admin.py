@@ -1,11 +1,11 @@
-from framework.sqlalchemy.session_factory import session_factory
+from framework.sqlalchemy.session import Session
 
 from user_identity.dependency_container import dependency_container
 from user_identity.infrastructure.peristance.user import UserORM
 
 
 def create_admin():
-    with session_factory() as session:
+    with Session() as session:
         hashed_password = dependency_container.password_hasher_factory().hash(plain_password='1234')
 
         user = UserORM(id=1, name='admin', hashed_password=hashed_password)

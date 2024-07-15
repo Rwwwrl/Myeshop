@@ -1,10 +1,10 @@
 from catalog.domain.models import CatalogBrand, CatalogItem, CatalogType
 
-from framework.sqlalchemy.session_factory import session_factory
+from framework.sqlalchemy.session import Session
 
 
 def create_catalog_items() -> None:
-    with session_factory() as session:
+    with Session() as session:
         catalog_type1 = CatalogType(id=1, type='type1')
         catalog_type2 = CatalogType(id=2, type='type2')
 

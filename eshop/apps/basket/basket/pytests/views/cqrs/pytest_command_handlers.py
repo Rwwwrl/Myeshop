@@ -94,18 +94,14 @@ def test_case_success() -> TestCaseSucess:
 
 
 class TestUpdateCustomerBasketCommandHandler__handle(TestClass[UpdateCustomerBasketCommandHandler]):
-    @patch.object(command_handlers, 'session_factory')
+    @patch.object(command_handlers, 'Session', new=SqlalchemySessionMock)
     @patch.object(PostgresCustomerBasketRepository, 'save')
     def test_case_success(
         self,
         mock__postgres_customer_basket_repository__save: Mock,
-        mock__session_factory: Mock,
         test_case_success: TestCaseSucess,
     ):
         test_case = test_case_success
-
-        sqlalchemy_session_mock = SqlalchemySessionMock()
-        mock__session_factory.return_value = sqlalchemy_session_mock
 
         UpdateCustomerBasketCommandHandler().handle(command=test_case.command)
 

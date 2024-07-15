@@ -4,11 +4,11 @@ from basket.infrastructure.persistence.postgres.customer_basket.customer_basket_
     Data,
 )
 
-from framework.sqlalchemy.session_factory import session_factory
+from framework.sqlalchemy.session import Session
 
 
 def create_customer_basket():
-    with session_factory() as session:
+    with Session() as session:
         customer_basket1 = CustomerBasketORM(
             buyer_id=1,
             data=Data(
