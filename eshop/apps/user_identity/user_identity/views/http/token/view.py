@@ -16,10 +16,10 @@ from framework.common.dto import DTO
 from user_identity import hints
 from user_identity.api_router import api_router
 from user_identity.dependency_container import dependency_container
-from user_identity.domain.models.user import User
-from user_identity.domain.models.user.user_repository import NotFoundInDB, UserRepository
+from user_identity.infrastructure.peristance.user import UserORM, UserRepository
+from user_identity.infrastructure.peristance.user.user_repository import NotFoundError
 
-__all__ = ('token_view', )
+__all__ = ('token', )
 
 
 class TokenType(Enum):
@@ -36,11 +36,11 @@ class AuthenticateException(Exception):
     pass
 
 
-def authenticate(user_name: hints.UserName, plain_password: hints.PlainPassword) -> User:
+def authenticate(user_name: hints.UserName, plain_password: hints.PlainPassword) -> UserORM:
     with Session(settings.SQLALCHEMY_ENGINE) as session:
         try:
             user = UserRepository(session=session).get_by_name(name=user_name)
-        except NotFoundInDB:
+        except NotFoundError:
             raise AuthenticateException(f'reason: there is not user with name = {user_name}')
 
     password_hasher = dependency_container.password_hasher_factory()
@@ -62,7 +62,7 @@ def login(username: hints.UserName, password: hints.PlainPassword) -> hints.JWTT
 
 
 @api_router.post("/token/")
-def token_view(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> AccessTokenDTO:
+def token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> AccessTokenDTO:
     try:
         jwt_token = login(username=form_data.username, password=form_data.password)
     except AuthenticateException:

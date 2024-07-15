@@ -8,9 +8,9 @@ from framework.sqlalchemy.session_factory import session_factory
 
 from user_identity import hints
 from user_identity.api_router import api_router
-from user_identity.domain.models.user.user_repository import UserRepository
+from user_identity.infrastructure.peristance.user import UserRepository
 
-__all__ = ('profile_view__get', )
+__all__ = ('profile', )
 
 
 class ProfileDTO(DTO):
@@ -20,7 +20,7 @@ class ProfileDTO(DTO):
 
 
 @api_router.get('/profile/')
-def profile_view__get(user_id: Annotated[hints.UserId, Depends(get_user_from_http_request)]) -> ProfileDTO:
+def profile(user_id: Annotated[hints.UserId, Depends(get_user_from_http_request)]) -> ProfileDTO:
     with session_factory() as session:
         user = UserRepository(session=session).get_by_id(id=user_id)
 

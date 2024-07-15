@@ -4,7 +4,7 @@ from fastapi import APIRouter
 
 from sqlalchemy.orm import DeclarativeBase
 
-from framework.app_config import IAppConfig
+from framework.iapp_config import IAppConfig
 
 
 class UserIdentityAppConfig(IAppConfig):
@@ -19,13 +19,13 @@ class UserIdentityAppConfig(IAppConfig):
 
     @classmethod
     def get_sqlalchemy_base(cls) -> Optional[Type[DeclarativeBase]]:
-        from .domain.models.base import Base
+        from .infrastructure.peristance.base import Base
 
         return Base
 
     @classmethod
     def import_models(cls) -> None:
-        from .domain import models    # noqa
+        from .infrastructure import peristance    # noqa
 
     @classmethod
     def import_http_views(cls) -> None:

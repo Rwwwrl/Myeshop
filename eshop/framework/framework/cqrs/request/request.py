@@ -14,6 +14,8 @@ from typing import (
 
 from attrs import define
 
+from pydantic import BaseModel
+
 if TYPE_CHECKING:
     from .handler import IRequestHandler
 
@@ -37,14 +39,12 @@ RequestResponseType = TypeVar('RequestResponseType')
 # которая не дает также красиво получать QueryResponseType из дженерика
 
 
-@define
 class IRequest(abc.ABC):
     @abc.abstractclassmethod
     def handler(cls, handler_cls: Type[IRequestHandlerTypeVar]) -> Type[IRequestHandlerTypeVar]:
         raise NotImplementedError
 
 
-@define
 class ISyncRequest(IRequest, Generic[RequestResponseType], abc.ABC):
     @property
     @classmethod
@@ -58,12 +58,10 @@ class ISyncRequest(IRequest, Generic[RequestResponseType], abc.ABC):
         raise NotImplementedError
 
 
-@define
 class IAsyncRequest(IRequest):
     pass
 
 
-@define
 class BaseRequest(IRequest):
     @final
     @classmethod
@@ -88,6 +86,5 @@ class BaseSyncRequest(ISyncRequest[RequestResponseType], BaseRequest):
                 return base.__args__[0]
 
 
-@define
-class BaseAsyncRequest(IAsyncRequest):
+class BaseAsyncRequest(IAsyncRequest, BaseRequest, BaseModel, frozen=True):
     pass

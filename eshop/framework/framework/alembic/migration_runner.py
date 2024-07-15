@@ -8,7 +8,7 @@ from sqlalchemy.schema import CreateSchema
 
 from eshop import settings
 
-from framework.app_config import IAppConfig
+from framework.iapp_config import IAppConfig
 from framework.sqlalchemy.dialects.postgres.pydantic_type import PydanticType
 
 

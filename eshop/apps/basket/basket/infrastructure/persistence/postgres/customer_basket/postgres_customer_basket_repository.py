@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from basket import hints
 
-from .customer_basket_orm import CustomerBasketORM
+from .customer_basket_orm import CustomerBasketORM, Data
 
 __all__ = ('PostgresCustomerBasketRepository', )
 
@@ -30,6 +30,17 @@ class BasketItemIdGenerator:
 class PostgresCustomerBasketRepository:
     def __init__(self, session: Session):
         self._session = session
+
+    def create(self, buyer_id: hints.BuyerId) -> None:
+        new_customer_basket_orm = CustomerBasketORM(
+            buyer_id=buyer_id,
+            data=Data(basket_items=[]),
+        )
+
+        self._session.add(new_customer_basket_orm)
+        self._session.flush(objects=[new_customer_basket_orm])
+
+        return new_customer_basket_orm
 
     def get_by_buyer_id(self, buyer_id: hints.BuyerId) -> CustomerBasketORM:
         # yapf: disable

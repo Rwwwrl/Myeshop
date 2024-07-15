@@ -1,27 +1,53 @@
 from eshop import settings
 
 from framework.cqrs.query.handler import IQueryHandler
+from framework.sqlalchemy.session_factory import session_factory
 
 from user_identity.dependency_container import dependency_container
+from user_identity.infrastructure.peristance.user import (
+    UserRepository,
+    user_repository as user_repository_module,
+)
 from user_identity.services.jwt_encoder_decoder import DecodeError
 
-from user_identity_cqrs_contract.query import UserIdFromJWTTokenQuery
-from user_identity_cqrs_contract.query.query import InvalidJwtTokenError
-from user_identity_cqrs_contract.query.query_response import UserDTO
+from user_identity_cqrs_contract.hints import UserId
+from user_identity_cqrs_contract.query import (
+    UserIdFromJWTTokenQuery,
+    UserQuery,
+)
+from user_identity_cqrs_contract.query.query import (
+    InvalidJwtTokenError,
+    UserNotFoundError,
+)
+from user_identity_cqrs_contract.query.query_response import (
+    UserDTO,
+)
 
 __all__ = ('UserFromJWTTokenQueryHandler', )
 
 
 @UserIdFromJWTTokenQuery.handler
 class UserFromJWTTokenQueryHandler(IQueryHandler):
-    def handle(self, query: UserIdFromJWTTokenQuery) -> UserDTO:
+    def handle(self, query: UserIdFromJWTTokenQuery) -> UserId:
         jwt_encoder_decoder = dependency_container.jwt_encoder_decoder_factory()
         try:
-            user_id = jwt_encoder_decoder.decode(
+            return jwt_encoder_decoder.decode(
                 token=query.jwt_token,
                 secret=settings.SETTINGS.user_identity_service.secret,
             )
         except DecodeError:
-            raise InvalidJwtTokenError
+            raise InvalidJwtTokenError(f'jwt_token = {query.jwt_token}')
 
-        return UserDTO(id=user_id)
+
+@UserQuery.handler
+class UserQueryHandler(IQueryHandler):
+    def handle(self, query: UserQuery) -> UserDTO:
+        with session_factory() as session:
+            user_repository = UserRepository(session=session)
+
+            try:
+                user = user_repository.get_by_id(id=query.user_id)
+            except user_repository_module.NotFoundError:
+                raise UserNotFoundError(f'user_id = {query.user_id}')
+
+        return UserDTO(id=user.id, name=user.name)

@@ -21,7 +21,7 @@ from basket.app_config import BasketAppConfig
 
 from catalog.app_config import CatalogAppConfig
 
-from framework.app_config import IAppConfig
+from framework.iapp_config import IAppConfig
 
 from user_identity.app_config import UserIdentityAppConfig
 

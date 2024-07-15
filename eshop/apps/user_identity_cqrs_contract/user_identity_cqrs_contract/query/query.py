@@ -5,11 +5,14 @@ from attrs import define
 from framework.cqrs.exceptions import PossibleExpectedError
 from framework.cqrs.query.query import Query
 
-from user_identity_cqrs_contract.hints import JWTToken
+from user_identity_cqrs_contract.hints import JWTToken, UserId
 
 from .query_response import UserDTO
 
-__all__ = ('UserIdFromJWTTokenQuery', )
+__all__ = (
+    'UserIdFromJWTTokenQuery',
+    'UserQuery',
+)
 
 
 @final
@@ -19,8 +22,22 @@ class InvalidJwtTokenError(PossibleExpectedError):
 
 @final
 @define
-class UserIdFromJWTTokenQuery(Query[UserDTO]):
+class UserIdFromJWTTokenQuery(Query[UserId]):
 
     jwt_token: JWTToken
 
     __possible_exceptions__: Final = (InvalidJwtTokenError, )
+
+
+@final
+class UserNotFoundError(PossibleExpectedError):
+    pass
+
+
+@final
+@define
+class UserQuery(Query[UserDTO]):
+
+    user_id: UserId
+
+    __possible_exceptions__: Final = (UserNotFoundError, )

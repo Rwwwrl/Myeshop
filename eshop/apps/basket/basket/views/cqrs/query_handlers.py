@@ -9,8 +9,7 @@ from basket.infrastructure.persistence.postgres.customer_basket.postgres_custome
 )
 
 from basket_cqrs_contract.customer_basket_dto import BasketItemDTO, CustomerBasketDTO
-from basket_cqrs_contract.query import CustomerBasketQuery
-from basket_cqrs_contract.query.query import CustomerDoesNotHaveBasketError
+from basket_cqrs_contract.query import CustomerBasketQuery, CustomerDoesNotHaveBasketError
 
 from framework.cqrs.query.handler import IQueryHandler
 from framework.sqlalchemy.session_factory import session_factory

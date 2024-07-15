@@ -4,7 +4,7 @@ from fastapi import APIRouter
 
 from sqlalchemy.orm import DeclarativeBase
 
-from framework.app_config import IAppConfig
+from framework.iapp_config import IAppConfig
 
 
 class BasketAppConfig(IAppConfig):
@@ -13,7 +13,9 @@ class BasketAppConfig(IAppConfig):
 
     @classmethod
     def get_api_router(cls) -> Optional[APIRouter]:
-        return None
+        from .api_router import api_router
+
+        return api_router
 
     @classmethod
     def get_sqlalchemy_base(cls) -> Optional[Type[DeclarativeBase]]:
@@ -27,7 +29,7 @@ class BasketAppConfig(IAppConfig):
 
     @classmethod
     def import_http_views(cls) -> None:
-        pass
+        from .views import http    # noqa
 
     @classmethod
     def import_cqrs_handlers(cls) -> None:

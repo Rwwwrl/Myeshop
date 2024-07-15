@@ -14,7 +14,7 @@ from user_identity_cqrs_contract.query.query import InvalidJwtTokenError
 
 def get_user_from_http_request(jwt_token: Annotated[hints.JWTToken, Depends(settings.OAUTH2_SCHEME)]) -> hints.UserId:
     try:
-        return UserIdFromJWTTokenQuery(jwt_token=jwt_token).fetch().id
+        return UserIdFromJWTTokenQuery(jwt_token=jwt_token).fetch()
     except InvalidJwtTokenError:
         raise BadRequestException(detail='invalid jwt token')
     except UnexpectedError:
