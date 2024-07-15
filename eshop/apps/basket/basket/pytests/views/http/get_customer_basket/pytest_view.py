@@ -2,7 +2,7 @@ from mock import Mock, patch
 
 import pytest
 
-from basket.api_router import api_router
+from basket.app_config import BasketAppConfig
 from basket.infrastructure.persistence.postgres.customer_basket.customer_basket_orm import (
     BasketItem,
     CustomerBasketORM,
@@ -120,7 +120,7 @@ def test_case_user_does_not_have_basket() -> TestCaseUserDoesNotHaveBasket:
 class TestUrlToView(TestClass[get_customer_basket]):
     def test(self):
         expected_url = '/basket/customer_basket/'
-        fact_url = api_router.url_path_for(get_customer_basket.__name__)
+        fact_url = BasketAppConfig.get_api_router().url_path_for(get_customer_basket.__name__)
         assert fact_url == expected_url
 
 

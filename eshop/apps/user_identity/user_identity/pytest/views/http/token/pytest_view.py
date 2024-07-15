@@ -10,7 +10,7 @@ from framework.for_pytests.test_case import TestCase
 from framework.for_pytests.test_class import TestClass
 
 from user_identity import hints
-from user_identity.api_router import api_router
+from user_identity.app_config import UserIdentityAppConfig
 from user_identity.views.http.token import token, view
 from user_identity.views.http.token.view import AccessTokenDTO, AuthenticateException, TokenType
 
@@ -63,7 +63,7 @@ def test_case_login_failed() -> TestCaseLoginFailed:
 class TestUrlToView(TestClass[token]):
     def test(self):
         expected_url = '/user_identity/token/'
-        fact_url = api_router.url_path_for(token.__name__)
+        fact_url = UserIdentityAppConfig.get_api_router().url_path_for(token.__name__)
         assert fact_url == expected_url
 
 

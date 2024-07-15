@@ -6,7 +6,7 @@ from framework.for_pytests.test_case import TestCase as _TestCase
 from framework.for_pytests.test_class import TestClass
 
 from user_identity import hints
-from user_identity.api_router import api_router
+from user_identity.app_config import UserIdentityAppConfig
 from user_identity.infrastructure.peristance.user import UserORM, UserRepository
 from user_identity.views.http.profile import profile
 from user_identity.views.http.profile.view import ProfileDTO
@@ -44,7 +44,7 @@ def test_case() -> TestCase:
 class TestUrlToView(TestClass[profile]):
     def test(self):
         expected_url = '/user_identity/profile/'
-        fact_url = api_router.url_path_for(profile.__name__)
+        fact_url = UserIdentityAppConfig.get_api_router().url_path_for(profile.__name__)
         assert fact_url == expected_url
 
 
