@@ -62,7 +62,6 @@ class IAsyncRequest(IRequest):
     pass
 
 
-@define
 class BaseRequest(IRequest):
     @final
     @classmethod
@@ -87,5 +86,5 @@ class BaseSyncRequest(ISyncRequest[RequestResponseType], BaseRequest):
                 return base.__args__[0]
 
 
-class BaseAsyncRequest(IAsyncRequest, BaseModel, frozen=True):
+class BaseAsyncRequest(IAsyncRequest, BaseRequest, BaseModel, frozen=True):
     pass
