@@ -37,5 +37,5 @@ class UpdateCustomerBasketCommandHandler(ICommandHandler):
         customer_basket_orm = self._deserialize_to_orm(command=command)
         with Session() as session:
             customer_basket_repository = PostgresCustomerBasketRepository(session=session)
-            customer_basket_repository.save(customer_basket_orm=customer_basket_orm)
-            session.commit()
+            with session.begin():
+                customer_basket_repository.save(customer_basket_orm=customer_basket_orm)

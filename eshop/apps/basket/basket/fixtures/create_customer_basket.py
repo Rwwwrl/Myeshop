@@ -8,33 +8,33 @@ from framework.sqlalchemy.session import Session
 
 
 def create_customer_basket():
-    with Session() as session:
-        customer_basket1 = CustomerBasketORM(
-            buyer_id=1,
-            data=Data(
-                basket_items=[
-                    BasketItem(
-                        id=1,
-                        product_id=1,
-                        product_name='name1',
-                        unit_price=10,
-                        quantity=1,
-                        picture_url='root/filename1',
-                    ),
-                    BasketItem(
-                        id=2,
-                        product_id=2,
-                        product_name='name2',
-                        unit_price=20,
-                        quantity=2,
-                        picture_url='root/filename2',
-                    ),
-                ],
-            ),
-        )
+    customer_basket1 = CustomerBasketORM(
+        buyer_id=1,
+        data=Data(
+            basket_items=[
+                BasketItem(
+                    id=1,
+                    product_id=1,
+                    product_name='name1',
+                    unit_price=10,
+                    quantity=1,
+                    picture_url='root/filename1',
+                ),
+                BasketItem(
+                    id=2,
+                    product_id=2,
+                    product_name='name2',
+                    unit_price=20,
+                    quantity=2,
+                    picture_url='root/filename2',
+                ),
+            ],
+        ),
+    )
 
-        session.add(customer_basket1)
-        session.commit()
+    with Session() as session:
+        with session.begin():
+            session.add(customer_basket1)
 
 
 if __name__ == '__main__':

@@ -44,7 +44,8 @@ class CustomerBasketQueryHandler(IQueryHandler):
         with Session() as session:
             customer_basket_repository = PostgresCustomerBasketRepository(session=session)
             try:
-                customer_basket_orm = customer_basket_repository.get_by_buyer_id(buyer_id=query.customer_id)
+                with session.begin():
+                    customer_basket_orm = customer_basket_repository.get_by_buyer_id(buyer_id=query.customer_id)
             except NotFoundError:
                 raise CustomerDoesNotHaveBasketError(f'customer_id = {query.customer_id}')
 

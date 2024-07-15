@@ -42,7 +42,8 @@ def book__get(id: hints.BookId) -> BookDTO:
             Book.id == id,
         )
         # yapf: enable
-        result = session.execute(stmt).one()._asdict()
+        with session.begin():
+            result = session.execute(stmt).one()._asdict()
 
     return BookDTO(title=result['title'], author_name=result['author_name'])
 

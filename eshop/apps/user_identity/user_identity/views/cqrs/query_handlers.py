@@ -44,9 +44,9 @@ class UserQueryHandler(IQueryHandler):
     def handle(self, query: UserQuery) -> UserDTO:
         with Session() as session:
             user_repository = UserRepository(session=session)
-
             try:
-                user = user_repository.get_by_id(id=query.user_id)
+                with session.begin():
+                    user = user_repository.get_by_id(id=query.user_id)
             except user_repository_module.NotFoundError:
                 raise UserNotFoundError(f'user_id = {query.user_id}')
 

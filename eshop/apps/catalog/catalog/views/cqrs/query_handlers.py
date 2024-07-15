@@ -40,7 +40,10 @@ class CatalogItemByIdQueryHandler(IQueryHandler):
                 joinedload(CatalogItemORM.catalog_type),
             )
             # yapf: enable
-            return session.scalars(stmt).all()
+            with session.begin():
+                catalog_items = session.scalars(stmt).all()
+                session.expunge_all()
+                return catalog_items
 
     @staticmethod
     def _to_dto(catalog_item_orm: CatalogItemORM) -> CatalogItemDTO:

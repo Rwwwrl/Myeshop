@@ -165,5 +165,3 @@ class TestGetCustomerBasketView(TestClass[get_customer_basket]):
         mock__customer_basket_repository__get_by_buyer_id.assert_called_once_with(buyer_id=test_case.user_id)
 
         mock__customer_basket_repository__create.assert_called_once_with(buyer_id=test_case.user_id)
-
-        sqlalchemy_session_mock.commit.assert_called_once()

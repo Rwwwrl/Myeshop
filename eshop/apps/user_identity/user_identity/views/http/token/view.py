@@ -38,7 +38,8 @@ class AuthenticateException(Exception):
 def authenticate(user_name: hints.UserName, plain_password: hints.PlainPassword) -> UserORM:
     with Session() as session:
         try:
-            user = UserRepository(session=session).get_by_name(name=user_name)
+            with session.begin():
+                user = UserRepository(session=session).get_by_name(name=user_name)
         except NotFoundError:
             raise AuthenticateException(f'reason: there is not user with name = {user_name}')
 

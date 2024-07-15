@@ -22,6 +22,7 @@ class ProfileDTO(DTO):
 @api_router.get('/profile/')
 def profile(user_id: Annotated[hints.UserId, Depends(get_user_from_http_request)]) -> ProfileDTO:
     with Session() as session:
-        user = UserRepository(session=session).get_by_id(id=user_id)
+        with session.begin():
+            user = UserRepository(session=session).get_by_id(id=user_id)
 
     return ProfileDTO(id=user.id, name=user.name)

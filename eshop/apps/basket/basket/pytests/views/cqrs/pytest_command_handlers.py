@@ -115,5 +115,3 @@ class TestUpdateCustomerBasketCommandHandler__handle(TestClass[UpdateCustomerBas
         )
         assert call_kwargs__customer_basket_orm_arg.buyer_id == expected_customer_basket_orm_arg.buyer_id
         assert call_kwargs__customer_basket_orm_arg.data == expected_customer_basket_orm_arg.data
-
-        sqlalchemy_session_mock.commit.assert_called_once()

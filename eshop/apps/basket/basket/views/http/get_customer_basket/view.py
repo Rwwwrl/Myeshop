@@ -43,12 +43,11 @@ def _orm_to_dto(customer_basket_orm: CustomerBasketORM) -> CustomerBasketDTO:
 def get_customer_basket(user_id: Annotated[UserId, Depends(get_user_from_http_request)]) -> CustomerBasketDTO:
     with Session() as session:
         customer_basket_repository = PostgresCustomerBasketRepository(session=session)
-
         try:
-            customer_basket_orm = customer_basket_repository.get_by_buyer_id(buyer_id=user_id)
+            with session.begin():
+                customer_basket_orm = customer_basket_repository.get_by_buyer_id(buyer_id=user_id)
         except NotFoundError:
-            customer_basket_orm = customer_basket_repository.create(buyer_id=user_id)
-            session.expunge(customer_basket_orm)
-            session.commit()
+            with session.begin():
+                customer_basket_orm = customer_basket_repository.create(buyer_id=user_id)
 
     return _orm_to_dto(customer_basket_orm=customer_basket_orm)
