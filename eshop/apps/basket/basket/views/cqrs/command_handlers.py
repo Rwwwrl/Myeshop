@@ -10,7 +10,7 @@ from basket.infrastructure.persistence.postgres.customer_basket.customer_basket_
 from basket_cqrs_contract.command import UpdateCustomerBasketCommand
 
 from framework.cqrs.command import ICommandHandler
-from framework.sqlalchemy.session_factory import session_factory
+from framework.sqlalchemy.session import Session
 
 
 @UpdateCustomerBasketCommand.handler
@@ -35,7 +35,7 @@ class UpdateCustomerBasketCommandHandler(ICommandHandler):
 
     def handle(self, command: UpdateCustomerBasketCommand) -> None:
         customer_basket_orm = self._deserialize_to_orm(command=command)
-        with session_factory() as session:
+        with Session() as session:
             customer_basket_repository = PostgresCustomerBasketRepository(session=session)
-            customer_basket_repository.save(customer_basket_orm=customer_basket_orm)
-            session.commit()
+            with session.begin():
+                customer_basket_repository.save(customer_basket_orm=customer_basket_orm)

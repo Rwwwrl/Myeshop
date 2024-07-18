@@ -40,6 +40,8 @@ class PostgresCustomerBasketRepository:
         self._session.add(new_customer_basket_orm)
         self._session.flush(objects=[new_customer_basket_orm])
 
+        self._session.expunge(new_customer_basket_orm)
+
         return new_customer_basket_orm
 
     def get_by_buyer_id(self, buyer_id: hints.BuyerId) -> CustomerBasketORM:
@@ -54,6 +56,8 @@ class PostgresCustomerBasketRepository:
         customer_basket_orm = self._session.scalar(stmt)
         if not customer_basket_orm:
             raise NotFoundError(f'buyer_id = {buyer_id}')
+
+        self._session.expunge(customer_basket_orm)
 
         return customer_basket_orm
 

@@ -14,6 +14,11 @@ handlers:
     class: logging.StreamHandler
     formatter: json
 
+  default_stream_handler:
+    level: DEBUG
+    class: logging.StreamHandler
+    formatter: default
+
 loggers:
   root:
     level: INFO
@@ -23,4 +28,9 @@ loggers:
   CQRSBus:
     level: DEBUG
     handlers: [json_stream_handler]
+    propagate: false
+
+  sqlalchemy.engine:
+    level: WARNING
+    handlers: [default_stream_handler]
     propagate: false

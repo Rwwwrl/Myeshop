@@ -7,11 +7,10 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 import pytz
 
-from sqlalchemy.orm import Session
-
 from eshop import settings
 
 from framework.common.dto import DTO
+from framework.sqlalchemy.session import Session
 
 from user_identity import hints
 from user_identity.api_router import api_router
@@ -37,9 +36,10 @@ class AuthenticateException(Exception):
 
 
 def authenticate(user_name: hints.UserName, plain_password: hints.PlainPassword) -> UserORM:
-    with Session(settings.SQLALCHEMY_ENGINE) as session:
+    with Session() as session:
         try:
-            user = UserRepository(session=session).get_by_name(name=user_name)
+            with session.begin():
+                user = UserRepository(session=session).get_by_name(name=user_name)
         except NotFoundError:
             raise AuthenticateException(f'reason: there is not user with name = {user_name}')
 

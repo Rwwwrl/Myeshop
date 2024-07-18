@@ -12,7 +12,7 @@ from basket_cqrs_contract.customer_basket_dto import BasketItemDTO, CustomerBask
 from basket_cqrs_contract.query import CustomerBasketQuery, CustomerDoesNotHaveBasketError
 
 from framework.cqrs.query.handler import IQueryHandler
-from framework.sqlalchemy.session_factory import session_factory
+from framework.sqlalchemy.session import Session
 
 __all__ = ('CustomerBasketQueryHandler', )
 
@@ -41,10 +41,11 @@ class CustomerBasketQueryHandler(IQueryHandler):
         )
 
     def handle(self, query: CustomerBasketQuery) -> CustomerBasketDTO:
-        with session_factory() as session:
+        with Session() as session:
             customer_basket_repository = PostgresCustomerBasketRepository(session=session)
             try:
-                customer_basket_orm = customer_basket_repository.get_by_buyer_id(buyer_id=query.customer_id)
+                with session.begin():
+                    customer_basket_orm = customer_basket_repository.get_by_buyer_id(buyer_id=query.customer_id)
             except NotFoundError:
                 raise CustomerDoesNotHaveBasketError(f'customer_id = {query.customer_id}')
 

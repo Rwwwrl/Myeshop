@@ -23,6 +23,8 @@ class UserRepository:
         if not user:
             raise NotFoundError(f'user with id = {id} does not exist')
 
+        self._session.expunge(user)
+
         return user
 
     def get_by_name(self, name: hints.UserName) -> UserORM:
@@ -31,5 +33,7 @@ class UserRepository:
         user = self._session.scalar(stmt)
         if not user:
             raise NotFoundError(f'user with name = {name} does not exist')
+
+        self._session.expunge(user)
 
         return user

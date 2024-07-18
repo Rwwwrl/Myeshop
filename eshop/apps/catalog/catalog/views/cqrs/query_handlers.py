@@ -16,7 +16,7 @@ from catalog_cqrs_contract.query.query_response import (
 )
 
 from framework.cqrs.query import IQueryHandler
-from framework.sqlalchemy.session_factory import session_factory
+from framework.sqlalchemy.session import Session
 
 __all__ = ("CatalogItemByIdQueryHandler", )
 
@@ -29,7 +29,7 @@ class NotFoundError(Exception):
 class CatalogItemByIdQueryHandler(IQueryHandler):
     @staticmethod
     def _fetch_from_db(ids: List[hints.CatalogItemId]) -> List[CatalogItemORM]:
-        with session_factory() as session:
+        with Session() as session:
             # yapf: disable
             stmt = select(
                 CatalogItemORM,
@@ -40,7 +40,10 @@ class CatalogItemByIdQueryHandler(IQueryHandler):
                 joinedload(CatalogItemORM.catalog_type),
             )
             # yapf: enable
-            return session.scalars(stmt).all()
+            with session.begin():
+                catalog_items = session.scalars(stmt).all()
+                session.expunge_all()
+                return catalog_items
 
     @staticmethod
     def _to_dto(catalog_item_orm: CatalogItemORM) -> CatalogItemDTO:

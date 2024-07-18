@@ -142,20 +142,16 @@ class TestGetCustomerBasketView(TestClass[get_customer_basket]):
 
         mock__customer_basket_repository__get_by_buyer_id.assert_called_once_with(buyer_id=test_case.user_id)
 
-    @patch.object(view, 'session_factory')
+    @patch.object(view, 'Session', new=SqlalchemySessionMock)
     @patch.object(PostgresCustomerBasketRepository, 'create')
     @patch.object(PostgresCustomerBasketRepository, 'get_by_buyer_id')
     def test_case_user_does_not_have_basket(
         self,
         mock__customer_basket_repository__get_by_buyer_id: Mock,
         mock__customer_basket_repository__create: Mock,
-        mock__session_factory: Mock,
         test_case_user_does_not_have_basket: TestCaseUserDoesNotHaveBasket,
     ):
         test_case = test_case_user_does_not_have_basket
-
-        sqlalchemy_session_mock = SqlalchemySessionMock()
-        mock__session_factory.return_value = sqlalchemy_session_mock
 
         mock__customer_basket_repository__get_by_buyer_id.side_effect = NotFoundError
 
@@ -169,5 +165,3 @@ class TestGetCustomerBasketView(TestClass[get_customer_basket]):
         mock__customer_basket_repository__get_by_buyer_id.assert_called_once_with(buyer_id=test_case.user_id)
 
         mock__customer_basket_repository__create.assert_called_once_with(buyer_id=test_case.user_id)
-
-        sqlalchemy_session_mock.commit.assert_called_once()

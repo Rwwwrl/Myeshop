@@ -1,7 +1,7 @@
 from eshop import settings
 
 from framework.cqrs.query.handler import IQueryHandler
-from framework.sqlalchemy.session_factory import session_factory
+from framework.sqlalchemy.session import Session
 
 from user_identity.dependency_container import dependency_container
 from user_identity.infrastructure.peristance.user import (
@@ -42,11 +42,11 @@ class UserFromJWTTokenQueryHandler(IQueryHandler):
 @UserQuery.handler
 class UserQueryHandler(IQueryHandler):
     def handle(self, query: UserQuery) -> UserDTO:
-        with session_factory() as session:
+        with Session() as session:
             user_repository = UserRepository(session=session)
-
             try:
-                user = user_repository.get_by_id(id=query.user_id)
+                with session.begin():
+                    user = user_repository.get_by_id(id=query.user_id)
             except user_repository_module.NotFoundError:
                 raise UserNotFoundError(f'user_id = {query.user_id}')
 
