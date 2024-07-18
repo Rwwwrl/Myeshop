@@ -67,7 +67,7 @@ def include_routes() -> None:
         MAIN_APP.include_router(router)
 
 
-def import_cqrs_controllers() -> None:
+def import_cqrs_handlers() -> None:
     for app_config in INSTALLED_APPS:
         app_config.import_cqrs_handlers()
 
@@ -76,7 +76,7 @@ def import_cqrs_controllers() -> None:
 async def lifespan(app: FastAPI):
     import_http_views()
     include_routes()
-    import_cqrs_controllers()
+    import_cqrs_handlers()
     init_logging()
     yield
 
