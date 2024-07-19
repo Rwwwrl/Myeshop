@@ -11,7 +11,7 @@ from catalog.infrastructure.persistance.postgres.models import CatalogItemORM
 from framework.fastapi.http_exceptions import BadRequestException
 from framework.sqlalchemy.session import Session
 
-from .dto import CatalogItemDTO
+from ..common.catalog_item_dto import CatalogItemDTO
 
 __all__ = ('get_items', )
 
@@ -44,23 +44,6 @@ def _fetch_catalog_items_from_db(ids: Optional[List[hints.CatalogItemId]]) -> Li
             return catalog_items
 
 
-def _orm_to_dto(orm: CatalogItemORM) -> CatalogItemDTO:
-    return CatalogItemDTO(
-        id=orm.id,
-        name=orm.name,
-        description=orm.description,
-        price=orm.price,
-        picture_filename=orm.picture_filename,
-        picture_url=orm.picture_url,
-        catalog_type_id=orm.catalog_type_id,
-        catalog_brand_id=orm.catalog_brand_id,
-        available_stock=orm.available_stock,
-        restock_threshold=orm.restock_threshold,
-        maxstock_threshold=orm.maxstock_threshold,
-        on_reorder=orm.on_reorder,
-    )
-
-
 @api_router.get('/items/')
 def get_items(ids: Annotated[Optional[str], Query(example="[10, 20, 30]")] = None) -> List[CatalogItemDTO]:
     # TODO: добавить пагинацию в случае если не передается ids
@@ -70,6 +53,4 @@ def get_items(ids: Annotated[Optional[str], Query(example="[10, 20, 30]")] = Non
         except ValueError:
             raise BadRequestException(detail='invalid query parameter "ids", must be a list of int')
 
-        return [_orm_to_dto(ci) for ci in _fetch_catalog_items_from_db(ids=ids)]
-
-    return [_orm_to_dto(ci) for ci in _fetch_catalog_items_from_db()]
+    return [CatalogItemDTO.from_orm(orm=ci) for ci in _fetch_catalog_items_from_db(ids=ids)]

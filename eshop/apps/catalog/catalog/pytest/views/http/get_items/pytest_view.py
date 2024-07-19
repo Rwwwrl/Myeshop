@@ -8,8 +8,8 @@ import pytest
 
 from catalog.app_config import CatalogAppConfig
 from catalog.infrastructure.persistance.postgres.models import CatalogItemORM
+from catalog.views.http.common.catalog_item_dto import CatalogItemDTO
 from catalog.views.http.get_items import get_items, view
-from catalog.views.http.get_items.dto import CatalogItemDTO
 
 from framework.for_pytests.for_testing_http_views import ExpectedHttpResponseException
 from framework.for_pytests.test_case import TestCase
@@ -221,4 +221,4 @@ class TestGetItemsView(TestClass[get_items]):
         response = get_items()
         assert response == test_case.expected_http_response
 
-        mock__fetch_catalog_items_from_db.assert_called_once_with()
+        mock__fetch_catalog_items_from_db.assert_called_once_with(ids=None)
