@@ -1,8 +1,10 @@
 from typing import NewType
 
-CatalogItemId = NewType('CatalogItemId', int)
+from pydantic.types import PositiveInt
+
+CatalogItemId = NewType('CatalogItemId', PositiveInt)
 CatalogItemName = NewType('CatalogItemName', str)
 
-CatalogTypeId = NewType('CatalogTypeId', int)
+CatalogTypeId = NewType('CatalogTypeId', PositiveInt)
 
-CatalogBrandId = NewType('CatalogBrandId', int)
+CatalogBrandId = NewType('CatalogBrandId', PositiveInt)
