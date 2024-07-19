@@ -19,13 +19,13 @@ class CatalogAppConfig(IAppConfig):
 
     @classmethod
     def get_sqlalchemy_base(cls) -> Optional[Type[DeclarativeBase]]:
-        from .domain.base import Base
+        from .infrastructure.persistance.postgres.base import Base
 
         return Base
 
     @classmethod
     def import_models(cls) -> None:
-        from .domain import models    # noqa
+        from .infrastructure.persistance.postgres import models    # noqa
 
     @classmethod
     def import_http_views(cls) -> None:

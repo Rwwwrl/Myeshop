@@ -7,7 +7,7 @@ from mock import Mock, patch
 import pytest
 
 from catalog.app_config import CatalogAppConfig
-from catalog.domain.models import CatalogItem
+from catalog.infrastructure.persistance.postgres.models import CatalogItemORM
 from catalog.views.http.get_items import get_items, view
 from catalog.views.http.get_items.dto import CatalogItemDTO
 
@@ -26,13 +26,13 @@ class TestValidRequestQueryParamsIds(TestCase['TestGetItemsView']):
 
     request_query_params__ids: str
     expected_http_response: List[CatalogItemDTO]
-    mock__fetch_catalog_items_from_db__return_value: List[CatalogItem]
+    mock__fetch_catalog_items_from_db__return_value: List[CatalogItemORM]
 
 
 class TestWithoutRequestQueryParamsIds(TestCase['TestGetItemsView']):
 
     expected_http_response: List[CatalogItemDTO]
-    mock__fetch_catalog_items_from_db__return_value: List[CatalogItem]
+    mock__fetch_catalog_items_from_db__return_value: List[CatalogItemORM]
 
 
 @pytest.fixture(scope='session')
@@ -50,8 +50,8 @@ def test_invalid_request_query_params__ids() -> TestInvalidRequestQueryParamsIds
 def test_valid_request_query_params__ids() -> TestValidRequestQueryParamsIds:
     request_query_params__ids = '[1, 2, 3]'
 
-    mock__fetch_catalog_items_from_db__return_value: List[CatalogItem] = [
-        CatalogItem(
+    mock__fetch_catalog_items_from_db__return_value: List[CatalogItemORM] = [
+        CatalogItemORM(
             id=1,
             name='name1',
             description='description1',
@@ -63,7 +63,7 @@ def test_valid_request_query_params__ids() -> TestValidRequestQueryParamsIds:
             maxstock_threshold=25,
             on_reorder=False,
         ),
-        CatalogItem(
+        CatalogItemORM(
             id=2,
             name='name2',
             description='description2',
@@ -113,8 +113,8 @@ def test_valid_request_query_params__ids() -> TestValidRequestQueryParamsIds:
 
 @pytest.fixture(scope='session')
 def test_without_request_query_params__ids() -> TestWithoutRequestQueryParamsIds:
-    mock__fetch_catalog_items_from_db__return_value: List[CatalogItem] = [
-        CatalogItem(
+    mock__fetch_catalog_items_from_db__return_value: List[CatalogItemORM] = [
+        CatalogItemORM(
             id=1,
             name='name1',
             description='description1',
@@ -126,7 +126,7 @@ def test_without_request_query_params__ids() -> TestWithoutRequestQueryParamsIds
             maxstock_threshold=25,
             on_reorder=False,
         ),
-        CatalogItem(
+        CatalogItemORM(
             id=2,
             name='name2',
             description='description2',

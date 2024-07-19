@@ -6,7 +6,7 @@ from sqlalchemy import select
 
 from catalog import hints
 from catalog.api_router import api_router
-from catalog.domain.models import CatalogItem
+from catalog.infrastructure.persistance.postgres.models import CatalogItemORM
 
 from framework.fastapi.http_exceptions import BadRequestException
 from framework.sqlalchemy.session import Session
@@ -31,11 +31,11 @@ def _parse_request_ids(ids: str) -> List[hints.CatalogItemId]:
     return ids
 
 
-def _fetch_catalog_items_from_db(ids: Optional[List[hints.CatalogItemId]]) -> List[CatalogItem]:
+def _fetch_catalog_items_from_db(ids: Optional[List[hints.CatalogItemId]]) -> List[CatalogItemORM]:
     if ids:
-        stmt = select(CatalogItem).where(CatalogItem.id.in_(ids))
+        stmt = select(CatalogItemORM).where(CatalogItemORM.id.in_(ids))
     else:
-        stmt = select(CatalogItem)
+        stmt = select(CatalogItemORM)
 
     with Session() as session:
         with session.begin():
@@ -44,7 +44,7 @@ def _fetch_catalog_items_from_db(ids: Optional[List[hints.CatalogItemId]]) -> Li
             return catalog_items
 
 
-def _orm_to_dto(orm: CatalogItem) -> CatalogItemDTO:
+def _orm_to_dto(orm: CatalogItemORM) -> CatalogItemDTO:
     return CatalogItemDTO(
         id=orm.id,
         name=orm.name,
@@ -62,7 +62,7 @@ def _orm_to_dto(orm: CatalogItem) -> CatalogItemDTO:
 
 
 @api_router.get('/items/')
-def get_items(ids: Annotated[Optional[str], Query(example='[10, 20, 30]')] = None) -> List[CatalogItemDTO]:
+def get_items(ids: Annotated[Optional[str], Query(example="[10, 20, 30]")] = None) -> List[CatalogItemDTO]:
     # TODO: добавить пагинацию в случае если не передается ids
     if ids:
         try:
