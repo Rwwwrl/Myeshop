@@ -21,10 +21,6 @@ from framework.sqlalchemy.session import Session
 __all__ = ("CatalogItemByIdQueryHandler", )
 
 
-class NotFoundError(Exception):
-    pass
-
-
 @CatalogItemsByIdsQuery.handler
 class CatalogItemByIdQueryHandler(IQueryHandler):
     @staticmethod
