@@ -5,6 +5,7 @@ from mock import Mock, patch
 import pytest
 
 from catalog import hints
+from catalog.app_config import CatalogAppConfig
 from catalog.views.http.delete_item import delete_item, view
 
 from catalog_cqrs_contract.event import CatalogItemHasBeenDeleted
@@ -49,6 +50,13 @@ def test_case_catalog_item_does_not_exist() -> TestCaseCatalogItemDoesNotExist:
             body=b'',
         ),
     )
+
+
+class TestUrlToView(TestClass[delete_item]):
+    def test(self):
+        expected_url = '/catalog/items/'
+        fact_url = CatalogAppConfig.get_api_router().url_path_for(delete_item.__name__)
+        assert fact_url == expected_url
 
 
 class TestDeleteItemView(TestClass[delete_item]):

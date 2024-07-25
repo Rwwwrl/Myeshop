@@ -6,6 +6,7 @@ import pytest
 
 from sqlalchemy.exc import IntegrityError
 
+from catalog.app_config import CatalogAppConfig
 from catalog.views.http.create_item import create_item, view
 from catalog.views.http.create_item.view import NewCatalogItemRequestData
 
@@ -69,6 +70,13 @@ def test_failed_due_to_integrity_error_case() -> TestFailedDueToIntegrityErrorCa
         new_catalog_item_request_data=new_catalog_item_request_data,
         expected_http_exception_status_code=status.HTTP_400_BAD_REQUEST,
     )
+
+
+class TestUrlToView(TestClass[create_item]):
+    def test(self):
+        expected_url = '/catalog/items/'
+        fact_url = CatalogAppConfig.get_api_router().url_path_for(create_item.__name__)
+        assert fact_url == expected_url
 
 
 class TestCreateItemView(TestClass[create_item]):

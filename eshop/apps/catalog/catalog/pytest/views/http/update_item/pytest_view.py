@@ -8,6 +8,7 @@ import pytest
 
 from sqlalchemy.exc import IntegrityError
 
+from catalog.app_config import CatalogAppConfig
 from catalog.views.http.update_item import update_item, view
 from catalog.views.http.update_item.view import CatalogItemRequestData, NotFoundError
 
@@ -148,6 +149,13 @@ def test_case_failed_due_to_not_found_error() -> TestCaseFailedDueToIntegrityErr
     )
 
     return TestCaseFailedDueToNotFoundError(catalog_item_request_data=catalog_item_request_data)
+
+
+class TestUrlToView(TestClass[update_item]):
+    def test(self):
+        expected_url = '/catalog/items/'
+        fact_url = CatalogAppConfig.get_api_router().url_path_for(update_item.__name__)
+        assert fact_url == expected_url
 
 
 class TestUpdateItemView(TestClass[update_item]):
