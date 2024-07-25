@@ -1,5 +1,8 @@
 from catalog_cqrs_contract import hints
-from catalog_cqrs_contract.event import CatalogItemPriceChangedEvent
+from catalog_cqrs_contract.event import (
+    CatalogItemHasBeenDeleted,
+    CatalogItemPriceChangedEvent,
+)
 
 from framework.for_pytests.for_testing_cqrs_contract_usage import ITestEventContract, assert_attribute
 
@@ -9,3 +12,8 @@ class TestCatalogItemPriceChangedEvent(ITestEventContract[CatalogItemPriceChange
         assert_attribute(CatalogItemPriceChangedEvent, 'catalog_item_id', hints.CatalogItemId)
         assert_attribute(CatalogItemPriceChangedEvent, 'old_price', float)
         assert_attribute(CatalogItemPriceChangedEvent, 'new_price', float)
+
+
+class TestCatalogItemHasBeenDeleted(ITestEventContract[CatalogItemHasBeenDeleted]):
+    def test_event_contract(self) -> None:
+        assert_attribute(CatalogItemHasBeenDeleted, 'id', hints.CatalogItemId)

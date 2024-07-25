@@ -5,3 +5,4 @@ from .get_catalog_types import *
 from .get_catalog_brands import *
 from .update_item import *
 from .create_item import *
+from .delete_item import *
