@@ -138,7 +138,7 @@ jobs:
             test_app_migrations_files:
               - 'eshop/apps/test_app/test_app/migrations/versions/*.py'
             user_identity_migrations_files:
-              - 'eshop/apps/test_app/test_app/migrations/versions/*.py'
+              - 'eshop/apps/user_identity/user_identity/migrations/versions/*.py'
             basket_migrations_files:
               - 'eshop/apps/basket/basket/migrations/versions/*.py'
             catalog_migrations_files:
