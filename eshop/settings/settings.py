@@ -86,6 +86,13 @@ MAIN_APP = FastAPI(lifespan=lifespan)
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+class BaseSettings(pydantic_settings.BaseSettings):
+    model_config = pydantic_settings.SettingsConfigDict(
+        case_sensitive=False,
+        env_nested_delimiter='__',
+    )
+
+
 class PostgresSettings(pydantic.BaseModel):
     name: str
     host: str
@@ -94,17 +101,19 @@ class PostgresSettings(pydantic.BaseModel):
     password: str
 
 
-class UserIdentityServiceSettings(pydantic.BaseModel):
+class InitialAdminUserCredentials(pydantic.BaseModel):
+    name: str
+    password: str
+
+
+class UserIdentityServiceSettings(BaseSettings):
 
     secret: str
     token_life_time_duration: timedelta = timedelta(minutes=5)
+    initial_admin_user_credentials: InitialAdminUserCredentials
 
 
-class Settings(pydantic_settings.BaseSettings):
-    model_config = pydantic_settings.SettingsConfigDict(
-        case_sensitive=False,
-        env_nested_delimiter='__',
-    )
+class Settings(BaseSettings):
 
     postgres: PostgresSettings
     user_identity_service: UserIdentityServiceSettings
