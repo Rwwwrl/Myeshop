@@ -3,7 +3,7 @@ from eshop.settings import SETTINGS
 from framework.sqlalchemy.session import Session
 
 from user_identity.dependency_container import dependency_container
-from user_identity.infrastructure.peristance.user import UserORM
+from user_identity.infrastructure.peristance.user.user import UserORM, UserRoleEnum
 
 
 def create_admin():
@@ -13,6 +13,7 @@ def create_admin():
     user = UserORM(
         name=SETTINGS.user_identity_service.initial_admin_user_credentials.name,
         hashed_password=hashed_password,
+        role=UserRoleEnum.ADMIN,
     )
 
     with Session() as session:
