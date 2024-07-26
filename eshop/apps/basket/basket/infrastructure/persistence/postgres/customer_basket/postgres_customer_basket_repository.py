@@ -1,3 +1,5 @@
+from typing import List
+
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
@@ -30,6 +32,14 @@ class BasketItemIdGenerator:
 class PostgresCustomerBasketRepository:
     def __init__(self, session: Session):
         self._session = session
+
+    def all(self) -> List[CustomerBasketORM]:
+        customers_baskets = self._session.scalars(select(CustomerBasketORM)).all()
+
+        for customer_basket_orm in customers_baskets:
+            self._session.expunge(customer_basket_orm)
+
+        return customers_baskets
 
     def create(self, buyer_id: hints.BuyerId) -> None:
         new_customer_basket_orm = CustomerBasketORM(

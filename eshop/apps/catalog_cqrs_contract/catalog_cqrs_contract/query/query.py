@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, final
 
 from attrs import define
 
@@ -11,6 +11,7 @@ from .query_response import CatalogItemDTO
 __all__ = ('CatalogItemsByIdsQuery', )
 
 
+@final
 @define
 class CatalogItemsByIdsQuery(Query[List[CatalogItemDTO]]):
 

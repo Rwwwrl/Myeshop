@@ -1,18 +1,16 @@
-from catalog.domain.models import CatalogBrand, CatalogItem, CatalogType
+from catalog.infrastructure.persistance.postgres.models import CatalogBrandORM, CatalogItemORM, CatalogTypeORM
 
 from framework.sqlalchemy.session import Session
 
 
 def create_catalog_items() -> None:
+    catalog_type1 = CatalogTypeORM(type='type1')
+    catalog_type2 = CatalogTypeORM(type='type2')
 
-    catalog_type1 = CatalogType(id=1, type='type1')
-    catalog_type2 = CatalogType(id=2, type='type2')
+    catalog_brand1 = CatalogBrandORM(brand='brand1')
+    catalog_brand2 = CatalogBrandORM(brand='brand2')
 
-    catalog_brand1 = CatalogBrand(id=1, brand='brand1')
-    catalog_brand2 = CatalogBrand(id=2, brand='brand2')
-
-    catalog_item1 = CatalogItem(
-        id=1,
+    catalog_item1 = CatalogItemORM(
         name='name1',
         description='description1',
         price=10,
@@ -25,8 +23,7 @@ def create_catalog_items() -> None:
         maxstock_threshold=15,
         on_reorder=False,
     )
-    catalog_item2 = CatalogItem(
-        id=2,
+    catalog_item2 = CatalogItemORM(
         name='name2',
         description='description2',
         price=20,
@@ -39,8 +36,7 @@ def create_catalog_items() -> None:
         maxstock_threshold=18,
         on_reorder=False,
     )
-    catalog_item3 = CatalogItem(
-        id=3,
+    catalog_item3 = CatalogItemORM(
         name='name3',
         description='description3',
         price=30,
@@ -53,8 +49,7 @@ def create_catalog_items() -> None:
         maxstock_threshold=20,
         on_reorder=False,
     )
-    catalog_item4 = CatalogItem(
-        id=4,
+    catalog_item4 = CatalogItemORM(
         name='name4',
         description='description4',
         price=40,

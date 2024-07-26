@@ -32,4 +32,4 @@ class Event(IEvent, BaseAsyncRequest):
         if not bus:
             bus = CQRSBusSingletoneFactory.create()
 
-        return bus.publish(query=self)
+        return bus.publish(event=self)

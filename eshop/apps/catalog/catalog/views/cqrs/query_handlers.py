@@ -4,9 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
 from catalog import hints
-from catalog.domain.models import (
-    CatalogItem as CatalogItemORM,
-)
+from catalog.infrastructure.persistance.postgres.models import CatalogItemORM
 
 from catalog_cqrs_contract.query import CatalogItemsByIdsQuery
 from catalog_cqrs_contract.query.query_response import (
@@ -19,10 +17,6 @@ from framework.cqrs.query import IQueryHandler
 from framework.sqlalchemy.session import Session
 
 __all__ = ("CatalogItemByIdQueryHandler", )
-
-
-class NotFoundError(Exception):
-    pass
 
 
 @CatalogItemsByIdsQuery.handler
