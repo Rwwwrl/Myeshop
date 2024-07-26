@@ -9,7 +9,7 @@ from basket.infrastructure.persistence.postgres.customer_basket.postgres_custome
     PostgresCustomerBasketRepository,
 )
 
-from framework.fastapi.dependencies.get_user_from_request import get_user_from_http_request
+from framework.fastapi.dependencies.get_user_id_from_http_request import get_user_id_from_http_request
 from framework.sqlalchemy.session import Session
 
 from user_identity_cqrs_contract.hints import UserId
@@ -40,7 +40,7 @@ def _orm_to_dto(customer_basket_orm: CustomerBasketORM) -> CustomerBasketDTO:
 
 
 @api_router.get('/customer_basket/')
-def get_customer_basket(user_id: Annotated[UserId, Depends(get_user_from_http_request)]) -> CustomerBasketDTO:
+def get_customer_basket(user_id: Annotated[UserId, Depends(get_user_id_from_http_request)]) -> CustomerBasketDTO:
     with Session() as session:
         customer_basket_repository = PostgresCustomerBasketRepository(session=session)
         try:

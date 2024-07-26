@@ -8,7 +8,7 @@ from basket_cqrs_contract.customer_basket_dto import BasketItemDTO, CustomerBask
 from basket_cqrs_contract.query import CustomerBasketQuery
 
 from framework.cqrs.exceptions import CQRSException
-from framework.fastapi.dependencies.get_user_from_request import get_user_from_http_request
+from framework.fastapi.dependencies.get_user_id_from_http_request import get_user_id_from_http_request
 from framework.fastapi.http_exceptions import BadRequestException
 from framework.fastapi.http_exceptions import InternalServerError
 
@@ -57,7 +57,7 @@ def update_quantities(
     request_data: UpdateBasketItemsRequest,
     user_id: Annotated[
         user_identity_cqrs_contract.hints.UserId,
-        Depends(get_user_from_http_request),
+        Depends(get_user_id_from_http_request),
     ],
 ) -> Response:
     customer_basket = CustomerBasketQuery(customer_id=user_id).fetch()

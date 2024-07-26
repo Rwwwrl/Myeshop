@@ -9,7 +9,7 @@ from basket_cqrs_contract.query import CustomerBasketQuery
 from catalog_cqrs_contract.query import CatalogItemsByIdsQuery
 
 from framework.cqrs.exceptions import CQRSException
-from framework.fastapi.dependencies.get_user_from_request import get_user_from_http_request
+from framework.fastapi.dependencies.get_user_id_from_http_request import get_user_id_from_http_request
 from framework.fastapi.http_exceptions import InternalServerError
 
 import user_identity_cqrs_contract.hints
@@ -25,7 +25,7 @@ def add_basket_item(
     request_data: AddBasketItemRequest,
     user_id: Annotated[
         user_identity_cqrs_contract.hints.UserId,
-        Depends(get_user_from_http_request),
+        Depends(get_user_id_from_http_request),
     ],
 ) -> Response:
     """
