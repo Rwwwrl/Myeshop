@@ -7,7 +7,7 @@ from catalog import hints
 from catalog.api_router import api_router
 from catalog.infrastructure.persistance.postgres.models import CatalogItemORM
 
-from catalog_cqrs_contract.event import CatalogItemHasBeenDeleted
+from catalog_cqrs_contract.event import CatalogItemHasBeenDeletedEvent
 
 from framework.sqlalchemy.session import Session
 
@@ -35,7 +35,7 @@ def delete_item(catalog_item_id: hints.CatalogItemId) -> Response:
             )
 
     if is_catalog_item_exists:
-        event = CatalogItemHasBeenDeleted(id=catalog_item_id)
+        event = CatalogItemHasBeenDeletedEvent(catalog_item_id=catalog_item_id)
         with Session() as session:
             with session.begin():
                 _delete_catalog_item_from_db(session=session, catalog_item_id=catalog_item_id)

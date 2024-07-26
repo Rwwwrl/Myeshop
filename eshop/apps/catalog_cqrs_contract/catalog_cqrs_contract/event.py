@@ -15,5 +15,5 @@ class CatalogItemPriceChangedEvent(Event):
 
 
 @final
-class CatalogItemHasBeenDeleted(Event):
-    id: hints.CatalogItemId
+class CatalogItemHasBeenDeletedEvent(Event):
+    catalog_item_id: hints.CatalogItemId

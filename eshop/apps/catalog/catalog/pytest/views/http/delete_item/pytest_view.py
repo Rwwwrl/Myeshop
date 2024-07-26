@@ -8,7 +8,7 @@ from catalog import hints
 from catalog.app_config import CatalogAppConfig
 from catalog.views.http.delete_item import delete_item, view
 
-from catalog_cqrs_contract.event import CatalogItemHasBeenDeleted
+from catalog_cqrs_contract.event import CatalogItemHasBeenDeletedEvent
 
 from framework.for_pytests.for_testing_http_views import ExpectedHttpResponse
 from framework.for_pytests.test_case import TestCase
@@ -17,7 +17,7 @@ from framework.for_pytests.test_class import TestClass
 
 class TestCaseCatalogItemExists(TestCase['TestDeleteItemView']):
     catalog_item_id: hints.CatalogItemId
-    expected_event_init_args: CatalogItemHasBeenDeleted
+    expected_event_init_args: CatalogItemHasBeenDeletedEvent
     expected_response: ExpectedHttpResponse
 
 
@@ -29,7 +29,7 @@ class TestCaseCatalogItemDoesNotExist(TestCase['TestDeleteItemView']):
 @pytest.fixture(scope='session')
 def test_case_catalog_item_exists() -> TestCaseCatalogItemExists:
     catalog_item_id = 1
-    expected_event_init_args = CatalogItemHasBeenDeleted(id=1)
+    expected_event_init_args = CatalogItemHasBeenDeletedEvent(catalog_item_id=1)
     return TestCaseCatalogItemExists(
         catalog_item_id=catalog_item_id,
         expected_event_init_args=expected_event_init_args,
@@ -60,8 +60,8 @@ class TestUrlToView(TestClass[delete_item]):
 
 
 class TestDeleteItemView(TestClass[delete_item]):
-    @patch.object(CatalogItemHasBeenDeleted, '__init__')
-    @patch.object(CatalogItemHasBeenDeleted, 'publish')
+    @patch.object(CatalogItemHasBeenDeletedEvent, '__init__')
+    @patch.object(CatalogItemHasBeenDeletedEvent, 'publish')
     @patch.object(view, '_delete_catalog_item_from_db')
     @patch.object(view, '_check_if_catalog_item_exists')
     def test_case_catalog_item_exists(
@@ -89,7 +89,7 @@ class TestDeleteItemView(TestClass[delete_item]):
             **test_case.expected_event_init_args.model_dump(),
         )
 
-    @patch.object(CatalogItemHasBeenDeleted, '__init__')
+    @patch.object(CatalogItemHasBeenDeletedEvent, '__init__')
     @patch.object(view, '_check_if_catalog_item_exists')
     def test_case_catalog_item_does_not_exist(
         self,

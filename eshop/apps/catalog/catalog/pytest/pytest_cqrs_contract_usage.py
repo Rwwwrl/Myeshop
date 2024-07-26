@@ -1,6 +1,6 @@
 from catalog_cqrs_contract import hints
 from catalog_cqrs_contract.event import (
-    CatalogItemHasBeenDeleted,
+    CatalogItemHasBeenDeletedEvent,
     CatalogItemPriceChangedEvent,
 )
 
@@ -14,6 +14,6 @@ class TestCatalogItemPriceChangedEvent(ITestEventContract[CatalogItemPriceChange
         assert_attribute(CatalogItemPriceChangedEvent, 'new_price', float)
 
 
-class TestCatalogItemHasBeenDeleted(ITestEventContract[CatalogItemHasBeenDeleted]):
+class TestCatalogItemHasBeenDeleted(ITestEventContract[CatalogItemHasBeenDeletedEvent]):
     def test_event_contract(self) -> None:
-        assert_attribute(CatalogItemHasBeenDeleted, 'id', hints.CatalogItemId)
+        assert_attribute(CatalogItemHasBeenDeletedEvent, 'catalog_item_id', hints.CatalogItemId)
