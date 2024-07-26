@@ -1,3 +1,5 @@
+from typing import final
+
 from eshop import settings
 
 from framework.cqrs.query.handler import IQueryHandler
@@ -12,7 +14,7 @@ from user_identity.services.jwt_encoder_decoder import DecodeError
 
 from user_identity_cqrs_contract.hints import UserId
 from user_identity_cqrs_contract.query import (
-    UserIdFromJWTTokenQuery,
+    UserFromJWTTokenQuery,
     UserQuery,
 )
 from user_identity_cqrs_contract.query.query import (
@@ -21,24 +23,34 @@ from user_identity_cqrs_contract.query.query import (
 )
 from user_identity_cqrs_contract.query.query_response import (
     UserDTO,
+    UserIdWithRoleDTO,
+    UserRoleEnum,
 )
 
 __all__ = ('UserFromJWTTokenQueryHandler', )
 
 
-@UserIdFromJWTTokenQuery.handler
+@final
+@UserFromJWTTokenQuery.handler
 class UserFromJWTTokenQueryHandler(IQueryHandler):
-    def handle(self, query: UserIdFromJWTTokenQuery) -> UserId:
+    def handle(self, query: UserFromJWTTokenQuery) -> UserId:
         jwt_encoder_decoder = dependency_container.jwt_encoder_decoder_factory()
         try:
-            return jwt_encoder_decoder.decode(
+            user_id = jwt_encoder_decoder.decode(
                 token=query.jwt_token,
                 secret=settings.SETTINGS.user_identity_service.secret,
             )
         except DecodeError:
             raise InvalidJwtTokenError(f'jwt_token = {query.jwt_token}')
 
+        with Session() as session:
+            user_repository = UserRepository(session=session)
+            with session.begin():
+                user = user_repository.get_by_id(id=user_id)
+                return UserIdWithRoleDTO(id=user.id, role=UserRoleEnum[user.role.value])
 
+
+@final
 @UserQuery.handler
 class UserQueryHandler(IQueryHandler):
     def handle(self, query: UserQuery) -> UserDTO:

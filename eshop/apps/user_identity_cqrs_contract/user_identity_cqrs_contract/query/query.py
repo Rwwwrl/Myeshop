@@ -7,10 +7,10 @@ from framework.cqrs.query.query import Query
 
 from user_identity_cqrs_contract.hints import JWTToken, UserId
 
-from .query_response import UserDTO
+from .query_response import UserDTO, UserIdWithRoleDTO
 
 __all__ = (
-    'UserIdFromJWTTokenQuery',
+    'UserFromJWTTokenQuery',
     'UserQuery',
 )
 
@@ -22,7 +22,7 @@ class InvalidJwtTokenError(PossibleExpectedError):
 
 @final
 @define
-class UserIdFromJWTTokenQuery(Query[UserId]):
+class UserFromJWTTokenQuery(Query[UserIdWithRoleDTO]):
 
     jwt_token: JWTToken
 

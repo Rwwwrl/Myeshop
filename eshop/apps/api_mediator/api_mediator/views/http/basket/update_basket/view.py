@@ -12,7 +12,7 @@ from catalog_cqrs_contract.query import CatalogItemsByIdsQuery
 from catalog_cqrs_contract.query.query_response import CatalogItemDTO
 
 from framework.cqrs.exceptions import CQRSException
-from framework.fastapi.dependencies.get_user_from_request import get_user_from_http_request
+from framework.fastapi.dependencies.get_user_id_from_http_request import get_user_id_from_http_request
 from framework.fastapi.http_exceptions import BadRequestException, InternalServerError
 
 import user_identity_cqrs_contract.hints
@@ -68,7 +68,7 @@ def update_basket(
     request_data: UpdateBasketRequestData,
     user_id: Annotated[
         user_identity_cqrs_contract.hints.UserId,
-        Depends(get_user_from_http_request),
+        Depends(get_user_id_from_http_request),
     ],
 ) -> Response:
     if not request_data.basket_items:
