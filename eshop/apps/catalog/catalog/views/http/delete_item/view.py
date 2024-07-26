@@ -39,7 +39,6 @@ def delete_item(catalog_item_id: hints.CatalogItemId) -> Response:
         with Session() as session:
             with session.begin():
                 _delete_catalog_item_from_db(session=session, catalog_item_id=catalog_item_id)
-                # TODO реализовать обработчик
                 event.publish()
 
     return Response(status_code=status.HTTP_200_OK)

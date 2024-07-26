@@ -7,7 +7,10 @@ from basket_cqrs_contract.event import UserCheckoutAcceptedEvent
 from basket_cqrs_contract.query import CustomerBasketQuery
 
 import catalog_cqrs_contract.hints
-from catalog_cqrs_contract.event import CatalogItemPriceChangedEvent
+from catalog_cqrs_contract.event import (
+    CatalogItemHasBeenDeletedEvent,
+    CatalogItemPriceChangedEvent,
+)
 
 from framework.for_pytests.for_testing_cqrs_contract_usage import (
     ITestEventContract,
@@ -52,6 +55,11 @@ class TestCatalogItemPriceChangedEvent(ITestEventContract[CatalogItemPriceChange
     def test_event_contract(self) -> None:
         assert_attribute(CatalogItemPriceChangedEvent, 'catalog_item_id', catalog_cqrs_contract.hints.CatalogItemId)
         assert_attribute(CatalogItemPriceChangedEvent, 'new_price', float)
+
+
+class TestCatalogItemHasBeenDeletedEvent(ITestEventContract[CatalogItemHasBeenDeletedEvent]):
+    def test_event_contract(self) -> None:
+        assert_attribute(CatalogItemHasBeenDeletedEvent, 'catalog_item_id', catalog_cqrs_contract.hints.CatalogItemId)
 
 
 class TestUserQuery(ITestQueryContract[UserQuery]):
