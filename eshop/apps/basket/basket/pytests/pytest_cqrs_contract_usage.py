@@ -6,6 +6,9 @@ from basket_cqrs_contract.customer_basket_dto import BasketItemDTO, CustomerBask
 from basket_cqrs_contract.event import UserCheckoutAcceptedEvent
 from basket_cqrs_contract.query import CustomerBasketQuery
 
+import catalog_cqrs_contract.hints
+from catalog_cqrs_contract.event import CatalogItemPriceChangedEvent
+
 from framework.for_pytests.for_testing_cqrs_contract_usage import (
     ITestEventContract,
     ITestQueryContract,
@@ -43,6 +46,12 @@ class TestUserCheckoutAcceptedEvent(ITestEventContract[UserCheckoutAcceptedEvent
         assert_attribute(BasketItemDTO, 'unit_price', basket_cqrs_contract.hints.Price)
         assert_attribute(BasketItemDTO, 'quantity', basket_cqrs_contract.hints.Quantity)
         assert_attribute(BasketItemDTO, 'picture_url', basket_cqrs_contract.hints.PictureUrl)
+
+
+class TestCatalogItemPriceChangedEvent(ITestEventContract[CatalogItemPriceChangedEvent]):
+    def test_event_contract(self) -> None:
+        assert_attribute(CatalogItemPriceChangedEvent, 'catalog_item_id', catalog_cqrs_contract.hints.CatalogItemId)
+        assert_attribute(CatalogItemPriceChangedEvent, 'new_price', float)
 
 
 class TestUserQuery(ITestQueryContract[UserQuery]):
