@@ -1,4 +1,4 @@
-from fastapi import Response, status
+from fastapi import Depends, Response, status
 
 from pydantic.types import PositiveFloat, PositiveInt
 
@@ -10,6 +10,7 @@ from catalog.api_router import api_router
 from catalog.infrastructure.persistance.postgres.models import CatalogItemORM
 
 from framework.common.dto import DTO
+from framework.fastapi.dependencies.admin_required import admin_required
 from framework.fastapi.http_exceptions import BadRequestException
 from framework.sqlalchemy.session import Session
 
@@ -53,8 +54,7 @@ def _new_catalog_item(new_catalog_item_request_data: NewCatalogItemRequestData) 
     )
 
 
-# TODO: доступ к эндпоинту должен иметь только админ
-@api_router.post('/items/')
+@api_router.post('/items/', dependencies=[Depends(admin_required)])
 def create_item(new_catalog_item_request_data: NewCatalogItemRequestData) -> Response:
     new_catalog_item = _new_catalog_item(new_catalog_item_request_data=new_catalog_item_request_data)
 

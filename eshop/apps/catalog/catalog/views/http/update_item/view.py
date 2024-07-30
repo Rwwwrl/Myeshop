@@ -1,4 +1,4 @@
-from fastapi import Response, status
+from fastapi import Depends, Response, status
 
 from pydantic.types import PositiveFloat, PositiveInt
 
@@ -13,6 +13,7 @@ from catalog.infrastructure.persistance.postgres.models import CatalogItemORM
 from catalog_cqrs_contract.event import CatalogItemPriceChangedEvent
 
 from framework.common.dto import DTO
+from framework.fastapi.dependencies.admin_required import admin_required
 from framework.fastapi.http_exceptions import BadRequestException
 from framework.sqlalchemy.session import Session
 
@@ -95,8 +96,7 @@ def _updated_catalog_item(catalog_item_request_data: CatalogItemRequestData) -> 
     )
 
 
-# TODO: доступ к эндпоинту должен иметь только админ
-@api_router.put('/items/')
+@api_router.put('/items/', dependencies=[Depends(admin_required)])
 def update_item(catalog_item_request_data: CatalogItemRequestData) -> Response:
     try:
         current_catalog_item_price = _fetch_current_catalog_item_price(catalog_item_id=catalog_item_request_data.id)
@@ -121,7 +121,6 @@ def update_item(catalog_item_request_data: CatalogItemRequestData) -> Response:
                 )
 
             if current_catalog_item_price != catalog_item_request_data.price:
-                # TODO: реализовать обработчик
                 CatalogItemPriceChangedEvent(
                     catalog_item_id=updated_catalog_item.id,
                     old_price=current_catalog_item_price,

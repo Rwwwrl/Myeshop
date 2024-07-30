@@ -1,4 +1,4 @@
-from fastapi import Response, status
+from fastapi import Depends, Response, status
 
 from sqlalchemy import delete, text
 from sqlalchemy.orm import Session as lib_Session
@@ -9,6 +9,7 @@ from catalog.infrastructure.persistance.postgres.models import CatalogItemORM
 
 from catalog_cqrs_contract.event import CatalogItemHasBeenDeletedEvent
 
+from framework.fastapi.dependencies.admin_required import admin_required
 from framework.sqlalchemy.session import Session
 
 __all__ = ('delete_item', )
@@ -24,8 +25,7 @@ def _delete_catalog_item_from_db(session: lib_Session, catalog_item_id: hints.Ca
     session.execute(stmt)
 
 
-# TODO: доступ к эндпоинту должен иметь только админ
-@api_router.delete('/items/')
+@api_router.delete('/items/', dependencies=[Depends(admin_required)])
 def delete_item(catalog_item_id: hints.CatalogItemId) -> Response:
     with Session() as session:
         with session.begin():
