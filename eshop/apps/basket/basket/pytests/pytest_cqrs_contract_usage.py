@@ -12,6 +12,7 @@ from catalog_cqrs_contract.event import (
     CatalogItemPriceChangedEvent,
 )
 
+from framework.cqrs.context import InsideSqlachemySessionContext
 from framework.for_pytests.for_testing_cqrs_contract_usage import (
     ITestEventContract,
     ITestQueryContract,
@@ -55,11 +56,13 @@ class TestCatalogItemPriceChangedEvent(ITestEventContract[CatalogItemPriceChange
     def test_event_contract(self) -> None:
         assert_attribute(CatalogItemPriceChangedEvent, 'catalog_item_id', catalog_cqrs_contract.hints.CatalogItemId)
         assert_attribute(CatalogItemPriceChangedEvent, 'new_price', float)
+        assert_attribute(CatalogItemPriceChangedEvent, 'session', InsideSqlachemySessionContext)
 
 
 class TestCatalogItemHasBeenDeletedEvent(ITestEventContract[CatalogItemHasBeenDeletedEvent]):
     def test_event_contract(self) -> None:
         assert_attribute(CatalogItemHasBeenDeletedEvent, 'catalog_item_id', catalog_cqrs_contract.hints.CatalogItemId)
+        assert_attribute(CatalogItemHasBeenDeletedEvent, 'session', InsideSqlachemySessionContext)
 
 
 class TestUserQuery(ITestQueryContract[UserQuery]):
