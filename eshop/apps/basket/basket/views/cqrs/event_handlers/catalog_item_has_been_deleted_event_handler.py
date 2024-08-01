@@ -8,7 +8,6 @@ from basket.infrastructure.persistence.postgres.customer_basket import (
 from catalog_cqrs_contract.event import CatalogItemHasBeenDeletedEvent
 
 from framework.cqrs.event import IEventHandler
-from framework.sqlalchemy.session import Session
 
 __all__ = ('CatalogItemHasBeenDeletedEventHandler', )
 
@@ -17,10 +16,8 @@ __all__ = ('CatalogItemHasBeenDeletedEventHandler', )
 @CatalogItemHasBeenDeletedEvent.handler
 class CatalogItemHasBeenDeletedEventHandler(IEventHandler):
     def handle(self, event: CatalogItemHasBeenDeletedEvent) -> None:
-        with Session() as session:
-            customer_basket_repository = PostgresCustomerBasketRepository(session=session)
-            with session.begin():
-                customers_baskets = customer_basket_repository.all()
+        customer_basket_repository = PostgresCustomerBasketRepository(session=event.context.session)
+        customers_baskets = customer_basket_repository.all()
 
         updated_customers_baskets: List[CustomerBasketORM] = []
         for customer_basket in customers_baskets:
@@ -34,8 +31,5 @@ class CatalogItemHasBeenDeletedEventHandler(IEventHandler):
             customer_basket.data.basket_items = updated_list_of_basket_items
 
         if updated_customers_baskets:
-            with Session() as session:
-                customer_basket_repository = PostgresCustomerBasketRepository(session=session)
-                with session.begin():
-                    for customer_basket in updated_customers_baskets:
-                        customer_basket_repository.save(customer_basket_orm=customer_basket)
+            for customer_basket in updated_customers_baskets:
+                customer_basket_repository.save(customer_basket_orm=customer_basket)

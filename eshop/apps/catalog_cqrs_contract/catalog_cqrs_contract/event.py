@@ -4,6 +4,7 @@ from pydantic.types import PositiveFloat
 
 from catalog_cqrs_contract import hints
 
+from framework.cqrs.context import InsideSqlachemySessionContext
 from framework.cqrs.event import Event
 
 
@@ -17,3 +18,5 @@ class CatalogItemPriceChangedEvent(Event):
 @final
 class CatalogItemHasBeenDeletedEvent(Event):
     catalog_item_id: hints.CatalogItemId
+
+    context: InsideSqlachemySessionContext
