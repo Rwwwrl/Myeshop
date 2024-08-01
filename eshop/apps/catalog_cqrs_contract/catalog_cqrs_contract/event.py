@@ -14,6 +14,8 @@ class CatalogItemPriceChangedEvent(Event):
     old_price: PositiveFloat
     new_price: PositiveFloat
 
+    context: InsideSqlachemySessionContext
+
 
 @final
 class CatalogItemHasBeenDeletedEvent(Event):
