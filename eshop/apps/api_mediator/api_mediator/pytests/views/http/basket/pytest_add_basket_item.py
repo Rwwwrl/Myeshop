@@ -1,12 +1,10 @@
-from typing import Any, List, cast
+from typing import Any, List
 
 from fastapi import HTTPException, status
 
 from mock import Mock, patch
 
 import pytest
-
-from typing_extensions import TypedDict
 
 from api_mediator.views.http.basket.add_basket_item import add_basket_item
 from api_mediator.views.http.basket.add_basket_item.dto import AddBasketItemRequest
@@ -26,17 +24,14 @@ from framework.for_pytests.test_class import TestClass
 import user_identity_cqrs_contract.hints
 
 
-class ExpectedUpdateCustomerBasketCommandInitCallArgs(TypedDict):
-    customer_basket: CustomerBasketDTO
-
-
 class TestCaseBasketDoesNotHaveBasketItem(TestCase['TestViewAddBasketItem']):
     request_data: AddBasketItemRequest
     user_id: user_identity_cqrs_contract.hints.UserId
     mock__customer_basket_query__fetch__return_value: CustomerBasketDTO
     mock__catalog_items_by_ids_query__fetch__return_value: List[
-        catalog_cqrs_contract.query.query_response.CatalogItemDTO]
-    expected_update_customer_basket_command_init_call_args: ExpectedUpdateCustomerBasketCommandInitCallArgs
+        catalog_cqrs_contract.query.query_response.CatalogItemDTO,
+    ]
+    expected_executed_command: UpdateCustomerBasketCommand
     expected_http_response: ExpectedHttpResponse
 
 
@@ -44,7 +39,7 @@ class TestCaseBasketAlreadyHaveBasketItem(TestCase['TestViewAddBasketItem']):
     request_data: AddBasketItemRequest
     user_id: user_identity_cqrs_contract.hints.UserId
     mock__customer_basket_query__fetch__return_value: CustomerBasketDTO
-    expected_update_customer_basket_command_init_call_args: ExpectedUpdateCustomerBasketCommandInitCallArgs
+    expected_executed_command: UpdateCustomerBasketCommand
     expected_http_response: ExpectedHttpResponse
 
 
@@ -52,7 +47,7 @@ class TestCaseUpdateCustomerBasketCommandExecuteCqrsException(TestCase['TestView
     request_data: AddBasketItemRequest
     user_id: user_identity_cqrs_contract.hints.UserId
     mock__customer_basket_query__fetch__return_value: CustomerBasketDTO
-    expected_update_customer_basket_command_init_call_args: ExpectedUpdateCustomerBasketCommandInitCallArgs
+    expected_executed_command: UpdateCustomerBasketCommand
     expected_http_response_exception: ExpectedHttpResponseException
 
 
@@ -110,45 +105,44 @@ def test_case_basket_does_not_have_basket_item() -> TestCaseBasketDoesNotHaveBas
         ),
     ]
 
-    expected_update_customer_basket_command_init_call_args: ExpectedUpdateCustomerBasketCommandInitCallArgs = {
-        'customer_basket':
-            CustomerBasketDTO(
-                buyer_id=1,
-                basket_items=[
-                    BasketItemDTO(
-                        id=1,
-                        product_id=1,
-                        product_name='product_name1',
-                        unit_price=10,
-                        quantity=5,
-                        picture_url='picture_url1',
-                    ),
-                    BasketItemDTO(
-                        id=2,
-                        product_id=2,
-                        product_name='product_name2',
-                        unit_price=20,
-                        quantity=1,
-                        picture_url='picture_url2',
-                    ),
-                    BasketItemDTO(
-                        id=None,
-                        product_id=3,
-                        product_name='product_name3',
-                        unit_price=10,
-                        quantity=3,
-                        picture_url='picture_url3',
-                    ),
-                ],
-            ),
-    }
+    expected_executed_command = UpdateCustomerBasketCommand(
+        customer_basket=CustomerBasketDTO(
+            buyer_id=1,
+            basket_items=[
+                BasketItemDTO(
+                    id=1,
+                    product_id=1,
+                    product_name='product_name1',
+                    unit_price=10,
+                    quantity=5,
+                    picture_url='picture_url1',
+                ),
+                BasketItemDTO(
+                    id=2,
+                    product_id=2,
+                    product_name='product_name2',
+                    unit_price=20,
+                    quantity=1,
+                    picture_url='picture_url2',
+                ),
+                BasketItemDTO(
+                    id=None,
+                    product_id=3,
+                    product_name='product_name3',
+                    unit_price=10,
+                    quantity=3,
+                    picture_url='picture_url3',
+                ),
+            ],
+        ),
+    )
 
     return TestCaseBasketDoesNotHaveBasketItem(
         request_data=request_data,
         user_id=user_id,
         mock__customer_basket_query__fetch__return_value=mock__customer_basket_query__fetch__return_value,
         mock__catalog_items_by_ids_query__fetch__return_value=mock__catalog_items_by_ids_query__fetch__return_value,
-        expected_update_customer_basket_command_init_call_args=expected_update_customer_basket_command_init_call_args,
+        expected_executed_command=expected_executed_command,
         expected_http_response=ExpectedHttpResponse(
             status_code=status.HTTP_200_OK,
             body=b'',
@@ -187,36 +181,35 @@ def test_case_basket_already_have_basket_item() -> TestCaseBasketAlreadyHaveBask
         ],
     )
 
-    expected_update_customer_basket_command_init_call_args: ExpectedUpdateCustomerBasketCommandInitCallArgs = {
-        'customer_basket':
-            CustomerBasketDTO(
-                buyer_id=1,
-                basket_items=[
-                    BasketItemDTO(
-                        id=1,
-                        product_id=1,
-                        product_name='product_name1',
-                        unit_price=10,
-                        quantity=8,
-                        picture_url='picture_url1',
-                    ),
-                    BasketItemDTO(
-                        id=2,
-                        product_id=2,
-                        product_name='product_name2',
-                        unit_price=20,
-                        quantity=1,
-                        picture_url='picture_url2',
-                    ),
-                ],
-            ),
-    }
+    expected_executed_command = UpdateCustomerBasketCommand(
+        customer_basket=CustomerBasketDTO(
+            buyer_id=1,
+            basket_items=[
+                BasketItemDTO(
+                    id=1,
+                    product_id=1,
+                    product_name='product_name1',
+                    unit_price=10,
+                    quantity=8,
+                    picture_url='picture_url1',
+                ),
+                BasketItemDTO(
+                    id=2,
+                    product_id=2,
+                    product_name='product_name2',
+                    unit_price=20,
+                    quantity=1,
+                    picture_url='picture_url2',
+                ),
+            ],
+        ),
+    )
 
     return TestCaseBasketAlreadyHaveBasketItem(
         request_data=request_data,
         user_id=user_id,
         mock__customer_basket_query__fetch__return_value=mock__customer_basket_query__fetch__return_value,
-        expected_update_customer_basket_command_init_call_args=expected_update_customer_basket_command_init_call_args,
+        expected_executed_command=expected_executed_command,
         expected_http_response=ExpectedHttpResponse(
             status_code=status.HTTP_200_OK,
             body=b'',
@@ -255,36 +248,35 @@ def test_case_update_customer_basket_command_execute_cqrs_exception() -> TestCas
         ],
     )
 
-    expected_update_customer_basket_command_init_call_args: ExpectedUpdateCustomerBasketCommandInitCallArgs = {
-        'customer_basket':
-            CustomerBasketDTO(
-                buyer_id=1,
-                basket_items=[
-                    BasketItemDTO(
-                        id=1,
-                        product_id=1,
-                        product_name='product_name1',
-                        unit_price=10,
-                        quantity=8,
-                        picture_url='picture_url1',
-                    ),
-                    BasketItemDTO(
-                        id=2,
-                        product_id=2,
-                        product_name='product_name2',
-                        unit_price=20,
-                        quantity=1,
-                        picture_url='picture_url2',
-                    ),
-                ],
-            ),
-    }
+    expected_executed_command = UpdateCustomerBasketCommand(
+        customer_basket=CustomerBasketDTO(
+            buyer_id=1,
+            basket_items=[
+                BasketItemDTO(
+                    id=1,
+                    product_id=1,
+                    product_name='product_name1',
+                    unit_price=10,
+                    quantity=8,
+                    picture_url='picture_url1',
+                ),
+                BasketItemDTO(
+                    id=2,
+                    product_id=2,
+                    product_name='product_name2',
+                    unit_price=20,
+                    quantity=1,
+                    picture_url='picture_url2',
+                ),
+            ],
+        ),
+    )
 
     return TestCaseUpdateCustomerBasketCommandExecuteCqrsException(
         request_data=request_data,
         user_id=user_id,
         mock__customer_basket_query__fetch__return_value=mock__customer_basket_query__fetch__return_value,
-        expected_update_customer_basket_command_init_call_args=expected_update_customer_basket_command_init_call_args,
+        expected_executed_command=expected_executed_command,
         expected_http_response_exception=ExpectedHttpResponseException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f'failed to update basket due to {UpdateCustomerBasketCommand.__name__} failed',
@@ -297,8 +289,7 @@ class TestViewAddBasketItem(TestClass[add_basket_item]):
     def _assert(fact: Any, expected: Any) -> None:
         assert fact == expected
 
-    @patch.object(UpdateCustomerBasketCommand, '__init__')
-    @patch.object(UpdateCustomerBasketCommand, 'execute')
+    @patch.object(UpdateCustomerBasketCommand, 'execute', autospec=True)
     @patch.object(CatalogItemsByIdsQuery, 'fetch')
     @patch.object(CustomerBasketQuery, 'fetch')
     def test_case_basket_does_not_have_basket_item(
@@ -306,7 +297,6 @@ class TestViewAddBasketItem(TestClass[add_basket_item]):
         mock__customer_basket_query__fetch: Mock,
         mock__catalog_items_by_ids_query__fetch: Mock,
         mock__update_customer_basket_command__execute: Mock,
-        mock__update_customer_basket_command__init: Mock,
         test_case_basket_does_not_have_basket_item: TestCaseBasketDoesNotHaveBasketItem,
     ):
         test_case = test_case_basket_does_not_have_basket_item
@@ -318,32 +308,29 @@ class TestViewAddBasketItem(TestClass[add_basket_item]):
         )
 
         mock__update_customer_basket_command__execute.return_value = None
-        mock__update_customer_basket_command__init.return_value = None
 
         response = add_basket_item(request_data=test_case.request_data, user_id=test_case.user_id)
         assert response.status_code == test_case.expected_http_response.status_code
         assert response.body == test_case.expected_http_response.body
 
-        call = mock__update_customer_basket_command__init.call_args_list[0]
-        call_kwargs__customer_basket_arg = cast(CustomerBasketDTO, call._get_call_arguments()[1]['customer_basket'])
-        expected_customer_basket_arg = (
-            test_case.expected_update_customer_basket_command_init_call_args['customer_basket']
+        fact_called_command: UpdateCustomerBasketCommand = (
+            mock__update_customer_basket_command__execute.call_args[0][0]
         )
-        assert call_kwargs__customer_basket_arg.buyer_id == expected_customer_basket_arg.buyer_id
+        fact_customer_basket_arg = fact_called_command.customer_basket
+        expected_customer_basket_arg = test_case.expected_executed_command.customer_basket
+        assert fact_customer_basket_arg.buyer_id == expected_customer_basket_arg.buyer_id
         self._assert(
-            set(call_kwargs__customer_basket_arg.basket_items),
+            set(fact_customer_basket_arg.basket_items),
             set(expected_customer_basket_arg.basket_items),
         )
         mock__update_customer_basket_command__execute.assert_called_once()
 
-    @patch.object(UpdateCustomerBasketCommand, '__init__')
-    @patch.object(UpdateCustomerBasketCommand, 'execute')
+    @patch.object(UpdateCustomerBasketCommand, 'execute', autospec=True)
     @patch.object(CustomerBasketQuery, 'fetch')
     def test_case_basket_already_have_basket_item(
         self,
         mock__customer_basket_query__fetch: Mock,
         mock__update_customer_basket_command__execute: Mock,
-        mock__update_customer_basket_command__init: Mock,
         test_case_basket_already_have_basket_item: TestCaseBasketAlreadyHaveBasketItem,
     ):
         test_case = test_case_basket_already_have_basket_item
@@ -351,32 +338,29 @@ class TestViewAddBasketItem(TestClass[add_basket_item]):
         mock__customer_basket_query__fetch.return_value = test_case.mock__customer_basket_query__fetch__return_value
 
         mock__update_customer_basket_command__execute.return_value = None
-        mock__update_customer_basket_command__init.return_value = None
 
         response = add_basket_item(request_data=test_case.request_data, user_id=test_case.user_id)
         assert response.status_code == test_case.expected_http_response.status_code
         assert response.body == test_case.expected_http_response.body
 
-        call = mock__update_customer_basket_command__init.call_args_list[0]
-        call_kwargs__customer_basket_arg = cast(CustomerBasketDTO, call._get_call_arguments()[1]['customer_basket'])
-        expected_customer_basket_arg = (
-            test_case.expected_update_customer_basket_command_init_call_args['customer_basket']
+        fact_called_command: UpdateCustomerBasketCommand = (
+            mock__update_customer_basket_command__execute.call_args[0][0]
         )
-        assert call_kwargs__customer_basket_arg.buyer_id == expected_customer_basket_arg.buyer_id
+        fact_customer_basket_arg = fact_called_command.customer_basket
+        expected_customer_basket_arg = test_case.expected_executed_command.customer_basket
+        assert fact_customer_basket_arg.buyer_id == expected_customer_basket_arg.buyer_id
         self._assert(
-            set(call_kwargs__customer_basket_arg.basket_items),
+            set(fact_customer_basket_arg.basket_items),
             set(expected_customer_basket_arg.basket_items),
         )
         mock__update_customer_basket_command__execute.assert_called_once()
 
-    @patch.object(UpdateCustomerBasketCommand, '__init__')
-    @patch.object(UpdateCustomerBasketCommand, 'execute')
+    @patch.object(UpdateCustomerBasketCommand, 'execute', autospec=True)
     @patch.object(CustomerBasketQuery, 'fetch')
     def test_case_update_customer_basket_command_execute_cqrs_exception(
         self,
         mock__customer_basket_query__fetch: Mock,
         mock__update_customer_basket_command__execute: Mock,
-        mock__update_customer_basket_command__init: Mock,
         test_case_update_customer_basket_command_execute_cqrs_exception:
         TestCaseUpdateCustomerBasketCommandExecuteCqrsException,
     ):
@@ -385,7 +369,6 @@ class TestViewAddBasketItem(TestClass[add_basket_item]):
         mock__customer_basket_query__fetch.return_value = test_case.mock__customer_basket_query__fetch__return_value
 
         mock__update_customer_basket_command__execute.side_effect = CQRSException
-        mock__update_customer_basket_command__init.return_value = None
 
         try:
             add_basket_item(request_data=test_case.request_data, user_id=test_case.user_id)
@@ -393,14 +376,14 @@ class TestViewAddBasketItem(TestClass[add_basket_item]):
             assert e.status_code == test_case.expected_http_response_exception.status_code
             assert e.detail == test_case.expected_http_response_exception.detail
 
-        call = mock__update_customer_basket_command__init.call_args_list[0]
-        call_kwargs__customer_basket_arg = cast(CustomerBasketDTO, call._get_call_arguments()[1]['customer_basket'])
-        expected_customer_basket_arg = (
-            test_case.expected_update_customer_basket_command_init_call_args['customer_basket']
+        fact_called_command: UpdateCustomerBasketCommand = (
+            mock__update_customer_basket_command__execute.call_args[0][0]
         )
-        assert call_kwargs__customer_basket_arg.buyer_id == expected_customer_basket_arg.buyer_id
+        fact_customer_basket_arg = fact_called_command.customer_basket
+        expected_customer_basket_arg = test_case.expected_executed_command.customer_basket
+        assert fact_customer_basket_arg.buyer_id == expected_customer_basket_arg.buyer_id
         self._assert(
-            set(call_kwargs__customer_basket_arg.basket_items),
+            set(fact_customer_basket_arg.basket_items),
             set(expected_customer_basket_arg.basket_items),
         )
         mock__update_customer_basket_command__execute.assert_called_once()

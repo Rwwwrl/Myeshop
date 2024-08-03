@@ -14,9 +14,11 @@ from catalog.views.http.update_item.view import CatalogItemRequestData, NotFound
 
 from catalog_cqrs_contract.event import CatalogItemPriceChangedEvent
 
+from framework.cqrs.context import InsideSqlachemySessionContext
 from framework.for_pytests.for_testing_http_views import ExpectedHttpResponse
 from framework.for_pytests.test_case import TestCase
 from framework.for_pytests.test_class import TestClass
+from framework.sqlalchemy.session import Session
 
 
 class TestCaseSuccessButPriceWasNotChanged(TestCase['TestUpdateItemView']):
@@ -28,7 +30,7 @@ class TestCaseSuccessButPriceWasNotChanged(TestCase['TestUpdateItemView']):
 class TestCaseSuccessButPriceHasBeenChanged(TestCase['TestUpdateItemView']):
     mock__fetch_current_catalog_item_price__return_value: PositiveFloat
     catalog_item_request_data: CatalogItemRequestData
-    expected_event_init_args: CatalogItemPriceChangedEvent
+    expected_published_event: CatalogItemPriceChangedEvent
     expected_response: ExpectedHttpResponse
 
 
@@ -89,16 +91,17 @@ def test_case_success_but_price_has_been_changed() -> TestCaseSuccessButPriceHas
         on_reorder=False,
     )
 
-    expected_event_init_args = CatalogItemPriceChangedEvent(
+    expected_published_event = CatalogItemPriceChangedEvent(
         catalog_item_id=1,
         old_price=10,
         new_price=15,
+        context=InsideSqlachemySessionContext(session=Session()),
     )
 
     return TestCaseSuccessButPriceHasBeenChanged(
         catalog_item_request_data=catalog_item_request_data,
         mock__fetch_current_catalog_item_price__return_value=mock__fetch_current_catalog_item_price__return_value,
-        expected_event_init_args=expected_event_init_args,
+        expected_published_event=expected_published_event,
         expected_response=ExpectedHttpResponse(
             status_code=status.HTTP_200_OK,
             body=b'',
@@ -159,14 +162,14 @@ class TestUrlToView(TestClass[update_item]):
 
 
 class TestUpdateItemView(TestClass[update_item]):
-    @patch.object(CatalogItemPriceChangedEvent, '__init__')
+    @patch.object(CatalogItemPriceChangedEvent, 'publish')
     @patch.object(view, '_update_catalog_item_in_db')
     @patch.object(view, '_fetch_current_catalog_item_price')
     def test_case_sucess_but_price_was_not_changed(
         self,
         mock__fetch_current_catalog_item_price: Mock,
         mock__update_catalog_item_in_db: Mock,
-        mock__catalog_item_price_changed_event__init__: Mock,
+        mock__catalog_item_price_changed_event__publish: Mock,
         test_case_sucess_but_price_was_not_changed: TestCaseSuccessButPriceWasNotChanged,
     ):
         test_case = test_case_sucess_but_price_was_not_changed
@@ -177,17 +180,17 @@ class TestUpdateItemView(TestClass[update_item]):
 
         mock__update_catalog_item_in_db.return_value = None
 
-        mock__catalog_item_price_changed_event__init__.return_value = None
+        mock__catalog_item_price_changed_event__publish.return_value = None
 
         response = update_item(catalog_item_request_data=test_case.catalog_item_request_data)
         assert response.status_code == test_case.expected_response.status_code
         assert response.body == test_case.expected_response.body
 
         mock__update_catalog_item_in_db.assert_called_once()
-        mock__catalog_item_price_changed_event__init__.assert_not_called()
 
-    @patch.object(CatalogItemPriceChangedEvent, '__init__')
-    @patch.object(CatalogItemPriceChangedEvent, 'publish')
+        mock__catalog_item_price_changed_event__publish.assert_not_called()
+
+    @patch.object(CatalogItemPriceChangedEvent, 'publish', autospec=True)
     @patch.object(view, '_update_catalog_item_in_db')
     @patch.object(view, '_fetch_current_catalog_item_price')
     def test_case_success_but_price_has_been_changed(
@@ -195,7 +198,6 @@ class TestUpdateItemView(TestClass[update_item]):
         mock__fetch_current_catalog_item_price: Mock,
         mock__update_catalog_item_in_db: Mock,
         mock__catalog_item_price_changed_event__publish: Mock,
-        mock__catalog_item_price_changed_event__init__: Mock,
         test_case_success_but_price_has_been_changed: TestCaseSuccessButPriceHasBeenChanged,
     ):
         test_case = test_case_success_but_price_has_been_changed
@@ -206,7 +208,6 @@ class TestUpdateItemView(TestClass[update_item]):
 
         mock__update_catalog_item_in_db.return_value = None
 
-        mock__catalog_item_price_changed_event__init__.return_value = None
         mock__catalog_item_price_changed_event__publish.return_value = None
 
         response = update_item(catalog_item_request_data=test_case.catalog_item_request_data)
@@ -214,18 +215,20 @@ class TestUpdateItemView(TestClass[update_item]):
         assert response.body == test_case.expected_response.body
 
         mock__update_catalog_item_in_db.assert_called_once()
-        mock__catalog_item_price_changed_event__init__.assert_called_once_with(
-            **test_case.expected_event_init_args.model_dump(),
-        )
 
-    @patch.object(CatalogItemPriceChangedEvent, '__init__')
+        fact_called_event: CatalogItemPriceChangedEvent = (
+            mock__catalog_item_price_changed_event__publish.call_args[0][0]
+        )
+        assert fact_called_event == test_case.expected_published_event
+
+    @patch.object(CatalogItemPriceChangedEvent, 'publish')
     @patch.object(view, '_update_catalog_item_in_db')
     @patch.object(view, '_fetch_current_catalog_item_price')
     def test_case_failed_due_to_integrity_error(
         self,
         mock__fetch_current_catalog_item_price: Mock,
         mock__update_catalog_item_in_db: Mock,
-        mock__catalog_item_price_changed_event__init__: Mock,
+        mock__catalog_item_price_changed_event__publish: Mock,
         test_case_failed_due_to_integrity_error: TestCaseFailedDueToIntegrityError,
     ):
         test_case = test_case_failed_due_to_integrity_error
@@ -236,7 +239,7 @@ class TestUpdateItemView(TestClass[update_item]):
 
         mock__update_catalog_item_in_db.side_effect = IntegrityError(orig=None, statement=None, params=None)
 
-        mock__catalog_item_price_changed_event__init__.return_value = None
+        mock__catalog_item_price_changed_event__publish.return_value = None
 
         try:
             update_item(catalog_item_request_data=test_case.catalog_item_request_data)
@@ -244,7 +247,7 @@ class TestUpdateItemView(TestClass[update_item]):
             assert e.status_code == status.HTTP_400_BAD_REQUEST
 
         mock__update_catalog_item_in_db.assert_called_once()
-        mock__catalog_item_price_changed_event__init__.assert_not_called()
+        mock__catalog_item_price_changed_event__publish.assert_not_called()
 
     @patch.object(view, '_fetch_current_catalog_item_price')
     def test_case_failed_due_to_not_found_error(
