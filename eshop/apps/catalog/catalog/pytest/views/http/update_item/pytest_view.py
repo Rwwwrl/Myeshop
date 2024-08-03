@@ -14,9 +14,11 @@ from catalog.views.http.update_item.view import CatalogItemRequestData, NotFound
 
 from catalog_cqrs_contract.event import CatalogItemPriceChangedEvent
 
+from framework.cqrs.context import InsideSqlachemySessionContext
 from framework.for_pytests.for_testing_http_views import ExpectedHttpResponse
 from framework.for_pytests.test_case import TestCase
 from framework.for_pytests.test_class import TestClass
+from framework.sqlalchemy.session import Session
 
 
 class TestCaseSuccessButPriceWasNotChanged(TestCase['TestUpdateItemView']):
@@ -93,6 +95,7 @@ def test_case_success_but_price_has_been_changed() -> TestCaseSuccessButPriceHas
         catalog_item_id=1,
         old_price=10,
         new_price=15,
+        context=InsideSqlachemySessionContext(session=Session()),
     )
 
     return TestCaseSuccessButPriceHasBeenChanged(
