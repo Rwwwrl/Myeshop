@@ -1,8 +1,12 @@
+from fastapi import Response, UploadFile as fastapi_UploadFile, status
+
 from sqlalchemy import select
 
 from test_app import hints
 
 from framework.common.dto import DTO
+from framework.file_storage import UploadFile
+from framework.file_storage.local_file_storage.local_file_storage_maker import LocalFileStorage
 from framework.sqlalchemy.session import Session
 
 from .api_router import api_router
@@ -86,3 +90,21 @@ def test() -> dict:
     logger.debug('invalid dto: %s', dto)
 
     return {"hello": "world"}
+
+
+@api_router.post('/file_upload/')
+def test_file_upload(upload_file: fastapi_UploadFile) -> Response:
+    LocalFileStorage().upload(
+        upload_file=UploadFile(file=upload_file.file, filename=upload_file.filename),
+        space='test_app',
+    )
+    return Response(status_code=status.HTTP_200_OK)
+
+
+class TestRequestBodyWithFileBody(DTO):
+    message: str
+
+
+@api_router.post('/test_request_body_with_file/')
+def test_request_body_with_file(upload_file: fastapi_UploadFile, body: TestRequestBodyWithFileBody) -> Response:
+    return Response(status_code=status.HTTP_200_OK)
