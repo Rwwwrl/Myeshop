@@ -15,6 +15,7 @@ services:
       - USER_IDENTITY_SERVICE__INITIAL_ADMIN_USER_CREDENTIALS__PASSWORD=${USER_IDENTITY_SERVICE__INITIAL_ADMIN_USER_CREDENTIALS__PASSWORD}
     volumes:
       - uvicorn_socket_folder:/usr/uvicorn_socket_folder
+      - media:/usr/code/myeshop/media
     container_name: web_app
     depends_on:
       postgres_db:
@@ -24,6 +25,7 @@ services:
     container_name: nginx
     volumes:
       - uvicorn_socket_folder:/usr/uvicorn_socket_folder
+      - media:/media
     depends_on:
       - web_app
 
@@ -70,7 +72,7 @@ services:
     volumes:
       - postgres_db_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES__LOGIN}" ]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES__LOGIN}"]
       interval: 1s
       timeout: 3s
       retries: 30
@@ -79,9 +81,9 @@ services:
     image: quay.io/prometheus/node-exporter:latest
     container_name: node_exporter
     command:
-      - '--path.rootfs=/host'
+      - "--path.rootfs=/host"
     volumes:
-      - '/:/host:ro,rslave'
+      - "/:/host:ro,rslave"
 
   prometheus:
     container_name: prometheus
@@ -97,6 +99,7 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
 
 volumes:
+  media:
   postgres_db_data:
   prometheus_data:
   grafana_data:

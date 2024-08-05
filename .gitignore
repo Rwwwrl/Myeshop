@@ -12,6 +12,9 @@
 # OS
 .DS_Store
 
+# media
+media
+
 # secret
 .env
 .env.*
