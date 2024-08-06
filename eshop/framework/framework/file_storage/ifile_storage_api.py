@@ -24,3 +24,7 @@ class IFileStorageApi(abc.ABC):
     @abc.abstractmethod
     def upload(self, upload_file: UploadFile) -> UrlPathToFile:
         raise NotImplementedError
+
+    @abc.abstractmethod
+    def delete(self, url_path_to_file: UrlPathToFile) -> None:
+        raise NotImplementedError

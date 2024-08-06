@@ -22,6 +22,9 @@ class LocalFileStorage:
 
         return upload_file.filename
 
+    def remove(self, filename: Filename) -> None:
+        os.remove(self._media_root / filename)
+
 
 class LocalFileStorageApi(IFileStorageApi):
     def __init__(self):
@@ -30,3 +33,7 @@ class LocalFileStorageApi(IFileStorageApi):
     def upload(self, upload_file: UploadFile) -> UrlPathToFile:
         filename = self._file_storage.save(upload_file=upload_file)
         return f'{settings.MEDIA_ROOT_URL}/{filename}'
+
+    def delete(self, url_path_to_file: UrlPathToFile) -> None:
+        filename = url_path_to_file.split('/')[-1]
+        self._file_storage.remove(filename=filename)
