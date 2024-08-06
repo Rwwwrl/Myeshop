@@ -1,5 +1,5 @@
 import abc
-from typing import BinaryIO
+from typing import BinaryIO, NewType
 
 from pydantic import ConfigDict, SkipValidation
 
@@ -7,8 +7,10 @@ from framework.common.dto import DTO
 
 __all__ = (
     'UploadFile',
-    'IFileStorage',
+    'IFileStorageApi',
 )
+
+UrlPathToFile = NewType('UrlPathToFile', str)
 
 
 class UploadFile(DTO):
@@ -18,7 +20,7 @@ class UploadFile(DTO):
     filename: str
 
 
-class IFileStorage(abc.ABC):
+class IFileStorageApi(abc.ABC):
     @abc.abstractmethod
-    def upload(self, upload_file: UploadFile, space: str) -> None:
+    def upload(self, upload_file: UploadFile) -> UrlPathToFile:
         raise NotImplementedError
