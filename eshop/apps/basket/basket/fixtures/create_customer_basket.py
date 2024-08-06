@@ -18,7 +18,7 @@ def create_customer_basket():
                     product_name='name1',
                     unit_price=10,
                     quantity=1,
-                    picture_url='root/filename1',
+                    picture_url='media/catalog_item1.jpg',
                 ),
                 BasketItem(
                     id=2,
@@ -26,7 +26,7 @@ def create_customer_basket():
                     product_name='name2',
                     unit_price=20,
                     quantity=2,
-                    picture_url='root/filename2',
+                    picture_url='media/catalog_item2.jpg',
                 ),
             ],
         ),
