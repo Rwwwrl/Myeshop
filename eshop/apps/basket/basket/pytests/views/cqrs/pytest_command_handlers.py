@@ -1,6 +1,6 @@
 from typing import cast
 
-from mock import Mock, patch
+from mock import MagicMock, Mock, patch
 
 import pytest
 
@@ -20,9 +20,9 @@ from basket.views.cqrs.command_handlers import UpdateCustomerBasketCommandHandle
 from basket_cqrs_contract.command import UpdateCustomerBasketCommand
 from basket_cqrs_contract.customer_basket_dto import BasketItemDTO, CustomerBasketDTO
 
-from framework.for_pytests.sqlalchemy_session_mock import SqlalchemySessionMock
 from framework.for_pytests.test_case import TestCase
 from framework.for_pytests.test_class import TestClass
+from framework.sqlalchemy.session import Session
 
 
 class ExpectedPostgresBasketRepositorySaveCallArgs(TypedDict):
@@ -94,7 +94,7 @@ def test_case_success() -> TestCaseSucess:
 
 
 class TestUpdateCustomerBasketCommandHandler__handle(TestClass[UpdateCustomerBasketCommandHandler]):
-    @patch.object(command_handlers, 'Session', new=SqlalchemySessionMock)
+    @patch.object(command_handlers, 'Session', new=MagicMock(spec=Session))
     @patch.object(PostgresCustomerBasketRepository, 'save')
     def test_case_success(
         self,
