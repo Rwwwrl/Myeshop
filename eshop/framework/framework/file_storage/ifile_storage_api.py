@@ -12,6 +12,8 @@ __all__ = (
 
 UrlPathToFile = NewType('UrlPathToFile', str)
 
+Filename = NewType('Filename', str)
+
 
 class UploadFile(DTO):
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -21,6 +23,10 @@ class UploadFile(DTO):
 
 
 class IFileStorageApi(abc.ABC):
+    @abc.abstractmethod
+    def url_path_for_file(self, filename: Filename) -> UrlPathToFile:
+        raise NotImplementedError
+
     @abc.abstractmethod
     def upload(self, upload_file: UploadFile) -> UrlPathToFile:
         raise NotImplementedError
