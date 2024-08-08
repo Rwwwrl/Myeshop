@@ -1,3 +1,6 @@
+from typing import Annotated
+
+import fastapi
 from fastapi import Depends, Response, status
 
 from pydantic.types import PositiveFloat, PositiveInt
@@ -12,10 +15,13 @@ from catalog.infrastructure.persistance.postgres.models import CatalogItemORM
 
 from catalog_cqrs_contract.event import CatalogItemPriceChangedEvent
 
+from eshop.dependency_container import dependency_container
+
 from framework.common.dto import DTO
 from framework.cqrs.context import InsideSqlachemyTransactionContext
 from framework.fastapi.dependencies.admin_required import admin_required
 from framework.fastapi.http_exceptions import BadRequestException
+from framework.file_storage import UploadFile
 from framework.sqlalchemy.session import Session
 
 __all__ = ('update_item', )
@@ -26,11 +32,6 @@ class CatalogItemRequestData(DTO):
     name: str
     description: str
     price: PositiveFloat
-
-    # TODO пока что это будет передавать именно так, а не ввиде файла
-    picture_filename: str
-    picture_url: str
-
     catalog_type_id: hints.CatalogTypeId
     catalog_brand_id: hints.CatalogBrandId
     available_stock: PositiveInt
@@ -80,14 +81,18 @@ def _update_catalog_item_in_db(session: lib_Session, catalog_item: CatalogItemOR
     session.execute(stmt)
 
 
-def _updated_catalog_item(catalog_item_request_data: CatalogItemRequestData) -> CatalogItemORM:
+def _updated_catalog_item(
+    catalog_item_request_data: CatalogItemRequestData,
+    picture_filename: str,
+    picture_url: str,
+) -> CatalogItemORM:
     return CatalogItemORM(
         id=catalog_item_request_data.id,
         name=catalog_item_request_data.name,
         description=catalog_item_request_data.description,
         price=catalog_item_request_data.price,
-        picture_filename=catalog_item_request_data.picture_filename,
-        picture_url=catalog_item_request_data.picture_url,
+        picture_filename=picture_filename,
+        picture_url=picture_url,
         catalog_type_id=catalog_item_request_data.catalog_type_id,
         catalog_brand_id=catalog_item_request_data.catalog_brand_id,
         available_stock=catalog_item_request_data.available_stock,
@@ -98,13 +103,24 @@ def _updated_catalog_item(catalog_item_request_data: CatalogItemRequestData) -> 
 
 
 @api_router.put('/items/', dependencies=[Depends(admin_required)])
-def update_item(catalog_item_request_data: CatalogItemRequestData) -> Response:
+def update_item(
+    catalog_item_request_data: Annotated[CatalogItemRequestData, Depends()],
+    catalog_item_picture: fastapi.UploadFile,
+) -> Response:
     try:
         current_catalog_item_price = _fetch_current_catalog_item_price(catalog_item_id=catalog_item_request_data.id)
     except NotFoundError:
         raise BadRequestException(detail=f'catalog item with id = {catalog_item_request_data.id} does not exist')
 
-    updated_catalog_item = _updated_catalog_item(catalog_item_request_data=catalog_item_request_data)
+    file_storage_api = dependency_container.file_storage_api_factory()
+
+    picture_url = file_storage_api.url_path_for_file(filename=catalog_item_picture.filename)
+
+    updated_catalog_item = _updated_catalog_item(
+        catalog_item_request_data=catalog_item_request_data,
+        picture_filename=catalog_item_picture.filename,
+        picture_url=picture_url,
+    )
 
     with Session() as session:
         with session.begin():
@@ -128,5 +144,10 @@ def update_item(catalog_item_request_data: CatalogItemRequestData) -> Response:
                     new_price=updated_catalog_item.price,
                     context=InsideSqlachemyTransactionContext(session=session),
                 ).publish()
+
+    file_storage_api.update(
+        upload_file=UploadFile(file=catalog_item_picture.file, filename=catalog_item_picture.filename),
+        does_not_exist_ok=False,
+    )
 
     return Response(status_code=status.HTTP_200_OK)

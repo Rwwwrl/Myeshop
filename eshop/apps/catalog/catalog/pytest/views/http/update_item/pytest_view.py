@@ -1,3 +1,6 @@
+from typing import cast
+
+import fastapi
 from fastapi import HTTPException, status
 
 from mock import Mock, patch
@@ -14,7 +17,11 @@ from catalog.views.http.update_item.view import CatalogItemRequestData, NotFound
 
 from catalog_cqrs_contract.event import CatalogItemPriceChangedEvent
 
+from eshop.dependency_container import dependency_container
+
 from framework.cqrs.context import InsideSqlachemyTransactionContext
+from framework.file_storage import IFileStorageApi, UploadFile
+from framework.for_pytests.file_storage.mock import FileStorageApiMockType
 from framework.for_pytests.for_testing_http_views import ExpectedHttpResponse
 from framework.for_pytests.test_case import TestCase
 from framework.for_pytests.test_class import TestClass
@@ -24,23 +31,29 @@ from framework.sqlalchemy.session import Session
 class TestCaseSuccessButPriceWasNotChanged(TestCase['TestUpdateItemView']):
     mock__fetch_current_catalog_item_price__return_value: PositiveFloat
     catalog_item_request_data: CatalogItemRequestData
+    catalog_item_picture: fastapi.UploadFile
     expected_response: ExpectedHttpResponse
+    mock__file_storage_api: FileStorageApiMockType
 
 
 class TestCaseSuccessButPriceHasBeenChanged(TestCase['TestUpdateItemView']):
     mock__fetch_current_catalog_item_price__return_value: PositiveFloat
     catalog_item_request_data: CatalogItemRequestData
+    catalog_item_picture: fastapi.UploadFile
     expected_published_event: CatalogItemPriceChangedEvent
     expected_response: ExpectedHttpResponse
+    mock__file_storage_api: FileStorageApiMockType
 
 
 class TestCaseFailedDueToIntegrityError(TestCase['TestUpdateItemView']):
     mock__fetch_current_catalog_item_price__return_value: PositiveFloat
     catalog_item_request_data: CatalogItemRequestData
+    catalog_item_picture: fastapi.UploadFile
 
 
 class TestCaseFailedDueToNotFoundError(TestCase['TestUpdateItemView']):
     catalog_item_request_data: CatalogItemRequestData
+    catalog_item_picture: fastapi.UploadFile
 
 
 @pytest.fixture(scope='session')
@@ -62,13 +75,20 @@ def test_case_sucess_but_price_was_not_changed() -> TestCaseSuccessButPriceWasNo
         on_reorder=False,
     )
 
+    catalog_item_picture = fastapi.UploadFile(file=Mock(), filename='picture.jpeg')
+
+    mock__file_storage_api = Mock(spec=IFileStorageApi)
+    mock__file_storage_api.update.return_value = None
+
     return TestCaseSuccessButPriceWasNotChanged(
         catalog_item_request_data=catalog_item_request_data,
+        catalog_item_picture=catalog_item_picture,
         mock__fetch_current_catalog_item_price__return_value=mock__fetch_current_catalog_item_price__return_value,
         expected_response=ExpectedHttpResponse(
             status_code=status.HTTP_200_OK,
             body=b'',
         ),
+        mock__file_storage_api=mock__file_storage_api,
     )
 
 
@@ -91,6 +111,11 @@ def test_case_success_but_price_has_been_changed() -> TestCaseSuccessButPriceHas
         on_reorder=False,
     )
 
+    catalog_item_picture = fastapi.UploadFile(file=Mock(), filename='picture.jpeg')
+
+    mock__file_storage_api = Mock(spec=IFileStorageApi)
+    mock__file_storage_api.update.return_value = None
+
     expected_published_event = CatalogItemPriceChangedEvent(
         catalog_item_id=1,
         old_price=10,
@@ -100,12 +125,14 @@ def test_case_success_but_price_has_been_changed() -> TestCaseSuccessButPriceHas
 
     return TestCaseSuccessButPriceHasBeenChanged(
         catalog_item_request_data=catalog_item_request_data,
+        catalog_item_picture=catalog_item_picture,
         mock__fetch_current_catalog_item_price__return_value=mock__fetch_current_catalog_item_price__return_value,
         expected_published_event=expected_published_event,
         expected_response=ExpectedHttpResponse(
             status_code=status.HTTP_200_OK,
             body=b'',
         ),
+        mock__file_storage_api=mock__file_storage_api,
     )
 
 
@@ -128,8 +155,11 @@ def test_case_failed_due_to_integrity_error() -> TestCaseFailedDueToIntegrityErr
         on_reorder=False,
     )
 
+    catalog_item_picture = fastapi.UploadFile(file=Mock(), filename='picture.jpeg')
+
     return TestCaseFailedDueToIntegrityError(
         catalog_item_request_data=catalog_item_request_data,
+        catalog_item_picture=catalog_item_picture,
         mock__fetch_current_catalog_item_price__return_value=mock__fetch_current_catalog_item_price__return_value,
     )
 
@@ -151,7 +181,12 @@ def test_case_failed_due_to_not_found_error() -> TestCaseFailedDueToIntegrityErr
         on_reorder=False,
     )
 
-    return TestCaseFailedDueToNotFoundError(catalog_item_request_data=catalog_item_request_data)
+    catalog_item_picture = fastapi.UploadFile(file=Mock(), filename='picture.jpeg')
+
+    return TestCaseFailedDueToNotFoundError(
+        catalog_item_request_data=catalog_item_request_data,
+        catalog_item_picture=catalog_item_picture,
+    )
 
 
 class TestUrlToView(TestClass[update_item]):
@@ -182,13 +217,26 @@ class TestUpdateItemView(TestClass[update_item]):
 
         mock__catalog_item_price_changed_event__publish.return_value = None
 
-        response = update_item(catalog_item_request_data=test_case.catalog_item_request_data)
+        with dependency_container.file_storage_api_factory.override(test_case.mock__file_storage_api):
+            response = update_item(
+                catalog_item_request_data=test_case.catalog_item_request_data,
+                catalog_item_picture=test_case.catalog_item_picture,
+            )
+
         assert response.status_code == test_case.expected_response.status_code
         assert response.body == test_case.expected_response.body
 
         mock__update_catalog_item_in_db.assert_called_once()
 
         mock__catalog_item_price_changed_event__publish.assert_not_called()
+
+        cast(Mock, test_case.mock__file_storage_api.update).assert_called_once_with(
+            upload_file=UploadFile(
+                file=test_case.catalog_item_picture.file,
+                filename=test_case.catalog_item_picture.filename,
+            ),
+            does_not_exist_ok=False,
+        )
 
     @patch.object(CatalogItemPriceChangedEvent, 'publish', autospec=True)
     @patch.object(view, '_update_catalog_item_in_db')
@@ -210,7 +258,12 @@ class TestUpdateItemView(TestClass[update_item]):
 
         mock__catalog_item_price_changed_event__publish.return_value = None
 
-        response = update_item(catalog_item_request_data=test_case.catalog_item_request_data)
+        with dependency_container.file_storage_api_factory.override(test_case.mock__file_storage_api):
+            response = update_item(
+                catalog_item_request_data=test_case.catalog_item_request_data,
+                catalog_item_picture=test_case.catalog_item_picture,
+            )
+
         assert response.status_code == test_case.expected_response.status_code
         assert response.body == test_case.expected_response.body
 
@@ -220,6 +273,14 @@ class TestUpdateItemView(TestClass[update_item]):
             mock__catalog_item_price_changed_event__publish.call_args[0][0]
         )
         assert fact_called_event == test_case.expected_published_event
+
+        cast(Mock, test_case.mock__file_storage_api.update).assert_called_once_with(
+            upload_file=UploadFile(
+                file=test_case.catalog_item_picture.file,
+                filename=test_case.catalog_item_picture.filename,
+            ),
+            does_not_exist_ok=False,
+        )
 
     @patch.object(CatalogItemPriceChangedEvent, 'publish')
     @patch.object(view, '_update_catalog_item_in_db')
@@ -241,13 +302,22 @@ class TestUpdateItemView(TestClass[update_item]):
 
         mock__catalog_item_price_changed_event__publish.return_value = None
 
-        try:
-            update_item(catalog_item_request_data=test_case.catalog_item_request_data)
-        except HTTPException as e:
-            assert e.status_code == status.HTTP_400_BAD_REQUEST
+        mock__file_storage_api = Mock(spec=IFileStorageApi)
+
+        with dependency_container.file_storage_api_factory.override(mock__file_storage_api):
+            try:
+                update_item(
+                    catalog_item_request_data=test_case.catalog_item_request_data,
+                    catalog_item_picture=test_case.catalog_item_picture,
+                )
+            except HTTPException as e:
+                assert e.status_code == status.HTTP_400_BAD_REQUEST
 
         mock__update_catalog_item_in_db.assert_called_once()
+
         mock__catalog_item_price_changed_event__publish.assert_not_called()
+
+        cast(Mock, mock__file_storage_api.update).assert_not_called()
 
     @patch.object(view, '_fetch_current_catalog_item_price')
     def test_case_failed_due_to_not_found_error(
@@ -259,7 +329,15 @@ class TestUpdateItemView(TestClass[update_item]):
 
         mock__fetch_current_catalog_item_price.side_effect = NotFoundError
 
-        try:
-            update_item(catalog_item_request_data=test_case.catalog_item_request_data)
-        except HTTPException as e:
-            assert e.status_code == status.HTTP_400_BAD_REQUEST
+        mock__file_storage_api = Mock(spec=IFileStorageApi)
+
+        with dependency_container.file_storage_api_factory.override(mock__file_storage_api):
+            try:
+                update_item(
+                    catalog_item_request_data=test_case.catalog_item_request_data,
+                    catalog_item_picture=test_case.catalog_item_picture,
+                )
+            except HTTPException as e:
+                assert e.status_code == status.HTTP_400_BAD_REQUEST
+
+        cast(Mock, mock__file_storage_api.update).assert_not_called()
