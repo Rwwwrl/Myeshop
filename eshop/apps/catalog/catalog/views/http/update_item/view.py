@@ -13,7 +13,7 @@ from catalog.infrastructure.persistance.postgres.models import CatalogItemORM
 from catalog_cqrs_contract.event import CatalogItemPriceChangedEvent
 
 from framework.common.dto import DTO
-from framework.cqrs.context import InsideSqlachemySessionContext
+from framework.cqrs.context import InsideSqlachemyTransactionContext
 from framework.fastapi.dependencies.admin_required import admin_required
 from framework.fastapi.http_exceptions import BadRequestException
 from framework.sqlalchemy.session import Session
@@ -126,7 +126,7 @@ def update_item(catalog_item_request_data: CatalogItemRequestData) -> Response:
                     catalog_item_id=updated_catalog_item.id,
                     old_price=current_catalog_item_price,
                     new_price=updated_catalog_item.price,
-                    context=InsideSqlachemySessionContext(session=session),
+                    context=InsideSqlachemyTransactionContext(session=session),
                 ).publish()
 
     return Response(status_code=status.HTTP_200_OK)
