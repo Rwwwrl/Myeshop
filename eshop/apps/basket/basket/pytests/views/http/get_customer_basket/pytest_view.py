@@ -1,4 +1,4 @@
-from mock import Mock, patch
+from mock import MagicMock, Mock, patch
 
 import pytest
 
@@ -16,9 +16,9 @@ from basket.views.http.get_customer_basket import get_customer_basket
 from basket.views.http.get_customer_basket import view
 from basket.views.http.get_customer_basket.dto import BasketItemDTO, CustomerBasketDTO
 
-from framework.for_pytests.sqlalchemy_session_mock import SqlalchemySessionMock
 from framework.for_pytests.test_case import TestCase
 from framework.for_pytests.test_class import TestClass
+from framework.sqlalchemy.session import Session
 
 from user_identity_cqrs_contract.hints import UserId
 
@@ -142,7 +142,7 @@ class TestGetCustomerBasketView(TestClass[get_customer_basket]):
 
         mock__customer_basket_repository__get_by_buyer_id.assert_called_once_with(buyer_id=test_case.user_id)
 
-    @patch.object(view, 'Session', new=SqlalchemySessionMock)
+    @patch.object(view, 'Session', new=MagicMock(spec=Session))
     @patch.object(PostgresCustomerBasketRepository, 'create')
     @patch.object(PostgresCustomerBasketRepository, 'get_by_buyer_id')
     def test_case_user_does_not_have_basket(

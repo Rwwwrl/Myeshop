@@ -1,21 +1,66 @@
+from pathlib import Path
+
 from catalog.infrastructure.persistance.postgres.models import CatalogBrandORM, CatalogItemORM, CatalogTypeORM
 
+from eshop.dependency_container import dependency_container
+
+from framework.file_storage.ifile_storage_api import UploadFile
 from framework.sqlalchemy.session import Session
 
 
 def create_catalog_items() -> None:
+    LOCAL_MEDIA_FOLDER = Path(__file__).parent / 'media'
+
+    file_storage_api = dependency_container.file_storage_api_factory()
+
     catalog_type1 = CatalogTypeORM(type='type1')
     catalog_type2 = CatalogTypeORM(type='type2')
 
     catalog_brand1 = CatalogBrandORM(brand='brand1')
     catalog_brand2 = CatalogBrandORM(brand='brand2')
 
+    catalog_item1_picture_filename = 'catalog_item1.jpg'
+    with open(LOCAL_MEDIA_FOLDER / catalog_item1_picture_filename, 'rb') as file:
+        catalog_item1_url_path_to_file = file_storage_api.upload(
+            upload_file=UploadFile(
+                file=file,
+                filename=catalog_item1_picture_filename,
+            ),
+        )
+
+    catalog_item2_picture_filename = 'catalog_item2.jpg'
+    with open(LOCAL_MEDIA_FOLDER / catalog_item1_picture_filename, 'rb') as file:
+        catalog_item2_url_path_to_file = file_storage_api.upload(
+            upload_file=UploadFile(
+                file=file,
+                filename=catalog_item2_picture_filename,
+            ),
+        )
+
+    catalog_item3_picture_filename = 'catalog_item3.jpg'
+    with open(LOCAL_MEDIA_FOLDER / catalog_item1_picture_filename, 'rb') as file:
+        catalog_item3_url_path_to_file = file_storage_api.upload(
+            upload_file=UploadFile(
+                file=file,
+                filename=catalog_item3_picture_filename,
+            ),
+        )
+
+    catalog_item4_picture_filename = 'catalog_item4.jpg'
+    with open(LOCAL_MEDIA_FOLDER / catalog_item1_picture_filename, 'rb') as file:
+        catalog_item4_url_path_to_file = file_storage_api.upload(
+            upload_file=UploadFile(
+                file=file,
+                filename=catalog_item4_picture_filename,
+            ),
+        )
+
     catalog_item1 = CatalogItemORM(
         name='name1',
         description='description1',
         price=10,
-        picture_filename='filename1',
-        picture_url='root/filename1',
+        picture_filename=catalog_item1_picture_filename,
+        picture_url=catalog_item1_url_path_to_file,
         catalog_type=catalog_type1,
         catalog_brand=catalog_brand1,
         available_stock=3,
@@ -27,8 +72,8 @@ def create_catalog_items() -> None:
         name='name2',
         description='description2',
         price=20,
-        picture_filename='filename2',
-        picture_url='root/filename2',
+        picture_filename=catalog_item2_picture_filename,
+        picture_url=catalog_item2_url_path_to_file,
         catalog_type=catalog_type1,
         catalog_brand=catalog_brand2,
         available_stock=5,
@@ -40,8 +85,8 @@ def create_catalog_items() -> None:
         name='name3',
         description='description3',
         price=30,
-        picture_filename='filename3',
-        picture_url='root/filename3',
+        picture_filename=catalog_item3_picture_filename,
+        picture_url=catalog_item3_url_path_to_file,
         catalog_type=catalog_type2,
         catalog_brand=catalog_brand1,
         available_stock=8,
@@ -53,8 +98,8 @@ def create_catalog_items() -> None:
         name='name4',
         description='description4',
         price=40,
-        picture_filename='filename4',
-        picture_url='root/filename4',
+        picture_filename=catalog_item4_picture_filename,
+        picture_url=catalog_item4_url_path_to_file,
         catalog_type=catalog_type2,
         catalog_brand=catalog_brand2,
         available_stock=9,

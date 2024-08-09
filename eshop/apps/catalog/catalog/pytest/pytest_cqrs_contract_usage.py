@@ -4,7 +4,7 @@ from catalog_cqrs_contract.event import (
     CatalogItemPriceChangedEvent,
 )
 
-from framework.cqrs.context import InsideSqlachemySessionContext
+from framework.cqrs.context import InsideSqlachemyTransactionContext
 from framework.for_pytests.for_testing_cqrs_contract_usage import ITestEventContract, assert_attribute
 
 
@@ -13,10 +13,10 @@ class TestCatalogItemPriceChangedEvent(ITestEventContract[CatalogItemPriceChange
         assert_attribute(CatalogItemPriceChangedEvent, 'catalog_item_id', hints.CatalogItemId)
         assert_attribute(CatalogItemPriceChangedEvent, 'old_price', float)
         assert_attribute(CatalogItemPriceChangedEvent, 'new_price', float)
-        assert_attribute(CatalogItemPriceChangedEvent, 'context', InsideSqlachemySessionContext)
+        assert_attribute(CatalogItemPriceChangedEvent, 'context', InsideSqlachemyTransactionContext)
 
 
 class TestCatalogItemHasBeenDeleted(ITestEventContract[CatalogItemHasBeenDeletedEvent]):
     def test_event_contract(self) -> None:
         assert_attribute(CatalogItemHasBeenDeletedEvent, 'catalog_item_id', hints.CatalogItemId)
-        assert_attribute(CatalogItemHasBeenDeletedEvent, 'context', InsideSqlachemySessionContext)
+        assert_attribute(CatalogItemHasBeenDeletedEvent, 'context', InsideSqlachemyTransactionContext)

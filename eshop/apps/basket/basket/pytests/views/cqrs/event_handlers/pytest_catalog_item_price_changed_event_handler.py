@@ -13,7 +13,7 @@ from basket.views.cqrs.event_handlers import CatalogItemPriceChangedEventHandler
 
 from catalog_cqrs_contract.event import CatalogItemPriceChangedEvent
 
-from framework.cqrs.context import InsideSqlachemySessionContext
+from framework.cqrs.context import InsideSqlachemyTransactionContext
 from framework.for_pytests.test_case import TestCase as _TestCase
 from framework.for_pytests.test_class import TestClass
 from framework.sqlalchemy.session import Session
@@ -31,7 +31,7 @@ def test_case() -> TestCase:
         catalog_item_id=1,
         old_price=10,
         new_price=15,
-        context=InsideSqlachemySessionContext(session=Session()),
+        context=InsideSqlachemyTransactionContext(session=Session()),
     )
 
     mock__customer_basket_repository__all__return_value: List[CustomerBasketORM] = [

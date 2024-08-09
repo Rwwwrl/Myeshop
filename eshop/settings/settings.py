@@ -133,3 +133,5 @@ DB_URL = URL.create(
 SQLALCHEMY_ENGINE = create_engine(url=DB_URL)
 
 OAUTH2_SCHEME = OAuth2PasswordBearer(tokenUrl='user_identity/token/')
+
+MEDIA_ROOT_URL = 'media'

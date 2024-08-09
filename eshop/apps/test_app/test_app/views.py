@@ -1,8 +1,15 @@
+from typing import Annotated
+
+from fastapi import Depends, Response, UploadFile as fastapi_UploadFile, status
+
 from sqlalchemy import select
 
 from test_app import hints
 
+from eshop.dependency_container import dependency_container
+
 from framework.common.dto import DTO
+from framework.file_storage import UploadFile
 from framework.sqlalchemy.session import Session
 
 from .api_router import api_router
@@ -86,3 +93,27 @@ def test() -> dict:
     logger.debug('invalid dto: %s', dto)
 
     return {"hello": "world"}
+
+
+@api_router.post('/file_upload/')
+def test_file_upload(upload_file: fastapi_UploadFile) -> Response:
+    url_path_to_file = dependency_container.file_storage_api_factory().upload(
+        upload_file=UploadFile(
+            file=upload_file.file,
+            filename=upload_file.filename,
+        ),
+    )
+    return url_path_to_file
+
+
+class TestRequestBodyWithFileBody(DTO):
+    field1: int
+    field2: int
+
+
+@api_router.post('/test_request_body_with_file/')
+def test_request_body_with_file(
+    upload_file: fastapi_UploadFile,
+    body: Annotated[TestRequestBodyWithFileBody, Depends()],
+) -> Response:
+    return Response(status_code=status.HTTP_200_OK)
