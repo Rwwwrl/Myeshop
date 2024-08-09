@@ -4,11 +4,11 @@ from mock import Mock, patch
 
 import pytest
 
-from basket.infrastructure.persistence.postgres.customer_basket import (
+from basket.domain.models.customer_basket import (
     CustomerBasketORM,
     PostgresCustomerBasketRepository,
 )
-from basket.infrastructure.persistence.postgres.customer_basket.customer_basket_orm import BasketItem, Data
+from basket.domain.models.customer_basket.customer_basket import BasketItem, Data
 from basket.views.cqrs.event_handlers import CatalogItemHasBeenDeletedEventHandler
 
 from catalog_cqrs_contract.event import CatalogItemHasBeenDeletedEvent

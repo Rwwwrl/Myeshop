@@ -3,8 +3,8 @@ from typing import Annotated, List
 from fastapi import Depends
 
 from basket.api_router import api_router
-from basket.infrastructure.persistence.postgres.customer_basket import CustomerBasketORM
-from basket.infrastructure.persistence.postgres.customer_basket.postgres_customer_basket_repository import (
+from basket.domain.models.customer_basket import CustomerBasketORM
+from basket.domain.models.customer_basket.customer_basket_repository import (
     NotFoundError,
     PostgresCustomerBasketRepository,
 )
