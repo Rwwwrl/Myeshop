@@ -1,5 +1,7 @@
+import contextlib
 import os
 from pathlib import Path
+from typing import Optional
 
 from eshop import settings
 
@@ -34,6 +36,21 @@ class LocalFileStorageApi(IFileStorageApi):
         return f'{settings.MEDIA_ROOT_URL}/{filename}'
 
     def upload(self, upload_file: UploadFile) -> UrlPathToFile:
+        self._file_storage.save(upload_file=upload_file)
+        return self.url_path_for_file(filename=upload_file.filename)
+
+    def update(
+        self,
+        old_file_filename: str,
+        upload_file: UploadFile,
+        does_not_exist_ok: Optional[bool] = False,
+    ) -> UrlPathToFile:
+        if does_not_exist_ok:
+            with contextlib.suppress(FileNotFoundError):
+                self._file_storage.remove(filename=old_file_filename)
+        else:
+            self._file_storage.remove(filename=old_file_filename)
+
         self._file_storage.save(upload_file=upload_file)
         return self.url_path_for_file(filename=upload_file.filename)
 

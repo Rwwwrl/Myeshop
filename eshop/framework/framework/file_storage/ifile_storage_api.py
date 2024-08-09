@@ -1,5 +1,5 @@
 import abc
-from typing import BinaryIO, NewType
+from typing import BinaryIO, NewType, Optional
 
 from pydantic import ConfigDict, SkipValidation
 
@@ -29,6 +29,15 @@ class IFileStorageApi(abc.ABC):
 
     @abc.abstractmethod
     def upload(self, upload_file: UploadFile) -> UrlPathToFile:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def update(
+        self,
+        old_file_filename: str,
+        upload_file: UploadFile,
+        does_not_exist_ok: Optional[bool] = False,
+    ) -> UrlPathToFile:
         raise NotImplementedError
 
     @abc.abstractmethod
