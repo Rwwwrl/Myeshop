@@ -19,7 +19,7 @@ services:
     volumes:
       - certbot_letsencrypt:/etc/letsencrypt
       - certbot_www:/var/www/certbot
-    command: certonly --webroot --webroot-path=/var/www/certbot --force-renewal --email lesh.solowiew@yandex.ru --agree-tos --no-eff-email -d myeshoponcontainers.site
+    command: certonly --webroot --webroot-path=/var/www/certbot --force-renewal --email ${EMAIL} --agree-tos --no-eff-email -d myeshoponcontainers.site
 
 volumes:
   certbot_letsencrypt:
