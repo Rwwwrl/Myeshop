@@ -44,17 +44,32 @@ class NotFoundError(Exception):
     pass
 
 
-def _fetch_current_catalog_item_price(catalog_item_id: hints.CatalogItemId) -> PositiveFloat:
-    stmt = select(CatalogItemORM.price).where(CatalogItemORM.id == catalog_item_id)
+class CatalogItemPriceAndPictureFilenameResult(DTO):
+    price: PositiveFloat
+    picture_filename: str
+
+
+def _fetch_catalog_item_price_and_picture_filename(
+    catalog_item_id: hints.CatalogItemId,
+) -> CatalogItemPriceAndPictureFilenameResult:
+    # yapf: disable
+    stmt = select(
+        CatalogItemORM.price,
+        CatalogItemORM.picture_filename,
+    ).where(
+        CatalogItemORM.id == catalog_item_id,
+    )
+    # yapf: enable
 
     with Session() as session:
         with session.begin():
-            price = session.scalar(stmt)
+            result = session.execute(stmt).fetchone()
 
-    if not price:
+    if not result:
         raise NotFoundError('catalog item with id = %s does not exist', catalog_item_id)
 
-    return price
+    price, picture_filename = result
+    return CatalogItemPriceAndPictureFilenameResult(price=price, picture_filename=picture_filename)
 
 
 def _update_catalog_item_in_db(session: lib_Session, catalog_item: CatalogItemORM) -> None:
@@ -108,9 +123,14 @@ def update_item(
     catalog_item_picture: fastapi.UploadFile,
 ) -> Response:
     try:
-        current_catalog_item_price = _fetch_current_catalog_item_price(catalog_item_id=catalog_item_request_data.id)
+        catalog_item_price_and_picture_filename = _fetch_catalog_item_price_and_picture_filename(
+            catalog_item_id=catalog_item_request_data.id,
+        )
     except NotFoundError:
         raise BadRequestException(detail=f'catalog item with id = {catalog_item_request_data.id} does not exist')
+
+    current_catalog_item_price = catalog_item_price_and_picture_filename.price
+    current_catalog_item_picture_filename = catalog_item_price_and_picture_filename.picture_filename
 
     file_storage_api = dependency_container.file_storage_api_factory()
 
@@ -146,6 +166,7 @@ def update_item(
                 ).publish()
 
     file_storage_api.update(
+        old_file_filename=current_catalog_item_picture_filename,
         upload_file=UploadFile(file=catalog_item_picture.file, filename=catalog_item_picture.filename),
         does_not_exist_ok=False,
     )

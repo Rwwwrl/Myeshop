@@ -5,15 +5,17 @@ from fastapi import HTTPException, status
 
 from mock import Mock, patch
 
-from pydantic.types import PositiveFloat
-
 import pytest
 
 from sqlalchemy.exc import IntegrityError
 
 from catalog.app_config import CatalogAppConfig
 from catalog.views.http.update_item import update_item, view
-from catalog.views.http.update_item.view import CatalogItemRequestData, NotFoundError
+from catalog.views.http.update_item.view import (
+    CatalogItemPriceAndPictureFilenameResult,
+    CatalogItemRequestData,
+    NotFoundError,
+)
 
 from catalog_cqrs_contract.event import CatalogItemPriceChangedEvent
 
@@ -21,7 +23,7 @@ from eshop.dependency_container import dependency_container
 
 from framework.cqrs.context import InsideSqlachemyTransactionContext
 from framework.file_storage import IFileStorageApi, UploadFile
-from framework.for_pytests.file_storage.mock import FileStorageApiMockType
+from framework.for_pytests.file_storage.mock_type import FileStorageApiMockType
 from framework.for_pytests.for_testing_http_views import ExpectedHttpResponse
 from framework.for_pytests.test_case import TestCase
 from framework.for_pytests.test_class import TestClass
@@ -29,7 +31,7 @@ from framework.sqlalchemy.session import Session
 
 
 class TestCaseSuccessButPriceWasNotChanged(TestCase['TestUpdateItemView']):
-    mock__fetch_current_catalog_item_price__return_value: PositiveFloat
+    mock__fetch_catalog_item_price_and_picture_filename__return_value: CatalogItemPriceAndPictureFilenameResult
     catalog_item_request_data: CatalogItemRequestData
     catalog_item_picture: fastapi.UploadFile
     expected_response: ExpectedHttpResponse
@@ -37,7 +39,7 @@ class TestCaseSuccessButPriceWasNotChanged(TestCase['TestUpdateItemView']):
 
 
 class TestCaseSuccessButPriceHasBeenChanged(TestCase['TestUpdateItemView']):
-    mock__fetch_current_catalog_item_price__return_value: PositiveFloat
+    mock__fetch_catalog_item_price_and_picture_filename__return_value: CatalogItemPriceAndPictureFilenameResult
     catalog_item_request_data: CatalogItemRequestData
     catalog_item_picture: fastapi.UploadFile
     expected_published_event: CatalogItemPriceChangedEvent
@@ -46,7 +48,7 @@ class TestCaseSuccessButPriceHasBeenChanged(TestCase['TestUpdateItemView']):
 
 
 class TestCaseFailedDueToIntegrityError(TestCase['TestUpdateItemView']):
-    mock__fetch_current_catalog_item_price__return_value: PositiveFloat
+    mock__fetch_catalog_item_price_and_picture_filename__return_value: CatalogItemPriceAndPictureFilenameResult
     catalog_item_request_data: CatalogItemRequestData
     catalog_item_picture: fastapi.UploadFile
 
@@ -58,15 +60,18 @@ class TestCaseFailedDueToNotFoundError(TestCase['TestUpdateItemView']):
 
 @pytest.fixture(scope='session')
 def test_case_sucess_but_price_was_not_changed() -> TestCaseSuccessButPriceWasNotChanged:
-    mock__fetch_current_catalog_item_price__return_value = 10
+    mock__fetch_catalog_item_price_and_picture_filename__return_value = CatalogItemPriceAndPictureFilenameResult(
+        price=10,
+        picture_filename='picture_filename',
+    )
 
     catalog_item_request_data = CatalogItemRequestData(
         id=1,
         name='name',
         description='description',
-        price=mock__fetch_current_catalog_item_price__return_value,
-        picture_filename='picture_filename',
-        picture_url='picture_filename',
+        price=mock__fetch_catalog_item_price_and_picture_filename__return_value.price,
+        picture_filename='new_picture_filename',
+        picture_url='picture_url',
         catalog_type_id=1,
         catalog_brand_id=2,
         available_stock=10,
@@ -83,7 +88,9 @@ def test_case_sucess_but_price_was_not_changed() -> TestCaseSuccessButPriceWasNo
     return TestCaseSuccessButPriceWasNotChanged(
         catalog_item_request_data=catalog_item_request_data,
         catalog_item_picture=catalog_item_picture,
-        mock__fetch_current_catalog_item_price__return_value=mock__fetch_current_catalog_item_price__return_value,
+        mock__fetch_catalog_item_price_and_picture_filename__return_value=(
+            mock__fetch_catalog_item_price_and_picture_filename__return_value
+        ),
         expected_response=ExpectedHttpResponse(
             status_code=status.HTTP_200_OK,
             body=b'',
@@ -94,7 +101,10 @@ def test_case_sucess_but_price_was_not_changed() -> TestCaseSuccessButPriceWasNo
 
 @pytest.fixture(scope='session')
 def test_case_success_but_price_has_been_changed() -> TestCaseSuccessButPriceHasBeenChanged:
-    mock__fetch_current_catalog_item_price__return_value = 10
+    mock__fetch_catalog_item_price_and_picture_filename__return_value = CatalogItemPriceAndPictureFilenameResult(
+        price=10,
+        picture_filename='picture_filename',
+    )
 
     catalog_item_request_data = CatalogItemRequestData(
         id=1,
@@ -126,7 +136,9 @@ def test_case_success_but_price_has_been_changed() -> TestCaseSuccessButPriceHas
     return TestCaseSuccessButPriceHasBeenChanged(
         catalog_item_request_data=catalog_item_request_data,
         catalog_item_picture=catalog_item_picture,
-        mock__fetch_current_catalog_item_price__return_value=mock__fetch_current_catalog_item_price__return_value,
+        mock__fetch_catalog_item_price_and_picture_filename__return_value=(
+            mock__fetch_catalog_item_price_and_picture_filename__return_value
+        ),
         expected_published_event=expected_published_event,
         expected_response=ExpectedHttpResponse(
             status_code=status.HTTP_200_OK,
@@ -138,7 +150,10 @@ def test_case_success_but_price_has_been_changed() -> TestCaseSuccessButPriceHas
 
 @pytest.fixture(scope='session')
 def test_case_failed_due_to_integrity_error() -> TestCaseFailedDueToIntegrityError:
-    mock__fetch_current_catalog_item_price__return_value = 10
+    mock__fetch_catalog_item_price_and_picture_filename__return_value = CatalogItemPriceAndPictureFilenameResult(
+        price=10,
+        picture_filename='picture_filename',
+    )
 
     catalog_item_request_data = CatalogItemRequestData(
         id=1,
@@ -160,7 +175,9 @@ def test_case_failed_due_to_integrity_error() -> TestCaseFailedDueToIntegrityErr
     return TestCaseFailedDueToIntegrityError(
         catalog_item_request_data=catalog_item_request_data,
         catalog_item_picture=catalog_item_picture,
-        mock__fetch_current_catalog_item_price__return_value=mock__fetch_current_catalog_item_price__return_value,
+        mock__fetch_catalog_item_price_and_picture_filename__return_value=(
+            mock__fetch_catalog_item_price_and_picture_filename__return_value
+        ),
     )
 
 
@@ -199,18 +216,18 @@ class TestUrlToView(TestClass[update_item]):
 class TestUpdateItemView(TestClass[update_item]):
     @patch.object(CatalogItemPriceChangedEvent, 'publish')
     @patch.object(view, '_update_catalog_item_in_db')
-    @patch.object(view, '_fetch_current_catalog_item_price')
+    @patch.object(view, '_fetch_catalog_item_price_and_picture_filename')
     def test_case_sucess_but_price_was_not_changed(
         self,
-        mock__fetch_current_catalog_item_price: Mock,
+        mock__fetch_catalog_item_price_and_picture_filename: Mock,
         mock__update_catalog_item_in_db: Mock,
         mock__catalog_item_price_changed_event__publish: Mock,
         test_case_sucess_but_price_was_not_changed: TestCaseSuccessButPriceWasNotChanged,
     ):
         test_case = test_case_sucess_but_price_was_not_changed
 
-        mock__fetch_current_catalog_item_price.return_value = (
-            test_case.mock__fetch_current_catalog_item_price__return_value
+        mock__fetch_catalog_item_price_and_picture_filename.return_value = (
+            test_case.mock__fetch_catalog_item_price_and_picture_filename__return_value
         )
 
         mock__update_catalog_item_in_db.return_value = None
@@ -231,6 +248,9 @@ class TestUpdateItemView(TestClass[update_item]):
         mock__catalog_item_price_changed_event__publish.assert_not_called()
 
         cast(Mock, test_case.mock__file_storage_api.update).assert_called_once_with(
+            old_file_filename=(
+                test_case.mock__fetch_catalog_item_price_and_picture_filename__return_value.picture_filename
+            ),
             upload_file=UploadFile(
                 file=test_case.catalog_item_picture.file,
                 filename=test_case.catalog_item_picture.filename,
@@ -240,18 +260,18 @@ class TestUpdateItemView(TestClass[update_item]):
 
     @patch.object(CatalogItemPriceChangedEvent, 'publish', autospec=True)
     @patch.object(view, '_update_catalog_item_in_db')
-    @patch.object(view, '_fetch_current_catalog_item_price')
+    @patch.object(view, '_fetch_catalog_item_price_and_picture_filename')
     def test_case_success_but_price_has_been_changed(
         self,
-        mock__fetch_current_catalog_item_price: Mock,
+        mock__fetch_catalog_item_price_and_picture_filename: Mock,
         mock__update_catalog_item_in_db: Mock,
         mock__catalog_item_price_changed_event__publish: Mock,
         test_case_success_but_price_has_been_changed: TestCaseSuccessButPriceHasBeenChanged,
     ):
         test_case = test_case_success_but_price_has_been_changed
 
-        mock__fetch_current_catalog_item_price.return_value = (
-            test_case.mock__fetch_current_catalog_item_price__return_value
+        mock__fetch_catalog_item_price_and_picture_filename.return_value = (
+            test_case.mock__fetch_catalog_item_price_and_picture_filename__return_value
         )
 
         mock__update_catalog_item_in_db.return_value = None
@@ -275,6 +295,9 @@ class TestUpdateItemView(TestClass[update_item]):
         assert fact_called_event == test_case.expected_published_event
 
         cast(Mock, test_case.mock__file_storage_api.update).assert_called_once_with(
+            old_file_filename=(
+                test_case.mock__fetch_catalog_item_price_and_picture_filename__return_value.picture_filename
+            ),
             upload_file=UploadFile(
                 file=test_case.catalog_item_picture.file,
                 filename=test_case.catalog_item_picture.filename,
@@ -284,18 +307,18 @@ class TestUpdateItemView(TestClass[update_item]):
 
     @patch.object(CatalogItemPriceChangedEvent, 'publish')
     @patch.object(view, '_update_catalog_item_in_db')
-    @patch.object(view, '_fetch_current_catalog_item_price')
+    @patch.object(view, '_fetch_catalog_item_price_and_picture_filename')
     def test_case_failed_due_to_integrity_error(
         self,
-        mock__fetch_current_catalog_item_price: Mock,
+        mock__fetch_catalog_item_price_and_picture_filename: Mock,
         mock__update_catalog_item_in_db: Mock,
         mock__catalog_item_price_changed_event__publish: Mock,
         test_case_failed_due_to_integrity_error: TestCaseFailedDueToIntegrityError,
     ):
         test_case = test_case_failed_due_to_integrity_error
 
-        mock__fetch_current_catalog_item_price.return_value = (
-            test_case.mock__fetch_current_catalog_item_price__return_value
+        mock__fetch_catalog_item_price_and_picture_filename.return_value = (
+            test_case.mock__fetch_catalog_item_price_and_picture_filename__return_value
         )
 
         mock__update_catalog_item_in_db.side_effect = IntegrityError(orig=None, statement=None, params=None)
@@ -319,15 +342,15 @@ class TestUpdateItemView(TestClass[update_item]):
 
         cast(Mock, mock__file_storage_api.update).assert_not_called()
 
-    @patch.object(view, '_fetch_current_catalog_item_price')
+    @patch.object(view, '_fetch_catalog_item_price_and_picture_filename')
     def test_case_failed_due_to_not_found_error(
         self,
-        mock__fetch_current_catalog_item_price: Mock,
+        mock__fetch_catalog_item_price_and_picture_filename: Mock,
         test_case_failed_due_to_not_found_error: TestCaseFailedDueToNotFoundError,
     ):
         test_case = test_case_failed_due_to_not_found_error
 
-        mock__fetch_current_catalog_item_price.side_effect = NotFoundError
+        mock__fetch_catalog_item_price_and_picture_filename.side_effect = NotFoundError
 
         mock__file_storage_api = Mock(spec=IFileStorageApi)
 
