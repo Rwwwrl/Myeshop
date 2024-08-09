@@ -117,7 +117,7 @@ class TestCreateItemView(TestClass[create_item]):
 
         mock__save_new_catalog_item_to_db.return_value = None
 
-        with dependency_container.file_storage_api.override(test_case.file_storage_api_mock):
+        with dependency_container.file_storage_api_factory.override(test_case.file_storage_api_mock):
             response = create_item(
                 new_catalog_item_request_data=test_case.new_catalog_item_request_data,
                 catalog_item_picture=test_case.catalog_item_picture,
@@ -147,7 +147,7 @@ class TestCreateItemView(TestClass[create_item]):
 
         mock__save_new_catalog_item_to_db.side_effect = IntegrityError(orig=None, statement=None, params=None)
 
-        with dependency_container.file_storage_api.override(test_case.file_storage_api_mock):
+        with dependency_container.file_storage_api_factory.override(test_case.file_storage_api_mock):
             try:
                 create_item(
                     new_catalog_item_request_data=test_case.new_catalog_item_request_data,

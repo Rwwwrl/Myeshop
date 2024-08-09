@@ -106,7 +106,7 @@ class TestDeleteItemView(TestClass[delete_item]):
 
         mock__catalog_item_has_been_deleted_event__publish.return_value = None
 
-        with dependency_container.file_storage_api.override(test_case.mock__file_storage_api):
+        with dependency_container.file_storage_api_factory.override(test_case.mock__file_storage_api):
             response = delete_item(catalog_item_id=test_case.catalog_item_id)
 
         assert response.status_code == test_case.expected_response.status_code

@@ -4,7 +4,7 @@ from framework.file_storage.local_file_storage_api import LocalFileStorageApi
 
 
 class DependencyContainer(containers.DeclarativeContainer):
-    file_storage_api = providers.Singleton(LocalFileStorageApi)
+    file_storage_api_factory = providers.Singleton(LocalFileStorageApi)
 
 
 dependency_container = DependencyContainer()

@@ -97,7 +97,7 @@ def test() -> dict:
 
 @api_router.post('/file_upload/')
 def test_file_upload(upload_file: fastapi_UploadFile) -> Response:
-    url_path_to_file = dependency_container.file_storage_api().upload(
+    url_path_to_file = dependency_container.file_storage_api_factory().upload(
         upload_file=UploadFile(
             file=upload_file.file,
             filename=upload_file.filename,

@@ -64,7 +64,7 @@ def create_item(
     new_catalog_item_request_data: Annotated[NewCatalogItemRequestData, Depends()],
     catalog_item_picture: fastapi.UploadFile,
 ) -> Response:
-    file_storage_api = dependency_container.file_storage_api()
+    file_storage_api = dependency_container.file_storage_api_factory()
 
     picture_url = file_storage_api.url_path_for_file(filename=catalog_item_picture.filename)
 

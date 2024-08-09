@@ -57,6 +57,6 @@ def delete_item(catalog_item_id: hints.CatalogItemId) -> Response:
             _delete_catalog_item_from_db(session=session, catalog_item_id=catalog_item_id)
             event.publish()
 
-        dependency_container.file_storage_api().delete(url_path_to_file=catalog_item_picture_url)
+        dependency_container.file_storage_api_factory().delete(url_path_to_file=catalog_item_picture_url)
 
     return Response(status_code=status.HTTP_200_OK)

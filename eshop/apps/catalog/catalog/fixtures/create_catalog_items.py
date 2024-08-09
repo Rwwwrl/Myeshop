@@ -11,7 +11,7 @@ from framework.sqlalchemy.session import Session
 def create_catalog_items() -> None:
     LOCAL_MEDIA_FOLDER = Path(__file__).parent / 'media'
 
-    file_storage_api = dependency_container.file_storage_api()
+    file_storage_api = dependency_container.file_storage_api_factory()
 
     catalog_type1 = CatalogTypeORM(type='type1')
     catalog_type2 = CatalogTypeORM(type='type2')
