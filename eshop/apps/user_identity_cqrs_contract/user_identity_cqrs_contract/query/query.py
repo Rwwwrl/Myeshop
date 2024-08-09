@@ -11,7 +11,7 @@ from .query_response import UserDTO, UserIdWithRoleDTO
 
 __all__ = (
     'UserFromJWTTokenQuery',
-    'UserQuery',
+    'UserByIdQuery',
 )
 
 
@@ -36,8 +36,8 @@ class UserNotFoundError(PossibleExpectedError):
 
 @final
 @define
-class UserQuery(Query[UserDTO]):
+class UserByIdQuery(Query[UserDTO]):
 
-    user_id: UserId
+    id: UserId
 
     __possible_exceptions__: Final = (UserNotFoundError, )

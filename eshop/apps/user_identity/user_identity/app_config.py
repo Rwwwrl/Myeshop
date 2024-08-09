@@ -19,13 +19,13 @@ class UserIdentityAppConfig(IAppConfig):
 
     @classmethod
     def get_sqlalchemy_base(cls) -> Optional[Type[DeclarativeBase]]:
-        from .infrastructure.peristance.base import Base
+        from .domain.models.base import Base
 
         return Base
 
     @classmethod
     def import_models(cls) -> None:
-        from .infrastructure import peristance    # noqa
+        from .domain import models    # noqa
 
     @classmethod
     def import_http_views(cls) -> None:
