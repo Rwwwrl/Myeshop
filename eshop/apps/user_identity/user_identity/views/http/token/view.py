@@ -13,10 +13,10 @@ from framework.common.dto import DTO
 from framework.sqlalchemy.session import Session
 
 from user_identity import hints
-from user_identity.api_router import api_router
 from user_identity.dependency_container import dependency_container
 from user_identity.domain.models.user import User, UserRepository
 from user_identity.domain.models.user.user_repository import NotFoundError
+from user_identity.views.http.api_router import api_router
 
 __all__ = ('token', )
 

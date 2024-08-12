@@ -2,12 +2,12 @@ from typing import Annotated, List
 
 from fastapi import Depends
 
-from basket.api_router import api_router
 from basket.domain.models.customer_basket import CustomerBasketORM
 from basket.domain.models.customer_basket.customer_basket_repository import (
     NotFoundError,
     PostgresCustomerBasketRepository,
 )
+from basket.views.http.api_router import api_router
 
 from framework.fastapi.dependencies.get_user_id_from_http_request import get_user_id_from_http_request
 from framework.sqlalchemy.session import Session

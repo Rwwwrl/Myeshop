@@ -2,8 +2,8 @@ from typing import List
 
 from sqlalchemy import select
 
-from catalog.api_router import api_router
 from catalog.domain.models.catalog_type import CatalogType
+from catalog.views.http.api_router import api_router
 
 from framework.sqlalchemy.session import Session
 

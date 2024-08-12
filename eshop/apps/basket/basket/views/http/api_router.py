@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from .app_config import BasketAppConfig
+from basket.app_config import BasketAppConfig
 
 api_router = APIRouter(
     prefix=f'/{BasketAppConfig.name}',

@@ -9,8 +9,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session as lib_Session
 
 from catalog import hints
-from catalog.api_router import api_router
 from catalog.domain.models import CatalogItem
+from catalog.views.http.api_router import api_router
 
 from eshop.dependency_container import dependency_container
 
