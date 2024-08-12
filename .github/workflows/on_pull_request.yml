@@ -96,4 +96,11 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: web_app:tests
-          run: pytest -c pytest.ini -m "not cqrs_contract_usage"
+          options: --volume ${{ github.workspace }}/pytest_coverage:/usr/code/myeshop/pytest_coverage
+          run: pytest --cov=eshop --cov-report html:pytest_coverage -c pytest.ini
+
+      - name: Upload pytest coverage result
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest_coverage
+          path: pytest_coverage
