@@ -4,8 +4,8 @@ from sqlalchemy import delete, select, text
 from sqlalchemy.orm import Session as lib_Session
 
 from catalog import hints
-from catalog.api_router import api_router
 from catalog.domain.models import CatalogItem
+from catalog.views.http.api_router import api_router
 
 from catalog_cqrs_contract.event import CatalogItemHasBeenDeletedEvent
 

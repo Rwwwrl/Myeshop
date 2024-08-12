@@ -3,8 +3,8 @@ from typing import List
 from sqlalchemy import select
 
 from catalog import hints
-from catalog.api_router import api_router
 from catalog.domain.models import CatalogItem
+from catalog.views.http.api_router import api_router
 
 from framework.sqlalchemy.session import Session
 
