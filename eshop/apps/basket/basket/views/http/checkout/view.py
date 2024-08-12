@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends, Response, status
 
-from basket.api_router import api_router
+from basket.views.http.api_router import api_router
 
 from basket_cqrs_contract.event import UserCheckoutAcceptedEvent
 from basket_cqrs_contract.query import CustomerBasketQuery

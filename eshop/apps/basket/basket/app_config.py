@@ -13,7 +13,7 @@ class BasketAppConfig(IAppConfig):
 
     @classmethod
     def get_api_router(cls) -> Optional[APIRouter]:
-        from .api_router import api_router
+        from .views.http.api_router import api_router
 
         return api_router
 
