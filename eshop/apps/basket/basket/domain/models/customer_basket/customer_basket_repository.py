@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from basket import hints
 
-from .customer_basket_orm import CustomerBasketORM, Data
+from .customer_basket import CustomerBasketORM, Data
 
 __all__ = ('PostgresCustomerBasketRepository', )
 

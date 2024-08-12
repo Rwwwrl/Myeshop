@@ -19,7 +19,7 @@ from framework.for_pytests.test_case import TestCase as _TestCase
 from framework.for_pytests.test_class import TestClass
 
 from user_identity_cqrs_contract.hints import UserId
-from user_identity_cqrs_contract.query import UserQuery
+from user_identity_cqrs_contract.query import UserByIdQuery
 from user_identity_cqrs_contract.query.query_response import UserDTO
 
 
@@ -108,7 +108,7 @@ class TestUrlToView(TestClass[checkout]):
 
 
 class TestCheckoutView(TestClass[checkout]):
-    @patch.object(UserQuery, 'fetch')
+    @patch.object(UserByIdQuery, 'fetch')
     @patch.object(CustomerBasketQuery, 'fetch')
     @patch.object(UserCheckoutAcceptedEvent, 'publish', autospec=True)
     def test(

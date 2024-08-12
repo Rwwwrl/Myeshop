@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
 from catalog import hints
-from catalog.infrastructure.persistance.postgres.models import CatalogItemORM
+from catalog.domain.models import CatalogItem
 
 from catalog_cqrs_contract.query import CatalogItemsByIdsQuery
 from catalog_cqrs_contract.query.query_response import (
@@ -22,16 +22,16 @@ __all__ = ("CatalogItemByIdQueryHandler", )
 @CatalogItemsByIdsQuery.handler
 class CatalogItemByIdQueryHandler(IQueryHandler):
     @staticmethod
-    def _fetch_from_db(ids: List[hints.CatalogItemId]) -> List[CatalogItemORM]:
+    def _fetch_from_db(ids: List[hints.CatalogItemId]) -> List[CatalogItem]:
         with Session() as session:
             # yapf: disable
             stmt = select(
-                CatalogItemORM,
+                CatalogItem,
             ).where(
-                CatalogItemORM.id.in_(ids),
+                CatalogItem.id.in_(ids),
             ).options(
-                joinedload(CatalogItemORM.catalog_brand),
-                joinedload(CatalogItemORM.catalog_type),
+                joinedload(CatalogItem.catalog_brand),
+                joinedload(CatalogItem.catalog_type),
             )
             # yapf: enable
             with session.begin():
@@ -40,7 +40,7 @@ class CatalogItemByIdQueryHandler(IQueryHandler):
                 return catalog_items
 
     @staticmethod
-    def _to_dto(catalog_item_orm: CatalogItemORM) -> CatalogItemDTO:
+    def _to_dto(catalog_item_orm: CatalogItem) -> CatalogItemDTO:
         return CatalogItemDTO(
             id=catalog_item_orm.id,
             name=catalog_item_orm.name,

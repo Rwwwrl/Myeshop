@@ -6,7 +6,7 @@ from sqlalchemy import select
 
 from catalog import hints
 from catalog.api_router import api_router
-from catalog.infrastructure.persistance.postgres.models import CatalogItemORM
+from catalog.domain.models import CatalogItem
 
 from framework.fastapi.http_exceptions import BadRequestException
 from framework.sqlalchemy.session import Session
@@ -31,11 +31,11 @@ def _parse_request_ids(ids: str) -> List[hints.CatalogItemId]:
     return ids
 
 
-def _fetch_catalog_items_from_db(ids: Optional[List[hints.CatalogItemId]]) -> List[CatalogItemORM]:
+def _fetch_catalog_items_from_db(ids: Optional[List[hints.CatalogItemId]]) -> List[CatalogItem]:
     if ids:
-        stmt = select(CatalogItemORM).where(CatalogItemORM.id.in_(ids))
+        stmt = select(CatalogItem).where(CatalogItem.id.in_(ids))
     else:
-        stmt = select(CatalogItemORM)
+        stmt = select(CatalogItem)
 
     with Session() as session:
         with session.begin():

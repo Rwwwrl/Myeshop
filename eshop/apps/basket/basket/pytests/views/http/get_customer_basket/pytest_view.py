@@ -3,12 +3,12 @@ from mock import MagicMock, Mock, patch
 import pytest
 
 from basket.app_config import BasketAppConfig
-from basket.infrastructure.persistence.postgres.customer_basket.customer_basket_orm import (
+from basket.domain.models.customer_basket.customer_basket import (
     BasketItem,
     CustomerBasketORM,
     Data,
 )
-from basket.infrastructure.persistence.postgres.customer_basket.postgres_customer_basket_repository import (
+from basket.domain.models.customer_basket.customer_basket_repository import (
     NotFoundError,
     PostgresCustomerBasketRepository,
 )

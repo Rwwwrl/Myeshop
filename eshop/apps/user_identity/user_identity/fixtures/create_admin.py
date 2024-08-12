@@ -3,14 +3,14 @@ from eshop.settings import SETTINGS
 from framework.sqlalchemy.session import Session
 
 from user_identity.dependency_container import dependency_container
-from user_identity.infrastructure.peristance.user.user import UserORM, UserRoleEnum
+from user_identity.domain.models.user.user import User, UserRoleEnum
 
 
 def create_admin():
     hashed_password = dependency_container.password_hasher_factory().hash(
         plain_password=SETTINGS.user_identity_service.initial_admin_user_credentials.password,
     )
-    user = UserORM(
+    user = User(
         name=SETTINGS.user_identity_service.initial_admin_user_credentials.name,
         hashed_password=hashed_password,
         role=UserRoleEnum.ADMIN,

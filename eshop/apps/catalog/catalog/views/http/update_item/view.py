@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session as lib_Session
 
 from catalog import hints
 from catalog.api_router import api_router
-from catalog.infrastructure.persistance.postgres.models import CatalogItemORM
+from catalog.domain.models import CatalogItem
 
 from catalog_cqrs_contract.event import CatalogItemPriceChangedEvent
 
@@ -54,10 +54,10 @@ def _fetch_catalog_item_price_and_picture_filename(
 ) -> CatalogItemPriceAndPictureFilenameResult:
     # yapf: disable
     stmt = select(
-        CatalogItemORM.price,
-        CatalogItemORM.picture_filename,
+        CatalogItem.price,
+        CatalogItem.picture_filename,
     ).where(
-        CatalogItemORM.id == catalog_item_id,
+        CatalogItem.id == catalog_item_id,
     )
     # yapf: enable
 
@@ -72,12 +72,12 @@ def _fetch_catalog_item_price_and_picture_filename(
     return CatalogItemPriceAndPictureFilenameResult(price=price, picture_filename=picture_filename)
 
 
-def _update_catalog_item_in_db(session: lib_Session, catalog_item: CatalogItemORM) -> None:
+def _update_catalog_item_in_db(session: lib_Session, catalog_item: CatalogItem) -> None:
     # yapf: disable
     stmt = update(
-        CatalogItemORM,
+        CatalogItem,
     ).where(
-        CatalogItemORM.id == catalog_item.id,
+        CatalogItem.id == catalog_item.id,
     ).values(
         name=catalog_item.name,
         description=catalog_item.description,
@@ -100,8 +100,8 @@ def _updated_catalog_item(
     catalog_item_request_data: CatalogItemRequestData,
     picture_filename: str,
     picture_url: str,
-) -> CatalogItemORM:
-    return CatalogItemORM(
+) -> CatalogItem:
+    return CatalogItem(
         id=catalog_item_request_data.id,
         name=catalog_item_request_data.name,
         description=catalog_item_request_data.description,

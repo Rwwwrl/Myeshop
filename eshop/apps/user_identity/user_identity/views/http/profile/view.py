@@ -8,7 +8,7 @@ from framework.sqlalchemy.session import Session
 
 from user_identity import hints
 from user_identity.api_router import api_router
-from user_identity.infrastructure.peristance.user import UserRepository
+from user_identity.domain.models.user import UserRepository
 
 __all__ = ('profile', )
 

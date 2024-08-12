@@ -7,7 +7,7 @@ from framework.for_pytests.test_class import TestClass
 
 from user_identity import hints
 from user_identity.app_config import UserIdentityAppConfig
-from user_identity.infrastructure.peristance.user import UserORM, UserRepository
+from user_identity.domain.models.user import User, UserRepository
 from user_identity.views.http.profile import profile
 from user_identity.views.http.profile.view import ProfileDTO
 
@@ -15,7 +15,7 @@ from user_identity.views.http.profile.view import ProfileDTO
 class TestCase(_TestCase['TestCaseProfileView']):
 
     user_id: hints.UserId
-    mock__user_repository__get_by_id__return_value: UserORM
+    mock__user_repository__get_by_id__return_value: User
     expected_response: ProfileDTO
 
 
@@ -23,7 +23,7 @@ class TestCase(_TestCase['TestCaseProfileView']):
 def test_case() -> TestCase:
     user_id = 1
 
-    mock__user_repository__get_by_id__return_value = UserORM(
+    mock__user_repository__get_by_id__return_value = User(
         id=1,
         name='name',
         hashed_password='hashed_password',

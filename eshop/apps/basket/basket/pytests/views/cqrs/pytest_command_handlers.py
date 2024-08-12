@@ -6,11 +6,11 @@ import pytest
 
 from typing_extensions import TypedDict
 
-from basket.infrastructure.persistence.postgres.customer_basket import (
+from basket.domain.models.customer_basket import (
     CustomerBasketORM,
     PostgresCustomerBasketRepository,
 )
-from basket.infrastructure.persistence.postgres.customer_basket.customer_basket_orm import (
+from basket.domain.models.customer_basket.customer_basket import (
     BasketItem,
     Data,
 )

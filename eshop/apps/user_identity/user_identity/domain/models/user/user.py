@@ -10,7 +10,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from user_identity import hints
 from user_identity.app_config import UserIdentityAppConfig
 
-__all__ = ('UserORM', )
+__all__ = ('User', )
 
 
 class UserRoleEnum(Enum):
@@ -18,7 +18,7 @@ class UserRoleEnum(Enum):
     CUSTOMER = 'CUSTOMER'
 
 
-class UserORM(UserIdentityAppConfig.get_sqlalchemy_base()):
+class User(UserIdentityAppConfig.get_sqlalchemy_base()):
 
     __tablename__ = 'user'
 

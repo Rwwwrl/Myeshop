@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from catalog.infrastructure.persistance.postgres.models import CatalogBrandORM, CatalogItemORM, CatalogTypeORM
+from catalog.domain.models import CatalogBrand, CatalogItem, CatalogType
 
 from eshop.dependency_container import dependency_container
 
@@ -13,11 +13,11 @@ def create_catalog_items() -> None:
 
     file_storage_api = dependency_container.file_storage_api_factory()
 
-    catalog_type1 = CatalogTypeORM(type='type1')
-    catalog_type2 = CatalogTypeORM(type='type2')
+    catalog_type1 = CatalogType(type='type1')
+    catalog_type2 = CatalogType(type='type2')
 
-    catalog_brand1 = CatalogBrandORM(brand='brand1')
-    catalog_brand2 = CatalogBrandORM(brand='brand2')
+    catalog_brand1 = CatalogBrand(brand='brand1')
+    catalog_brand2 = CatalogBrand(brand='brand2')
 
     catalog_item1_picture_filename = 'catalog_item1.jpg'
     with open(LOCAL_MEDIA_FOLDER / catalog_item1_picture_filename, 'rb') as file:
@@ -55,7 +55,7 @@ def create_catalog_items() -> None:
             ),
         )
 
-    catalog_item1 = CatalogItemORM(
+    catalog_item1 = CatalogItem(
         name='name1',
         description='description1',
         price=10,
@@ -68,7 +68,7 @@ def create_catalog_items() -> None:
         maxstock_threshold=15,
         on_reorder=False,
     )
-    catalog_item2 = CatalogItemORM(
+    catalog_item2 = CatalogItem(
         name='name2',
         description='description2',
         price=20,
@@ -81,7 +81,7 @@ def create_catalog_items() -> None:
         maxstock_threshold=18,
         on_reorder=False,
     )
-    catalog_item3 = CatalogItemORM(
+    catalog_item3 = CatalogItem(
         name='name3',
         description='description3',
         price=30,
@@ -94,7 +94,7 @@ def create_catalog_items() -> None:
         maxstock_threshold=20,
         on_reorder=False,
     )
-    catalog_item4 = CatalogItemORM(
+    catalog_item4 = CatalogItem(
         name='name4',
         description='description4',
         price=40,

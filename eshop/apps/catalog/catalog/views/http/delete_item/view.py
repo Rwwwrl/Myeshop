@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session as lib_Session
 
 from catalog import hints
 from catalog.api_router import api_router
-from catalog.infrastructure.persistance.postgres.models import CatalogItemORM
+from catalog.domain.models import CatalogItem
 
 from catalog_cqrs_contract.event import CatalogItemHasBeenDeletedEvent
 
@@ -24,12 +24,12 @@ def _check_if_catalog_item_exists(session: lib_Session, catalog_item_id: hints.C
 
 
 def _delete_catalog_item_from_db(session: lib_Session, catalog_item_id: hints.CatalogItemId) -> None:
-    stmt = delete(CatalogItemORM).where(CatalogItemORM.id == catalog_item_id)
+    stmt = delete(CatalogItem).where(CatalogItem.id == catalog_item_id)
     session.execute(stmt)
 
 
 def _fetch_catalog_item_picture_url(session: lib_Session, catalog_item_id: hints.CatalogItemId) -> str:
-    stmt = select(CatalogItemORM.picture_url).where(CatalogItemORM.id == catalog_item_id)
+    stmt = select(CatalogItem.picture_url).where(CatalogItem.id == catalog_item_id)
     return session.scalar(stmt)
 
 

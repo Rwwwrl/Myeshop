@@ -20,7 +20,7 @@ from framework.for_pytests.for_testing_cqrs_contract_usage import (
 )
 
 import user_identity_cqrs_contract.hints
-from user_identity_cqrs_contract.query import UserQuery
+from user_identity_cqrs_contract.query import UserByIdQuery
 from user_identity_cqrs_contract.query.query_response import UserDTO
 
 
@@ -65,12 +65,12 @@ class TestCatalogItemHasBeenDeletedEvent(ITestEventContract[CatalogItemHasBeenDe
         assert_attribute(CatalogItemHasBeenDeletedEvent, 'context', InsideSqlachemyTransactionContext)
 
 
-class TestUserQuery(ITestQueryContract[UserQuery]):
+class TestUserQuery(ITestQueryContract[UserByIdQuery]):
     def test_query_contract(self) -> None:
-        assert_attribute(UserQuery, 'user_id', user_identity_cqrs_contract.hints.UserId)
+        assert_attribute(UserByIdQuery, 'id', user_identity_cqrs_contract.hints.UserId)
 
     def test_query_response_contract(self) -> None:
-        response_type = UserQuery.__response_type__()
+        response_type = UserByIdQuery.__response_type__()
 
         assert response_type == UserDTO
 

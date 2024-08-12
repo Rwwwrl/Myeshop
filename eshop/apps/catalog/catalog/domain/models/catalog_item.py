@@ -1,4 +1,6 @@
-from typing import List
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from sqlalchemy import (
     ForeignKey,
@@ -11,34 +13,14 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from catalog import hints
 from catalog.app_config import CatalogAppConfig
 
-__all__ = (
-    'CatalogItemORM',
-    'CatalogBrandORM',
-    'CatalogTypeORM',
-)
+__all__ = ('CatalogItem', )
+
+if TYPE_CHECKING:
+    from .catalog_type import CatalogType
+    from .catalog_brand import CatalogBrand
 
 
-class CatalogTypeORM(CatalogAppConfig.get_sqlalchemy_base()):
-
-    __tablename__ = 'catalog_type'
-
-    id: Mapped[hints.CatalogTypeId] = mapped_column(INTEGER, primary_key=True)
-    type: Mapped[str] = mapped_column()
-
-    catalog_items: Mapped[List['CatalogItemORM']] = relationship(back_populates='catalog_type')
-
-
-class CatalogBrandORM(CatalogAppConfig.get_sqlalchemy_base()):
-
-    __tablename__ = 'catalog_brand'
-
-    id: Mapped[hints.CatalogTypeId] = mapped_column(INTEGER, primary_key=True)
-    brand: Mapped[str] = mapped_column()
-
-    catalog_items: Mapped[List['CatalogItemORM']] = relationship(back_populates='catalog_brand')
-
-
-class CatalogItemORM(CatalogAppConfig.get_sqlalchemy_base()):
+class CatalogItem(CatalogAppConfig.get_sqlalchemy_base()):
 
     __tablename__ = 'catalog_item'
 
@@ -59,5 +41,5 @@ class CatalogItemORM(CatalogAppConfig.get_sqlalchemy_base()):
     # True if item is on reorder
     on_reorder: Mapped[bool] = mapped_column()
 
-    catalog_type: Mapped[CatalogTypeORM] = relationship(back_populates='catalog_items')
-    catalog_brand: Mapped[CatalogBrandORM] = relationship(back_populates='catalog_items')
+    catalog_type: Mapped[CatalogType] = relationship(back_populates='catalog_items')
+    catalog_brand: Mapped[CatalogBrand] = relationship(back_populates='catalog_items')

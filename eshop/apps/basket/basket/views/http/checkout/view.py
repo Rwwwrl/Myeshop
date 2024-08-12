@@ -10,7 +10,7 @@ from basket_cqrs_contract.query import CustomerBasketQuery
 from framework.fastapi.dependencies.get_user_id_from_http_request import get_user_id_from_http_request
 
 from user_identity_cqrs_contract.hints import UserId
-from user_identity_cqrs_contract.query import UserQuery
+from user_identity_cqrs_contract.query import UserByIdQuery
 
 from .dto import BasketCheckoutRequestData
 
@@ -23,7 +23,7 @@ def checkout(
     user_id: Annotated[UserId, Depends(get_user_id_from_http_request)],
 ) -> Response:
 
-    username = UserQuery(user_id=user_id).fetch().name
+    username = UserByIdQuery(id=user_id).fetch().name
     customer_basket = CustomerBasketQuery(customer_id=user_id).fetch()
 
     event = UserCheckoutAcceptedEvent(

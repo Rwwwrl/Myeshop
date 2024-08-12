@@ -1,10 +1,10 @@
 from typing import List, final
 
-from basket.infrastructure.persistence.postgres.customer_basket import (
+from basket.domain.models.customer_basket import (
     CustomerBasketORM,
     PostgresCustomerBasketRepository,
 )
-from basket.infrastructure.persistence.postgres.customer_basket.postgres_customer_basket_repository import (
+from basket.domain.models.customer_basket.customer_basket_repository import (
     NotFoundError,
 )
 

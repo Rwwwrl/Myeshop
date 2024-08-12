@@ -5,7 +5,7 @@ from mock import Mock, patch
 import pytest
 
 from catalog.app_config import CatalogAppConfig
-from catalog.infrastructure.persistance.postgres.models import CatalogTypeORM
+from catalog.domain.models import CatalogType
 from catalog.views.http.get_catalog_types import get_catalog_types, view
 from catalog.views.http.get_catalog_types.dto import CatalogTypeDTO
 
@@ -14,19 +14,19 @@ from framework.for_pytests.test_class import TestClass
 
 
 class TestCase(TestCase['TestGetCatalogTypesView']):
-    mock__fetch_all_catalog_types_from_db__return_value: List[CatalogTypeORM]
+    mock__fetch_all_catalog_types_from_db__return_value: List[CatalogType]
     expected_response: List[CatalogTypeDTO]
 
 
 @pytest.fixture(scope='session')
 def test_case() -> TestCase:
 
-    mock__fetch_all_catalog_types_from_db__return_value: List[CatalogTypeORM] = [
-        CatalogTypeORM(
+    mock__fetch_all_catalog_types_from_db__return_value: List[CatalogType] = [
+        CatalogType(
             id=1,
             type='type1',
         ),
-        CatalogTypeORM(
+        CatalogType(
             id=2,
             type='type2',
         ),

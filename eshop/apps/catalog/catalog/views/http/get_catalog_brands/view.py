@@ -3,7 +3,7 @@ from typing import List
 from sqlalchemy import select
 
 from catalog.api_router import api_router
-from catalog.infrastructure.persistance.postgres.models import CatalogBrandORM
+from catalog.domain.models import CatalogBrand
 
 from framework.sqlalchemy.session import Session
 
@@ -12,17 +12,17 @@ from .dto import CatalogBrandDTO
 __all__ = ('get_catalog_brands', )
 
 
-def _orm_to_dto(orm: CatalogBrandORM) -> CatalogBrandDTO:
+def _orm_to_dto(orm: CatalogBrand) -> CatalogBrandDTO:
     return CatalogBrandDTO(
         id=orm.id,
         brand=orm.brand,
     )
 
 
-def _fetch_all_catalog_brands_from_db() -> List[CatalogBrandORM]:
+def _fetch_all_catalog_brands_from_db() -> List[CatalogBrand]:
     with Session() as session:
         with session.begin():
-            catalog_brands = session.scalars(select(CatalogBrandORM)).all()
+            catalog_brands = session.scalars(select(CatalogBrand)).all()
             session.expunge_all()
             return catalog_brands
 

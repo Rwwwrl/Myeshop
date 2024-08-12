@@ -1,4 +1,4 @@
-from basket.infrastructure.persistence.postgres.customer_basket.customer_basket_orm import (
+from basket.domain.models.customer_basket.customer_basket import (
     BasketItem,
     CustomerBasketORM,
     Data,

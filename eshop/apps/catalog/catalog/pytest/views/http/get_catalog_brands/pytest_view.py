@@ -5,7 +5,7 @@ from mock import Mock, patch
 import pytest
 
 from catalog.app_config import CatalogAppConfig
-from catalog.infrastructure.persistance.postgres.models import CatalogBrandORM
+from catalog.domain.models import CatalogBrand
 from catalog.views.http.get_catalog_brands import get_catalog_brands, view
 from catalog.views.http.get_catalog_brands.dto import CatalogBrandDTO
 
@@ -14,7 +14,7 @@ from framework.for_pytests.test_class import TestClass
 
 
 class TestCase(TestCase['TestGetCatalogTypesView']):
-    mock__fetch_all_catalog_brands_from_db__return_value: List[CatalogBrandORM]
+    mock__fetch_all_catalog_brands_from_db__return_value: List[CatalogBrand]
     expected_response: List[CatalogBrandDTO]
 
 
@@ -22,11 +22,11 @@ class TestCase(TestCase['TestGetCatalogTypesView']):
 def test_case() -> TestCase:
 
     mock__fetch_all_catalog_types_from_db__return_value: List[CatalogBrandDTO] = [
-        CatalogBrandORM(
+        CatalogBrand(
             id=1,
             brand='brand1',
         ),
-        CatalogBrandORM(
+        CatalogBrand(
             id=2,
             brand='brand2',
         ),

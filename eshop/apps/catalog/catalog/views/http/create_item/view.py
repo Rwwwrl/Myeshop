@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session as lib_Session
 
 from catalog import hints
 from catalog.api_router import api_router
-from catalog.infrastructure.persistance.postgres.models import CatalogItemORM
+from catalog.domain.models import CatalogItem
 
 from eshop.dependency_container import dependency_container
 
@@ -35,7 +35,7 @@ class NewCatalogItemRequestData(DTO):
     on_reorder: bool
 
 
-def _save_new_catalog_item_to_db(session: lib_Session, new_catalog_item: CatalogItemORM) -> None:
+def _save_new_catalog_item_to_db(session: lib_Session, new_catalog_item: CatalogItem) -> None:
     session.add(new_catalog_item)
 
 
@@ -43,8 +43,8 @@ def _new_catalog_item(
     new_catalog_item_request_data: NewCatalogItemRequestData,
     picture_filename: str,
     picture_url: str,
-) -> CatalogItemORM:
-    return CatalogItemORM(
+) -> CatalogItem:
+    return CatalogItem(
         name=new_catalog_item_request_data.name,
         description=new_catalog_item_request_data.description,
         price=new_catalog_item_request_data.price,
