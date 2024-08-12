@@ -34,9 +34,9 @@ class IQuery(ISyncRequest[QueryResponseType], abc.ABC):
 class Query(IQuery[QueryResponseType], BaseSyncRequest):
     @final
     def fetch(self, bus: Optional[ICQRSBus] = None) -> QueryResponseType:
-        from ..cqrs_bus import CQRSBusSingletoneFactory
+        from eshop.dependency_container import dependency_container
 
         if not bus:
-            bus = CQRSBusSingletoneFactory.create()
+            bus = dependency_container.cqrs_bus_factory()
 
         return bus.fetch(query=self)

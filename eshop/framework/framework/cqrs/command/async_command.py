@@ -27,9 +27,9 @@ class IAsyncCommand(IAsyncRequest, abc.ABC):
 class AsyncCommand(IAsyncCommand, BaseAsyncRequest):
     @final
     def execute(self, bus: Optional[ICQRSBus] = None) -> None:
-        from ..cqrs_bus import CQRSBusSingletoneFactory
+        from eshop.dependency_container import dependency_container
 
         if not bus:
-            bus = CQRSBusSingletoneFactory.create()
+            bus = dependency_container.cqrs_bus_factory()
 
         bus.async_execute(command=self)

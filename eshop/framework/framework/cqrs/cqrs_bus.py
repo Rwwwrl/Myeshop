@@ -97,16 +97,3 @@ class CQRSBus(ICQRSBus):
         if exceptions:
             self._logger.debug('event %s processing produced errors %s', event, exceptions)
             raise ExceptionGroup(f'event {event} processing produced errors', exceptions)
-
-
-class CQRSBusSingletoneFactory:
-
-    _instance: CQRSBus = None
-
-    @classmethod
-    def create(cls) -> CQRSBus:
-        if cls._instance is not None:
-            return cls._instance
-
-        cls._instance = CQRSBus()
-        return cls._instance
