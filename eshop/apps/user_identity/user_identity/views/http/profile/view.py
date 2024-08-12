@@ -7,8 +7,8 @@ from framework.fastapi.dependencies.get_user_id_from_http_request import get_use
 from framework.sqlalchemy.session import Session
 
 from user_identity import hints
-from user_identity.api_router import api_router
 from user_identity.domain.models.user import UserRepository
+from user_identity.views.http.api_router import api_router
 
 __all__ = ('profile', )
 
