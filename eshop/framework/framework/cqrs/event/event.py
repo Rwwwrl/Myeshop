@@ -27,9 +27,9 @@ class IEvent(IAsyncRequest, abc.ABC):
 class Event(IEvent, BaseAsyncRequest):
     @final
     def publish(self, bus: Optional[ICQRSBus] = None) -> None:
-        from ..cqrs_bus import CQRSBusSingletoneFactory
+        from eshop.dependency_container import dependency_container
 
         if not bus:
-            bus = CQRSBusSingletoneFactory.create()
+            bus = dependency_container.cqrs_bus_factory()
 
         return bus.publish(event=self)
