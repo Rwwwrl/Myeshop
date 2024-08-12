@@ -4,7 +4,7 @@ from mock import Mock, patch
 
 import pytest
 
-from catalog.infrastructure.persistance.postgres.models import CatalogBrandORM, CatalogItemORM, CatalogTypeORM
+from catalog.domain.models import CatalogBrand, CatalogItem, CatalogType
 from catalog.views.cqrs.query_handlers import CatalogItemByIdQueryHandler
 
 from catalog_cqrs_contract.query import CatalogItemsByIdsQuery
@@ -21,7 +21,7 @@ from framework.for_pytests.test_class import TestClass
 class TestCase(_TestCase['TestCatalogItemByIdQueryHandler__handle']):
 
     query: CatalogItemsByIdsQuery
-    mock__fetch_from_db__return_value: List[CatalogItemORM]
+    mock__fetch_from_db__return_value: List[CatalogItem]
     expected_result: List[CatalogItemDTO]
 
 
@@ -29,10 +29,10 @@ class TestCase(_TestCase['TestCatalogItemByIdQueryHandler__handle']):
 def test_case() -> TestClass:
     query = CatalogItemsByIdsQuery(ids=[1, 2, 3])
 
-    catalog_brand = CatalogBrandORM(id=1, brand='brand')
-    catalog_type = CatalogTypeORM(id=1, type='type')
-    mock__fetch_from_db__return_value: List[CatalogItemORM] = [
-        CatalogItemORM(
+    catalog_brand = CatalogBrand(id=1, brand='brand')
+    catalog_type = CatalogType(id=1, type='type')
+    mock__fetch_from_db__return_value: List[CatalogItem] = [
+        CatalogItem(
             id=1,
             name='name1',
             description='description1',
@@ -46,7 +46,7 @@ def test_case() -> TestClass:
             catalog_type=catalog_type,
             catalog_brand=catalog_brand,
         ),
-        CatalogItemORM(
+        CatalogItem(
             id=2,
             name='name2',
             description='description2',

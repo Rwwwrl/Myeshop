@@ -6,7 +6,7 @@ import pytest
 
 from catalog import hints
 from catalog.app_config import CatalogAppConfig
-from catalog.infrastructure.persistance.postgres.models import CatalogItemORM
+from catalog.domain.models import CatalogItem
 from catalog.views.http.common.catalog_item_dto import CatalogItemDTO
 from catalog.views.http.get_items_by_type_id_and_brand_id import get_items_by_type_id_and_brand_id, view
 
@@ -24,15 +24,15 @@ class TestCase(_TestCase['TestGetItemsByTypeIdAndBrandIdView']):
 
     request_query_params: RequestQueryParams
     expected_http_response: List[CatalogItemDTO]
-    mock__fetch_catalog_items_from_db__return_value: List[CatalogItemORM]
+    mock__fetch_catalog_items_from_db__return_value: List[CatalogItem]
 
 
 @pytest.fixture(scope='session')
 def test_case() -> TestCase:
     request_query_params = RequestQueryParams(brand_id=1, type_id=2)
 
-    mock__fetch_catalog_items_from_db__return_value: List[CatalogItemORM] = [
-        CatalogItemORM(
+    mock__fetch_catalog_items_from_db__return_value: List[CatalogItem] = [
+        CatalogItem(
             id=1,
             name='name1',
             description='description1',
@@ -44,7 +44,7 @@ def test_case() -> TestCase:
             maxstock_threshold=25,
             on_reorder=False,
         ),
-        CatalogItemORM(
+        CatalogItem(
             id=2,
             name='name2',
             description='description2',

@@ -1,7 +1,7 @@
 from pydantic.types import PositiveFloat, PositiveInt
 
 from catalog import hints
-from catalog.infrastructure.persistance.postgres import CatalogItemORM
+from catalog.domain.models import CatalogItem
 
 from framework.common.dto import DTO
 
@@ -19,7 +19,7 @@ class CatalogItemDTO(DTO):
     on_reorder: bool
 
     @classmethod
-    def from_orm(cls, orm: CatalogItemORM) -> 'CatalogItemDTO':
+    def from_orm(cls, orm: CatalogItem) -> 'CatalogItemDTO':
         return CatalogItemDTO(
             id=orm.id,
             name=orm.name,

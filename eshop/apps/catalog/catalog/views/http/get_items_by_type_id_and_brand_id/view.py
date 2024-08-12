@@ -4,7 +4,7 @@ from sqlalchemy import select
 
 from catalog import hints
 from catalog.api_router import api_router
-from catalog.infrastructure.persistance.postgres import CatalogItemORM
+from catalog.domain.models import CatalogItem
 
 from framework.sqlalchemy.session import Session
 
@@ -13,13 +13,13 @@ from ..common.catalog_item_dto import CatalogItemDTO
 __all__ = ('get_items_by_type_id_and_brand_id', )
 
 
-def _fetch_catalog_items_from_db(type_id: hints.CatalogTypeId, brand_id: hints.CatalogBrandId) -> List[CatalogItemORM]:
+def _fetch_catalog_items_from_db(type_id: hints.CatalogTypeId, brand_id: hints.CatalogBrandId) -> List[CatalogItem]:
     # yapf: disable
     stmt = select(
-        CatalogItemORM,
+        CatalogItem,
     ).where(
-        CatalogItemORM.catalog_brand_id == brand_id,
-        CatalogItemORM.catalog_type_id == type_id,
+        CatalogItem.catalog_brand_id == brand_id,
+        CatalogItem.catalog_type_id == type_id,
     )
     # yapf: enable
 

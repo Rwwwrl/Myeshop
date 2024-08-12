@@ -3,7 +3,7 @@ from typing import List
 from sqlalchemy import select
 
 from catalog.api_router import api_router
-from catalog.infrastructure.persistance.postgres.models import CatalogTypeORM
+from catalog.domain.models.catalog_type import CatalogType
 
 from framework.sqlalchemy.session import Session
 
@@ -12,17 +12,17 @@ from .dto import CatalogTypeDTO
 __all__ = ('get_catalog_types', )
 
 
-def _orm_to_dto(orm: CatalogTypeORM) -> CatalogTypeDTO:
+def _orm_to_dto(orm: CatalogType) -> CatalogTypeDTO:
     return CatalogTypeDTO(
         id=orm.id,
         type=orm.type,
     )
 
 
-def _fetch_all_catalog_types_from_db() -> List[CatalogTypeORM]:
+def _fetch_all_catalog_types_from_db() -> List[CatalogType]:
     with Session() as session:
         with session.begin():
-            catalog_types = session.scalars(select(CatalogTypeORM)).all()
+            catalog_types = session.scalars(select(CatalogType)).all()
             session.expunge_all()
             return catalog_types
 
