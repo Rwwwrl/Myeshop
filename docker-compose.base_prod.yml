@@ -77,6 +77,18 @@ services:
       timeout: 3s
       retries: 30
 
+  postgres_db_exporter:
+    image: quay.io/prometheuscommunity/postgres-exporter
+    container_name: postgres_db_exporter
+    environment:
+      - DATA_SOURCE_URI=postgres_db:5432/postgres?sslmode=disable
+      # TODO: создать пользователя "неадмина" под эти цели
+      - DATA_SOURCE_USER=${POSTGRES__LOGIN}
+      - DATA_SOURCE_PASS=${POSTGRES__PASSWORD}
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+
   node_exporter:
     image: quay.io/prometheus/node-exporter:latest
     container_name: node_exporter
