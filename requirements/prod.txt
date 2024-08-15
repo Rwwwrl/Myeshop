@@ -24,3 +24,4 @@ framework
 api_mediator
 myeshop
 order
+order_cqrs_contract
