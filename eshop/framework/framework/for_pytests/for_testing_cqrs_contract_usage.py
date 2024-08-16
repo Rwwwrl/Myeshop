@@ -2,6 +2,7 @@ import abc
 import types
 import typing as t
 from datetime import datetime, timedelta
+from enum import Enum
 from typing import Any, Type, TypeVar, Union
 
 import attrs
@@ -75,9 +76,21 @@ class ITestSyncCommandContract(abc.ABC, TestClass[SyncCommandTypeVar], metaclass
         raise NotImplementedError
 
 
-class ITestEventContract(abc.ABC, TestClass[EventTypeVar], metaclass=TestConctractMetaUnionWithABCMeta):
+class ITestEventContractPublisher(abc.ABC, TestClass[EventTypeVar], metaclass=TestConctractMetaUnionWithABCMeta):
     """
-    Базовый класс для тестирования контракта команды
+    Базовый класс для тестирования контракта эвента со стороны publisher`a
+    """
+    @abc.abstractmethod
+    def test_event_contract(self) -> None:
+        """
+        тестируем контракт самой квери
+        """
+        raise NotImplementedError
+
+
+class ITestEventContractConsumer(abc.ABC, TestClass[EventTypeVar], metaclass=TestConctractMetaUnionWithABCMeta):
+    """
+    Базовый класс для тестирования контракта эвента со стороны consumer`а
     """
     @abc.abstractmethod
     def test_event_contract(self) -> None:
@@ -98,6 +111,8 @@ def _get_fact_type_from_complex_type(complex_type: Any) -> Any:
     посмотреть примеры можно в
         framework.pytests.for_pytests.pytest_for_testing_cqrs_contract_usage.TestGetFactTypeFromComplexType
     """
+    # TODO: красиво переписать функцию
+    # разнести на typing, types, custom_types
 
     fact_types = set([int, float, str, set, list, dict, tuple, datetime, timedelta])
     if complex_type in fact_types:
@@ -164,6 +179,9 @@ def _get_fact_type_from_complex_type(complex_type: Any) -> Any:
 
         if complex_type.__origin__ is tuple:
             return t.Tuple[_get_fact_type_from_complex_type(complex_type.__args__[0])]
+
+    if issubclass(complex_type, Enum):
+        return complex_type
 
     if issubclass(complex_type, IContext):
         return complex_type

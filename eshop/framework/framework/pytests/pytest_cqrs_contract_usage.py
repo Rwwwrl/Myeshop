@@ -1,6 +1,7 @@
 from framework.for_pytests.for_testing_cqrs_contract_usage import ITestQueryContract, assert_attribute
 
-from user_identity_cqrs_contract.query.query import UserFromJWTTokenQuery, UserIdWithRoleDTO
+from user_identity_cqrs_contract.query import UserFromJWTTokenQuery
+from user_identity_cqrs_contract.query.query_response import UserIdWithRoleDTO, UserRoleEnum
 
 
 class TestUserIdFromJWTTokenQuery(ITestQueryContract[UserFromJWTTokenQuery]):
@@ -12,3 +13,4 @@ class TestUserIdFromJWTTokenQuery(ITestQueryContract[UserFromJWTTokenQuery]):
 
         assert response_type == UserIdWithRoleDTO
         assert_attribute(UserIdWithRoleDTO, 'id', int)
+        assert_attribute(UserIdWithRoleDTO, 'role', UserRoleEnum)

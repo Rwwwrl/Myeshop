@@ -1,5 +1,6 @@
 import typing as t
 from datetime import datetime, timedelta
+from enum import Enum
 
 import pytest
 
@@ -131,6 +132,17 @@ def test_case_typing_Optional() -> TestCase:
 
 
 @pytest.fixture(scope='session')
+def test_case_typing_Enum() -> TestCase:
+    class MyEnum(Enum):
+        pass
+
+    return TestCase(
+        complex_type=MyEnum,
+        expected_fact_type=MyEnum,
+    )
+
+
+@pytest.fixture(scope='session')
 def test_case_pydantic_BaseModel() -> TestCase:
     class MyDTO(DTO):
         field1: str
@@ -219,6 +231,7 @@ def test_case_super_complex_type() -> TestCase:
         pytest_lazyfixture.lazy_fixture(test_case_union1.__name__),
         pytest_lazyfixture.lazy_fixture(test_case_union2.__name__),
         pytest_lazyfixture.lazy_fixture(test_case_typing_Optional.__name__),
+        pytest_lazyfixture.lazy_fixture(test_case_typing_Enum.__name__),
         pytest_lazyfixture.lazy_fixture(test_case_super_complex_type.__name__),
         pytest_lazyfixture.lazy_fixture(test_case_pydantic_BaseModel.__name__),
         pytest_lazyfixture.lazy_fixture(test_case_context.__name__),

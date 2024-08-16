@@ -12,7 +12,8 @@ from catalog_cqrs_contract.event import (
 
 from framework.cqrs.context import InsideSqlachemyTransactionContext
 from framework.for_pytests.for_testing_cqrs_contract_usage import (
-    ITestEventContract,
+    ITestEventContractConsumer,
+    ITestEventContractPublisher,
     ITestQueryContract,
     assert_attribute,
 )
@@ -21,7 +22,7 @@ from user_identity_cqrs_contract.query import UserByIdQuery
 from user_identity_cqrs_contract.query.query_response import UserDTO
 
 
-class TestUserCheckoutAcceptedEvent(ITestEventContract[UserCheckoutAcceptedEvent]):
+class TestUserCheckoutAcceptedEvent(ITestEventContractPublisher[UserCheckoutAcceptedEvent]):
     def test_event_contract(self) -> None:
         assert_attribute(UserCheckoutAcceptedEvent, 'user_id', int)
         assert_attribute(UserCheckoutAcceptedEvent, 'username', str)
@@ -49,14 +50,14 @@ class TestUserCheckoutAcceptedEvent(ITestEventContract[UserCheckoutAcceptedEvent
         assert_attribute(BasketItemDTO, 'picture_url', str)
 
 
-class TestCatalogItemPriceChangedEvent(ITestEventContract[CatalogItemPriceChangedEvent]):
+class TestCatalogItemPriceChangedEvent(ITestEventContractConsumer[CatalogItemPriceChangedEvent]):
     def test_event_contract(self) -> None:
         assert_attribute(CatalogItemPriceChangedEvent, 'catalog_item_id', int)
         assert_attribute(CatalogItemPriceChangedEvent, 'new_price', float)
         assert_attribute(CatalogItemPriceChangedEvent, 'context', InsideSqlachemyTransactionContext)
 
 
-class TestCatalogItemHasBeenDeletedEvent(ITestEventContract[CatalogItemHasBeenDeletedEvent]):
+class TestCatalogItemHasBeenDeletedEvent(ITestEventContractConsumer[CatalogItemHasBeenDeletedEvent]):
     def test_event_contract(self) -> None:
         assert_attribute(CatalogItemHasBeenDeletedEvent, 'catalog_item_id', int)
         assert_attribute(CatalogItemHasBeenDeletedEvent, 'context', InsideSqlachemyTransactionContext)
