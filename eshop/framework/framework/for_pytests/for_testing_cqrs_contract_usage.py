@@ -8,6 +8,8 @@ import attrs
 
 from pydantic import BaseModel
 
+import pytest
+
 from pytest_check import check
 
 from framework.common.dto import DTO
@@ -22,7 +24,20 @@ SyncCommandTypeVar = TypeVar('SyncCommandTypeVar', bound=ISyncCommand)
 EventTypeVar = TypeVar('EventTypeVar', bound=IEvent)
 
 
-class ITestQueryContract(abc.ABC, TestClass[QueryTypeVar]):
+class TestContractMeta(type):
+    """
+    класс нужен только для того чтобы автоматически навешивать pytest.mark.cqrs_contract_usag
+    на каждый класс теста контракта.
+    """
+    def __new__(cls, *args, **kwargs):
+        return pytest.mark.cqrs_contract_usage(super().__new__(cls, *args, **kwargs))
+
+
+class TestConctractMetaUnionWithABCMeta(TestContractMeta, abc.ABCMeta):
+    """нужно для решения проблемы 'metaclass conflict'"""
+
+
+class ITestQueryContract(abc.ABC, TestClass[QueryTypeVar], metaclass=TestConctractMetaUnionWithABCMeta):
     """
     Базовый класс для тестирования контракта квери
     """
@@ -41,7 +56,7 @@ class ITestQueryContract(abc.ABC, TestClass[QueryTypeVar]):
         raise NotImplementedError
 
 
-class ITestSyncCommandContract(abc.ABC, TestClass[SyncCommandTypeVar]):
+class ITestSyncCommandContract(abc.ABC, TestClass[SyncCommandTypeVar], metaclass=TestConctractMetaUnionWithABCMeta):
     """
     Базовый класс для тестирования контракта команды
     """
@@ -60,7 +75,7 @@ class ITestSyncCommandContract(abc.ABC, TestClass[SyncCommandTypeVar]):
         raise NotImplementedError
 
 
-class ITestEventContract(abc.ABC, TestClass[EventTypeVar]):
+class ITestEventContract(abc.ABC, TestClass[EventTypeVar], metaclass=TestConctractMetaUnionWithABCMeta):
     """
     Базовый класс для тестирования контракта команды
     """

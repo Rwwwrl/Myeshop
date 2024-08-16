@@ -1,7 +1,5 @@
 from typing import List, Union
 
-import pytest
-
 from basket_cqrs_contract.command import UpdateCustomerBasketCommand
 from basket_cqrs_contract.customer_basket_dto import BasketItemDTO, CustomerBasketDTO
 from basket_cqrs_contract.query import CustomerBasketQuery
@@ -16,7 +14,6 @@ from framework.for_pytests.for_testing_cqrs_contract_usage import (
 )
 
 
-@pytest.mark.cqrs_contract_usage
 class TestCatalogItemByIdsQuery(ITestQueryContract[CatalogItemsByIdsQuery]):
     def test_query_contract(self):
         assert_attribute(CatalogItemsByIdsQuery, 'ids', List[int])
