@@ -76,9 +76,21 @@ class ITestSyncCommandContract(abc.ABC, TestClass[SyncCommandTypeVar], metaclass
         raise NotImplementedError
 
 
-class ITestEventContract(abc.ABC, TestClass[EventTypeVar], metaclass=TestConctractMetaUnionWithABCMeta):
+class ITestEventContractPublisher(abc.ABC, TestClass[EventTypeVar], metaclass=TestConctractMetaUnionWithABCMeta):
     """
-    Базовый класс для тестирования контракта команды
+    Базовый класс для тестирования контракта эвента со стороны publisher`a
+    """
+    @abc.abstractmethod
+    def test_event_contract(self) -> None:
+        """
+        тестируем контракт самой квери
+        """
+        raise NotImplementedError
+
+
+class ITestEventContractConsumer(abc.ABC, TestClass[EventTypeVar], metaclass=TestConctractMetaUnionWithABCMeta):
+    """
+    Базовый класс для тестирования контракта эвента со стороны consumer`а
     """
     @abc.abstractmethod
     def test_event_contract(self) -> None:
