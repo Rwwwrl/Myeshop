@@ -1,12 +1,10 @@
 from datetime import datetime
 from typing import List, Union
 
-import basket_cqrs_contract.hints
 from basket_cqrs_contract.customer_basket_dto import BasketItemDTO, CustomerBasketDTO
 from basket_cqrs_contract.event import UserCheckoutAcceptedEvent
 from basket_cqrs_contract.query import CustomerBasketQuery
 
-import catalog_cqrs_contract.hints
 from catalog_cqrs_contract.event import (
     CatalogItemHasBeenDeletedEvent,
     CatalogItemPriceChangedEvent,
@@ -19,7 +17,6 @@ from framework.for_pytests.for_testing_cqrs_contract_usage import (
     assert_attribute,
 )
 
-import user_identity_cqrs_contract.hints
 from user_identity_cqrs_contract.query import UserByIdQuery
 from user_identity_cqrs_contract.query.query_response import UserDTO
 
@@ -41,45 +38,45 @@ class TestUserCheckoutAcceptedEvent(ITestEventContract[UserCheckoutAcceptedEvent
         assert_attribute(UserCheckoutAcceptedEvent, 'card_type_id', int)
         assert_attribute(UserCheckoutAcceptedEvent, 'basket', CustomerBasketDTO)
 
-        assert_attribute(CustomerBasketDTO, 'buyer_id', basket_cqrs_contract.hints.BuyerId)
+        assert_attribute(CustomerBasketDTO, 'buyer_id', int)
         assert_attribute(CustomerBasketDTO, 'basket_items', List[BasketItemDTO])
 
-        assert_attribute(BasketItemDTO, 'id', Union[basket_cqrs_contract.hints.BasketItemId, None])
-        assert_attribute(BasketItemDTO, 'product_id', basket_cqrs_contract.hints.ProductId)
-        assert_attribute(BasketItemDTO, 'product_name', basket_cqrs_contract.hints.ProductName)
-        assert_attribute(BasketItemDTO, 'unit_price', basket_cqrs_contract.hints.Price)
-        assert_attribute(BasketItemDTO, 'quantity', basket_cqrs_contract.hints.Quantity)
-        assert_attribute(BasketItemDTO, 'picture_url', basket_cqrs_contract.hints.PictureUrl)
+        assert_attribute(BasketItemDTO, 'id', Union[int, None])
+        assert_attribute(BasketItemDTO, 'product_id', int)
+        assert_attribute(BasketItemDTO, 'product_name', str)
+        assert_attribute(BasketItemDTO, 'unit_price', float)
+        assert_attribute(BasketItemDTO, 'quantity', int)
+        assert_attribute(BasketItemDTO, 'picture_url', str)
 
 
 class TestCatalogItemPriceChangedEvent(ITestEventContract[CatalogItemPriceChangedEvent]):
     def test_event_contract(self) -> None:
-        assert_attribute(CatalogItemPriceChangedEvent, 'catalog_item_id', catalog_cqrs_contract.hints.CatalogItemId)
+        assert_attribute(CatalogItemPriceChangedEvent, 'catalog_item_id', int)
         assert_attribute(CatalogItemPriceChangedEvent, 'new_price', float)
         assert_attribute(CatalogItemPriceChangedEvent, 'context', InsideSqlachemyTransactionContext)
 
 
 class TestCatalogItemHasBeenDeletedEvent(ITestEventContract[CatalogItemHasBeenDeletedEvent]):
     def test_event_contract(self) -> None:
-        assert_attribute(CatalogItemHasBeenDeletedEvent, 'catalog_item_id', catalog_cqrs_contract.hints.CatalogItemId)
+        assert_attribute(CatalogItemHasBeenDeletedEvent, 'catalog_item_id', int)
         assert_attribute(CatalogItemHasBeenDeletedEvent, 'context', InsideSqlachemyTransactionContext)
 
 
 class TestUserQuery(ITestQueryContract[UserByIdQuery]):
     def test_query_contract(self) -> None:
-        assert_attribute(UserByIdQuery, 'id', user_identity_cqrs_contract.hints.UserId)
+        assert_attribute(UserByIdQuery, 'id', int)
 
     def test_query_response_contract(self) -> None:
         response_type = UserByIdQuery.__response_type__()
 
         assert response_type == UserDTO
 
-        assert_attribute(UserDTO, 'name', user_identity_cqrs_contract.hints.UserName)
+        assert_attribute(UserDTO, 'name', str)
 
 
 class TestCustomerBasketQuery(ITestQueryContract[CustomerBasketQuery]):
     def test_query_contract(self) -> None:
-        assert_attribute(CustomerBasketQuery, 'customer_id', basket_cqrs_contract.hints.CustomerId)
+        assert_attribute(CustomerBasketQuery, 'customer_id', int)
 
     def test_query_response_contract(self) -> None:
         response_type = CustomerBasketQuery.__response_type__()
