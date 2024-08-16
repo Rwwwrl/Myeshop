@@ -8,7 +8,7 @@ import pytest_lazyfixture
 
 from framework.common.dto import DTO
 from framework.cqrs.context import IContext
-from framework.for_pytests.for_testing_cqrs_contract_usage import _get_fact_type_from_complex_type
+from framework.for_pytests.for_testing_cqrs_contract_usage.assert_attribute import FactTypeFromComplexTypeGetter
 from framework.for_pytests.test_case import TestCase as _TestCase
 from framework.for_pytests.test_class import TestClass
 
@@ -241,7 +241,7 @@ def test_case(request) -> TestCase:
     return request.param
 
 
-class TestGetFactTypeFromComplexType(TestClass[_get_fact_type_from_complex_type]):
+class TestFactTypeFromComplexTypeGetter__get(TestClass[FactTypeFromComplexTypeGetter.get]):
     def test(self, test_case: TestCase):
-        fact_type = _get_fact_type_from_complex_type(complex_type=test_case.complex_type)
+        fact_type = FactTypeFromComplexTypeGetter.get(complex_type=test_case.complex_type)
         assert fact_type == test_case.expected_fact_type
