@@ -23,6 +23,8 @@ from catalog.app_config import CatalogAppConfig
 
 from framework.iapp_config import IAppConfig
 
+from order.app_config import OrderAppConfig
+
 from user_identity.app_config import UserIdentityAppConfig
 
 INSTALLED_APPS: List[Type[IAppConfig]] = [
@@ -30,6 +32,7 @@ INSTALLED_APPS: List[Type[IAppConfig]] = [
     UserIdentityAppConfig,
     BasketAppConfig,
     CatalogAppConfig,
+    OrderAppConfig,
 ]
 
 
