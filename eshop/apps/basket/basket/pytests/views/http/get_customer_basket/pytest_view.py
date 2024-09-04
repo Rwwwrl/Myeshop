@@ -5,12 +5,12 @@ import pytest
 from basket.app_config import BasketAppConfig
 from basket.domain.models.customer_basket.customer_basket import (
     BasketItem,
-    CustomerBasketORM,
+    CustomerBasket,
     Data,
 )
 from basket.domain.models.customer_basket.customer_basket_repository import (
+    CustomerBasketRepository,
     NotFoundError,
-    PostgresCustomerBasketRepository,
 )
 from basket.views.http.get_customer_basket import get_customer_basket
 from basket.views.http.get_customer_basket import view
@@ -26,7 +26,7 @@ from user_identity_cqrs_contract.hints import UserId
 class TestCaseUserHaveBasket(TestCase):
 
     user_id: UserId
-    mock__customer_basket_repository__get_by_buyer_id__return_value: CustomerBasketORM
+    mock__customer_basket_repository__get_by_buyer_id__return_value: CustomerBasket
     expected_response: CustomerBasketDTO
 
 
@@ -34,14 +34,14 @@ class TestCaseUserDoesNotHaveBasket(TestCase):
 
     user_id: UserId
     expected_response: CustomerBasketDTO
-    mock__customer_basket_repository__create__return_value: CustomerBasketORM
+    mock__customer_basket_repository__create__return_value: CustomerBasket
 
 
 @pytest.fixture(scope='session')
 def test_case_user_have_basket() -> TestCaseUserHaveBasket:
     user_id = 1
 
-    mock__customer_basket_repository__get_by_buyer_id__return_value = CustomerBasketORM(
+    mock__customer_basket_repository__get_by_buyer_id__return_value = CustomerBasket(
         buyer_id=1,
         data=Data(
             basket_items=[
@@ -105,7 +105,7 @@ def test_case_user_does_not_have_basket() -> TestCaseUserDoesNotHaveBasket:
         basket_items=[],
     )
 
-    mock__customer_basket_repository__create__return_value = CustomerBasketORM(
+    mock__customer_basket_repository__create__return_value = CustomerBasket(
         buyer_id=1,
         data=Data(basket_items=[]),
     )
@@ -125,7 +125,7 @@ class TestUrlToView(TestClass[get_customer_basket]):
 
 
 class TestGetCustomerBasketView(TestClass[get_customer_basket]):
-    @patch.object(PostgresCustomerBasketRepository, 'get_by_buyer_id')
+    @patch.object(CustomerBasketRepository, 'get_by_buyer_id')
     def test_case_user_have_basket(
         self,
         mock__customer_basket_repository__get_by_buyer_id: Mock,
@@ -143,8 +143,8 @@ class TestGetCustomerBasketView(TestClass[get_customer_basket]):
         mock__customer_basket_repository__get_by_buyer_id.assert_called_once_with(buyer_id=test_case.user_id)
 
     @patch.object(view, 'Session', new=MagicMock(spec=Session))
-    @patch.object(PostgresCustomerBasketRepository, 'create')
-    @patch.object(PostgresCustomerBasketRepository, 'get_by_buyer_id')
+    @patch.object(CustomerBasketRepository, 'create')
+    @patch.object(CustomerBasketRepository, 'get_by_buyer_id')
     def test_case_user_does_not_have_basket(
         self,
         mock__customer_basket_repository__get_by_buyer_id: Mock,

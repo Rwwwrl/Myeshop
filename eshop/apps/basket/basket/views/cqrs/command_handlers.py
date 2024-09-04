@@ -1,6 +1,6 @@
 from basket.domain.models.customer_basket import (
-    CustomerBasketORM,
-    PostgresCustomerBasketRepository,
+    CustomerBasket,
+    CustomerBasketRepository,
 )
 from basket.domain.models.customer_basket.customer_basket import (
     BasketItem,
@@ -16,8 +16,8 @@ from framework.sqlalchemy.session import Session
 @UpdateCustomerBasketCommand.handler
 class UpdateCustomerBasketCommandHandler(ICommandHandler):
     @staticmethod
-    def _deserialize_to_orm(command: UpdateCustomerBasketCommand) -> CustomerBasketORM:
-        return CustomerBasketORM(
+    def _deserialize_to_orm(command: UpdateCustomerBasketCommand) -> CustomerBasket:
+        return CustomerBasket(
             buyer_id=command.customer_basket.buyer_id,
             data=Data(
                 basket_items=[
@@ -36,6 +36,6 @@ class UpdateCustomerBasketCommandHandler(ICommandHandler):
     def handle(self, command: UpdateCustomerBasketCommand) -> None:
         customer_basket_orm = self._deserialize_to_orm(command=command)
         with Session() as session:
-            customer_basket_repository = PostgresCustomerBasketRepository(session=session)
+            customer_basket_repository = CustomerBasketRepository(session=session)
             with session.begin():
                 customer_basket_repository.save(customer_basket_orm=customer_basket_orm)

@@ -1,4 +1,4 @@
-from typing import Annotated, List, Set, Union
+from typing import Annotated, List, Set, Union, final
 
 from pydantic import BaseModel, field_validator
 
@@ -12,9 +12,10 @@ from basket.app_config import BasketAppConfig
 
 from framework.sqlalchemy.dialects.postgres.pydantic_type import PydanticType
 
-__all__ = ('CustomerBasketORM', )
+__all__ = ('CustomerBasket', )
 
 
+@final
 class BasketItem(BaseModel):
     id: Annotated[
         Union[hints.BasketItemId, None],
@@ -35,6 +36,7 @@ class BasketItem(BaseModel):
     picture_url: hints.PictureUrl
 
 
+@final
 class Data(BaseModel):
     basket_items: List[BasketItem]
 
@@ -69,8 +71,8 @@ class Data(BaseModel):
         return value
 
 
-# TODO: удалить суффикс ORM
-class CustomerBasketORM(BasketAppConfig.get_sqlalchemy_base()):
+@final
+class CustomerBasket(BasketAppConfig.get_sqlalchemy_base()):
 
     __tablename__ = 'customer_basket'
 

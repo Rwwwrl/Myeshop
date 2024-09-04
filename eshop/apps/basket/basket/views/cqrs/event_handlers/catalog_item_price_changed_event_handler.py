@@ -1,8 +1,8 @@
 from typing import List, final
 
 from basket.domain.models.customer_basket import (
-    CustomerBasketORM,
-    PostgresCustomerBasketRepository,
+    CustomerBasket,
+    CustomerBasketRepository,
 )
 
 from catalog_cqrs_contract.event import CatalogItemPriceChangedEvent
@@ -16,10 +16,10 @@ __all__ = ('CatalogItemPriceChangedEventHandler', )
 @CatalogItemPriceChangedEvent.handler
 class CatalogItemPriceChangedEventHandler(IEventHandler):
     def handle(self, event: CatalogItemPriceChangedEvent) -> None:
-        customer_basket_repository = PostgresCustomerBasketRepository(session=event.context.session)
+        customer_basket_repository = CustomerBasketRepository(session=event.context.session)
         customers_baskets = customer_basket_repository.all()
 
-        updated_customers_baskets: List[CustomerBasketORM] = []
+        updated_customers_baskets: List[CustomerBasket] = []
         for customer_basket in customers_baskets:
             for basket_item in customer_basket.data.basket_items:
                 if basket_item.product_id == event.catalog_item_id:

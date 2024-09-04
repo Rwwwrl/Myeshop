@@ -1,21 +1,23 @@
-from typing import List
+from typing import List, final
 
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
 from basket import hints
 
-from .customer_basket import CustomerBasketORM, Data
+from .customer_basket import CustomerBasket, Data
 
-__all__ = ('PostgresCustomerBasketRepository', )
+__all__ = ('CustomerBasketRepository', )
 
 
+@final
 class NotFoundError(Exception):
     pass
 
 
+@final
 class BasketItemIdGenerator:
-    def __init__(self, customer_basket_orm: CustomerBasketORM):
+    def __init__(self, customer_basket_orm: CustomerBasket):
         self._current_sequence_value: int = 1
         for basket_item in customer_basket_orm.data.basket_items:
             if basket_item.id is None:
@@ -29,12 +31,13 @@ class BasketItemIdGenerator:
         return self._current_sequence_value
 
 
-class PostgresCustomerBasketRepository:
+@final
+class CustomerBasketRepository:
     def __init__(self, session: Session):
         self._session = session
 
-    def all(self) -> List[CustomerBasketORM]:
-        customers_baskets = self._session.scalars(select(CustomerBasketORM)).all()
+    def all(self) -> List[CustomerBasket]:
+        customers_baskets = self._session.scalars(select(CustomerBasket)).all()
 
         for customer_basket_orm in customers_baskets:
             self._session.expunge(customer_basket_orm)
@@ -42,7 +45,7 @@ class PostgresCustomerBasketRepository:
         return customers_baskets
 
     def create(self, buyer_id: hints.BuyerId) -> None:
-        new_customer_basket_orm = CustomerBasketORM(
+        new_customer_basket_orm = CustomerBasket(
             buyer_id=buyer_id,
             data=Data(basket_items=[]),
         )
@@ -54,12 +57,12 @@ class PostgresCustomerBasketRepository:
 
         return new_customer_basket_orm
 
-    def get_by_buyer_id(self, buyer_id: hints.BuyerId) -> CustomerBasketORM:
+    def get_by_buyer_id(self, buyer_id: hints.BuyerId) -> CustomerBasket:
         # yapf: disable
         stmt = select(
-            CustomerBasketORM,
+            CustomerBasket,
         ).where(
-            CustomerBasketORM.buyer_id == buyer_id,
+            CustomerBasket.buyer_id == buyer_id,
         )
         # yapf: enable
 
@@ -72,23 +75,23 @@ class PostgresCustomerBasketRepository:
         return customer_basket_orm
 
     @staticmethod
-    def _set_id_to_basket_items_in_transient_state(customer_basket_orm: CustomerBasketORM) -> None:
+    def _set_id_to_basket_items_in_transient_state(customer_basket_orm: CustomerBasket) -> None:
         basket_items_in_transient_state = list(filter(lambda bi: bi.id is None, customer_basket_orm.data.basket_items))
         if basket_items_in_transient_state:
             basket_item_id_generator = BasketItemIdGenerator(customer_basket_orm=customer_basket_orm)
             for basket_item in basket_items_in_transient_state:
                 basket_item.id = basket_item_id_generator.next()
 
-    def save(self, customer_basket_orm: CustomerBasketORM) -> None:
+    def save(self, customer_basket_orm: CustomerBasket) -> None:
         self._set_id_to_basket_items_in_transient_state(customer_basket_orm=customer_basket_orm)
 
         # yapf: disable
         stmt = update(
-            CustomerBasketORM,
+            CustomerBasket,
         ).values(
             data=customer_basket_orm.data,
         ).where(
-            CustomerBasketORM.buyer_id == customer_basket_orm.buyer_id,
+            CustomerBasket.buyer_id == customer_basket_orm.buyer_id,
         )
         # yapf: enable
         self._session.execute(stmt)

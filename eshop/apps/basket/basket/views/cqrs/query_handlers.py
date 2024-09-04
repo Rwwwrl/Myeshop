@@ -1,8 +1,8 @@
 from typing import List, final
 
 from basket.domain.models.customer_basket import (
-    CustomerBasketORM,
-    PostgresCustomerBasketRepository,
+    CustomerBasket,
+    CustomerBasketRepository,
 )
 from basket.domain.models.customer_basket.customer_basket_repository import (
     NotFoundError,
@@ -21,7 +21,7 @@ __all__ = ('CustomerBasketQueryHandler', )
 @CustomerBasketQuery.handler
 class CustomerBasketQueryHandler(IQueryHandler):
     @staticmethod
-    def _orm_to_dto(customer_basket_orm: CustomerBasketORM) -> CustomerBasketDTO:
+    def _orm_to_dto(customer_basket_orm: CustomerBasket) -> CustomerBasketDTO:
         basket_items: List[BasketItemDTO] = []
         for basket_item in customer_basket_orm.data.basket_items:
             basket_items.append(
@@ -42,7 +42,7 @@ class CustomerBasketQueryHandler(IQueryHandler):
 
     def handle(self, query: CustomerBasketQuery) -> CustomerBasketDTO:
         with Session() as session:
-            customer_basket_repository = PostgresCustomerBasketRepository(session=session)
+            customer_basket_repository = CustomerBasketRepository(session=session)
             try:
                 with session.begin():
                     customer_basket_orm = customer_basket_repository.get_by_buyer_id(buyer_id=query.customer_id)
