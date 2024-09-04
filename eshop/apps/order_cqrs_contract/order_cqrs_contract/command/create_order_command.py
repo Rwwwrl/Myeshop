@@ -24,8 +24,8 @@ class OrderItemDTO(DTO):
 @define(frozen=True)
 class CreateOrderCommand(SyncCommand[None]):
     order_items: List[OrderItemDTO]
-    user_id: PositiveInt
-    username: str
+    buyer_id: PositiveInt
+    buyer_name: str
     city: str
     street: str
     state: str

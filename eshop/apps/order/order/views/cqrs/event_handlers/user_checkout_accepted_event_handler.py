@@ -1,11 +1,11 @@
 from typing import final
 
-from order_cqrs_contract.command.create_order_command import CreateOrderCommand, OrderItemDTO
-
 from basket_cqrs_contract.customer_basket_dto import BasketItemDTO
 from basket_cqrs_contract.event import UserCheckoutAcceptedEvent
 
 from framework.cqrs.event import IEventHandler
+
+from order_cqrs_contract.command.create_order_command import CreateOrderCommand, OrderItemDTO
 
 __all__ = ('UserCheckoutAcceptedEventHandler', )
 
@@ -28,8 +28,8 @@ class UserCheckoutAcceptedEventHandler(IEventHandler):
             order_items=[
                 self._basket_item_dto_to_order_item_dto(basket_item) for basket_item in event.basket.basket_items
             ],
-            user_id=event.user_id,
-            username=event.username,
+            buyer_id=event.user_id,
+            buyer_name=event.username,
             city=event.city,
             street=event.street,
             state=event.state,
