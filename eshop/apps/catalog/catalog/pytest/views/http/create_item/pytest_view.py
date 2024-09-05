@@ -8,9 +8,11 @@ from mock import Mock, patch
 import pytest
 
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 
 from catalog.app_config import CatalogAppConfig
-from catalog.views.http.create_item import create_item, view
+from catalog.domain.models.catalog_item import CatalogItem
+from catalog.views.http.create_item import create_item
 from catalog.views.http.create_item.view import NewCatalogItemRequestData
 
 from eshop.dependency_container import dependency_container
@@ -27,6 +29,7 @@ class TestSuccessCase(TestCase['TestCreateItemView']):
     catalog_item_picture: fastapi.UploadFile
     expected_http_response: ExpectedHttpResponse
     file_storage_api_mock: FileStorageApiMockType
+    expected_created_catalog_item: CatalogItem
 
 
 class TestFailedDueToIntegrityErrorCase(TestCase['TestCreateItemView']):
@@ -42,14 +45,13 @@ def test_success_case() -> TestSuccessCase:
         name='name',
         description='description',
         price=10,
-        picture_filename='picture_filename',
-        picture_url='picture_url',
         catalog_type_id=1,
         catalog_brand_id=1,
         available_stock=10,
         restock_threshold=15,
         maxstock_threshold=20,
         on_reorder=True,
+        discount=50,
     )
 
     catalog_item_picture = fastapi.UploadFile(file=Mock(), filename='picture.jpeg')
@@ -58,8 +60,24 @@ def test_success_case() -> TestSuccessCase:
     file_storage_api_mock.url_path_for_file.return_value = 'picture_url'
     file_storage_api_mock.upload.return_value = None
 
+    expected_created_catalog_item = CatalogItem(
+        name='name',
+        description='description',
+        price=10,
+        picture_filename='picture.jpeg',
+        picture_url='picture_url',
+        catalog_type_id=1,
+        catalog_brand_id=1,
+        available_stock=10,
+        restock_threshold=15,
+        maxstock_threshold=20,
+        on_reorder=True,
+        discount=50,
+    )
+
     return TestSuccessCase(
         new_catalog_item_request_data=new_catalog_item_request_data,
+        expected_created_catalog_item=expected_created_catalog_item,
         catalog_item_picture=catalog_item_picture,
         expected_http_response=ExpectedHttpResponse(
             status_code=status.HTTP_201_CREATED,
@@ -83,6 +101,7 @@ def test_failed_due_to_integrity_error_case() -> TestFailedDueToIntegrityErrorCa
         restock_threshold=15,
         maxstock_threshold=20,
         on_reorder=True,
+        discount=50,
     )
 
     catalog_item_picture = fastapi.UploadFile(file=Mock(), filename='picture.jpeg')
@@ -107,15 +126,30 @@ class TestUrlToView(TestClass[create_item]):
 
 
 class TestCreateItemView(TestClass[create_item]):
-    @patch.object(view, '_save_new_catalog_item_to_db')
+    @staticmethod
+    def _assert_catalog_item(fact: CatalogItem, expected: CatalogItem) -> None:
+        assert fact.name == expected.name
+        assert fact.description == expected.description
+        assert fact.price == expected.price
+        assert fact.picture_filename == expected.picture_filename
+        assert fact.picture_url == expected.picture_url
+        assert fact.catalog_type_id == expected.catalog_type_id
+        assert fact.catalog_brand_id == expected.catalog_brand_id
+        assert fact.available_stock == expected.available_stock
+        assert fact.restock_threshold == expected.restock_threshold
+        assert fact.maxstock_threshold == expected.maxstock_threshold
+        assert fact.on_reorder == expected.on_reorder
+        assert fact.discount == expected.discount
+
+    @patch.object(Session, Session.add.__name__)
     def test_success_case(
         self,
-        mock__save_new_catalog_item_to_db: Mock,
+        mock__session__add: Mock,
         test_success_case: TestSuccessCase,
     ):
         test_case = test_success_case
 
-        mock__save_new_catalog_item_to_db.return_value = None
+        mock__session__add.return_value = None
 
         with dependency_container.file_storage_api_factory.override(test_case.file_storage_api_mock):
             response = create_item(
@@ -129,6 +163,13 @@ class TestCreateItemView(TestClass[create_item]):
         cast(Mock, test_case.file_storage_api_mock.url_path_for_file) \
             .assert_called_once_with(filename=test_case.catalog_item_picture.filename)
 
+        fact_created_catalog_item: CatalogItem = mock__session__add.call_args_list[0].args[0]
+
+        self._assert_catalog_item(
+            fact=fact_created_catalog_item,
+            expected=test_case.expected_created_catalog_item,
+        )
+
         cast(Mock, test_case.file_storage_api_mock.upload) \
             .assert_called_once_with(
                 upload_file=UploadFile(
@@ -137,15 +178,15 @@ class TestCreateItemView(TestClass[create_item]):
                 ),
             )
 
-    @patch.object(view, '_save_new_catalog_item_to_db')
+    @patch.object(Session, Session.flush.__name__)
     def test_failed_due_to_integrity_error_case(
         self,
-        mock__save_new_catalog_item_to_db: Mock,
+        mock__session__flush: Mock,
         test_failed_due_to_integrity_error_case: TestFailedDueToIntegrityErrorCase,
     ):
         test_case = test_failed_due_to_integrity_error_case
 
-        mock__save_new_catalog_item_to_db.side_effect = IntegrityError(orig=None, statement=None, params=None)
+        mock__session__flush.side_effect = IntegrityError(orig=None, statement=None, params=None)
 
         with dependency_container.file_storage_api_factory.override(test_case.file_storage_api_mock):
             try:
@@ -158,3 +199,6 @@ class TestCreateItemView(TestClass[create_item]):
 
         cast(Mock, test_case.file_storage_api_mock.url_path_for_file) \
             .assert_called_once_with(filename=test_case.catalog_item_picture.filename)
+
+        cast(Mock, test_case.file_storage_api_mock.upload) \
+            .assert_not_called()
