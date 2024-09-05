@@ -43,6 +43,7 @@ def test_case() -> TestCase:
             restock_threshold=20,
             maxstock_threshold=25,
             on_reorder=False,
+            discount=10,
         ),
         CatalogItem(
             id=2,
@@ -55,6 +56,7 @@ def test_case() -> TestCase:
             restock_threshold=20,
             maxstock_threshold=25,
             on_reorder=False,
+            discount=20,
         ),
     ]
 
@@ -70,6 +72,7 @@ def test_case() -> TestCase:
             restock_threshold=20,
             maxstock_threshold=25,
             on_reorder=False,
+            discount=10,
         ),
         CatalogItemDTO(
             id=2,
@@ -82,6 +85,7 @@ def test_case() -> TestCase:
             restock_threshold=20,
             maxstock_threshold=25,
             on_reorder=False,
+            discount=20,
         ),
     ]
 
