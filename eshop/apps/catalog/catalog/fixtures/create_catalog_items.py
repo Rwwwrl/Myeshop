@@ -67,6 +67,7 @@ def create_catalog_items() -> None:
         restock_threshold=10,
         maxstock_threshold=15,
         on_reorder=False,
+        discount=0,
     )
     catalog_item2 = CatalogItem(
         name='name2',
@@ -80,6 +81,7 @@ def create_catalog_items() -> None:
         restock_threshold=12,
         maxstock_threshold=18,
         on_reorder=False,
+        discount=0,
     )
     catalog_item3 = CatalogItem(
         name='name3',
@@ -93,6 +95,7 @@ def create_catalog_items() -> None:
         restock_threshold=13,
         maxstock_threshold=20,
         on_reorder=False,
+        discount=0,
     )
     catalog_item4 = CatalogItem(
         name='name4',
@@ -106,6 +109,7 @@ def create_catalog_items() -> None:
         restock_threshold=15,
         maxstock_threshold=20,
         on_reorder=False,
+        discount=0,
     )
 
     with Session() as session:
