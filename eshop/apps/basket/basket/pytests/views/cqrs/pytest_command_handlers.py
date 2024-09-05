@@ -7,8 +7,8 @@ import pytest
 from typing_extensions import TypedDict
 
 from basket.domain.models.customer_basket import (
-    CustomerBasketORM,
-    PostgresCustomerBasketRepository,
+    CustomerBasket,
+    CustomerBasketRepository,
 )
 from basket.domain.models.customer_basket.customer_basket import (
     BasketItem,
@@ -26,7 +26,7 @@ from framework.sqlalchemy.session import Session
 
 
 class ExpectedPostgresBasketRepositorySaveCallArgs(TypedDict):
-    customer_basket_orm: CustomerBasketORM
+    customer_basket_orm: CustomerBasket
 
 
 class TestCaseSucess(TestCase['TestUpdateCustomerBasketCommandHandler__handle']):
@@ -62,7 +62,7 @@ def test_case_success() -> TestCaseSucess:
 
     expected_posgres_basket_repository_save_call_args: ExpectedPostgresBasketRepositorySaveCallArgs = {
         'customer_basket_orm':
-            CustomerBasketORM(
+            CustomerBasket(
                 buyer_id=1,
                 data=Data(
                     basket_items=[
@@ -95,7 +95,7 @@ def test_case_success() -> TestCaseSucess:
 
 class TestUpdateCustomerBasketCommandHandler__handle(TestClass[UpdateCustomerBasketCommandHandler]):
     @patch.object(command_handlers, 'Session', new=MagicMock(spec=Session))
-    @patch.object(PostgresCustomerBasketRepository, 'save')
+    @patch.object(CustomerBasketRepository, 'save')
     def test_case_success(
         self,
         mock__postgres_customer_basket_repository__save: Mock,
@@ -107,7 +107,7 @@ class TestUpdateCustomerBasketCommandHandler__handle(TestClass[UpdateCustomerBas
 
         call = mock__postgres_customer_basket_repository__save.call_args_list[0]
         call_kwargs__customer_basket_orm_arg = cast(
-            CustomerBasketORM,
+            CustomerBasket,
             call._get_call_arguments()[1]['customer_basket_orm'],
         )
         expected_customer_basket_orm_arg = (

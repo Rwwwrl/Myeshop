@@ -2,10 +2,10 @@ from typing import Annotated, List
 
 from fastapi import Depends
 
-from basket.domain.models.customer_basket import CustomerBasketORM
+from basket.domain.models.customer_basket import CustomerBasket
 from basket.domain.models.customer_basket.customer_basket_repository import (
+    CustomerBasketRepository,
     NotFoundError,
-    PostgresCustomerBasketRepository,
 )
 from basket.views.http.api_router import api_router
 
@@ -19,7 +19,7 @@ from .dto import BasketItemDTO, CustomerBasketDTO
 __all__ = ('get_customer_basket', )
 
 
-def _orm_to_dto(customer_basket_orm: CustomerBasketORM) -> CustomerBasketDTO:
+def _orm_to_dto(customer_basket_orm: CustomerBasket) -> CustomerBasketDTO:
     basket_items: List[BasketItemDTO] = []
     for basket_item in customer_basket_orm.data.basket_items:
         basket_items.append(
@@ -42,7 +42,7 @@ def _orm_to_dto(customer_basket_orm: CustomerBasketORM) -> CustomerBasketDTO:
 @api_router.get('/customer_basket/')
 def get_customer_basket(user_id: Annotated[UserId, Depends(get_user_id_from_http_request)]) -> CustomerBasketDTO:
     with Session() as session:
-        customer_basket_repository = PostgresCustomerBasketRepository(session=session)
+        customer_basket_repository = CustomerBasketRepository(session=session)
         try:
             with session.begin():
                 customer_basket_orm = customer_basket_repository.get_by_buyer_id(buyer_id=user_id)

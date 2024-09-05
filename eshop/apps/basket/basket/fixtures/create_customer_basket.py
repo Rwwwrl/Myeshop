@@ -1,6 +1,6 @@
 from basket.domain.models.customer_basket.customer_basket import (
     BasketItem,
-    CustomerBasketORM,
+    CustomerBasket,
     Data,
 )
 
@@ -8,7 +8,7 @@ from framework.sqlalchemy.session import Session
 
 
 def create_customer_basket():
-    customer_basket1 = CustomerBasketORM(
+    customer_basket1 = CustomerBasket(
         buyer_id=1,
         data=Data(
             basket_items=[

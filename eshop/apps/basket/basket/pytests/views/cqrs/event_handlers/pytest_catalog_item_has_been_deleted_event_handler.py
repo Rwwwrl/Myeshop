@@ -5,8 +5,8 @@ from mock import Mock, patch
 import pytest
 
 from basket.domain.models.customer_basket import (
-    CustomerBasketORM,
-    PostgresCustomerBasketRepository,
+    CustomerBasket,
+    CustomerBasketRepository,
 )
 from basket.domain.models.customer_basket.customer_basket import BasketItem, Data
 from basket.views.cqrs.event_handlers import CatalogItemHasBeenDeletedEventHandler
@@ -21,8 +21,8 @@ from framework.sqlalchemy.session import Session
 
 class TestCase(_TestCase['TestCatalogItemHasBeenDeletedEventHandler__handle']):
     event: CatalogItemHasBeenDeletedEvent
-    mock__customer_basket_repository__all__return_value: List[CustomerBasketORM]
-    expected_customer_basket_repository_calls: List[CustomerBasketORM]
+    mock__customer_basket_repository__all__return_value: List[CustomerBasket]
+    expected_customer_basket_repository_calls: List[CustomerBasket]
 
 
 @pytest.fixture(scope='session')
@@ -32,8 +32,8 @@ def test_case() -> TestCase:
         context=InsideSqlachemyTransactionContext(session=Session()),
     )
 
-    mock__customer_basket_repository__all__return_value: List[CustomerBasketORM] = [
-        CustomerBasketORM(
+    mock__customer_basket_repository__all__return_value: List[CustomerBasket] = [
+        CustomerBasket(
             buyer_id=1,
             data=Data(
                 basket_items=[
@@ -56,7 +56,7 @@ def test_case() -> TestCase:
                 ],
             ),
         ),
-        CustomerBasketORM(
+        CustomerBasket(
             buyer_id=2,
             data=Data(
                 basket_items=[
@@ -71,7 +71,7 @@ def test_case() -> TestCase:
                 ],
             ),
         ),
-        CustomerBasketORM(
+        CustomerBasket(
             buyer_id=3,
             data=Data(
                 basket_items=[
@@ -96,8 +96,8 @@ def test_case() -> TestCase:
         ),
     ]
 
-    expected_customer_basket_repository_calls: List[CustomerBasketORM] = [
-        CustomerBasketORM(
+    expected_customer_basket_repository_calls: List[CustomerBasket] = [
+        CustomerBasket(
             buyer_id=1,
             data=Data(
                 basket_items=[
@@ -112,7 +112,7 @@ def test_case() -> TestCase:
                 ],
             ),
         ),
-        CustomerBasketORM(
+        CustomerBasket(
             buyer_id=3,
             data=Data(
                 basket_items=[
@@ -137,8 +137,8 @@ def test_case() -> TestCase:
 
 
 class TestCatalogItemHasBeenDeletedEventHandler__handle(TestClass[CatalogItemHasBeenDeletedEventHandler.handle]):
-    @patch.object(PostgresCustomerBasketRepository, 'save')
-    @patch.object(PostgresCustomerBasketRepository, 'all')
+    @patch.object(CustomerBasketRepository, 'save')
+    @patch.object(CustomerBasketRepository, 'all')
     def test_case(
         self,
         mock__customer_basket_repository__all: Mock,
@@ -158,6 +158,6 @@ class TestCatalogItemHasBeenDeletedEventHandler__handle(TestClass[CatalogItemHas
             mock__customer_basket_repository__save.call_args_list,
             test_case.expected_customer_basket_repository_calls,
         ):
-            fact_call = cast(CustomerBasketORM, call.kwargs['customer_basket_orm'])
+            fact_call = cast(CustomerBasket, call.kwargs['customer_basket_orm'])
             assert fact_call.buyer_id == expected_call_arg.buyer_id
             assert fact_call.data == expected_call_arg.data
