@@ -42,6 +42,7 @@ def test_case() -> TestCase:
             restock_threshold=20,
             maxstock_threshold=25,
             on_reorder=False,
+            discount=10,
         ),
         CatalogItem(
             id=2,
@@ -54,6 +55,7 @@ def test_case() -> TestCase:
             restock_threshold=20,
             maxstock_threshold=25,
             on_reorder=False,
+            discount=20,
         ),
     ]
 
@@ -69,6 +71,7 @@ def test_case() -> TestCase:
             restock_threshold=20,
             maxstock_threshold=25,
             on_reorder=False,
+            discount=10,
         ),
         CatalogItemDTO(
             id=2,
@@ -81,6 +84,7 @@ def test_case() -> TestCase:
             restock_threshold=20,
             maxstock_threshold=25,
             on_reorder=False,
+            discount=20,
         ),
     ]
 
@@ -104,7 +108,7 @@ class TestUrlToView(TestClass[get_items_by_brand_id]):
 
 
 class TestGetItemsByBrandIdView(TestClass[get_items_by_brand_id]):
-    @patch.object(view, '_fetch_catalog_items_from_db')
+    @patch.object(view, view._fetch_catalog_items_from_db.__name__)
     def test_case(
         self,
         mock__fetch_catalog_items_from_db: Mock,
