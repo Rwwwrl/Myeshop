@@ -1,3 +1,5 @@
+from pydantic import Field
+
 from catalog_cqrs_contract import hints
 
 from framework.common.dto import DTO
@@ -26,3 +28,4 @@ class CatalogItemDTO(DTO):
     restock_threshold: int
     maxstock_threshold: int
     on_reorder: bool
+    discount: int = Field(ge=0, le=100)

@@ -37,6 +37,7 @@ def test_case() -> TestClass:
             name='name1',
             description='description1',
             price=10,
+            discount=15,
             picture_filename='picture_filename1',
             picture_url='picture_url1',
             available_stock=10,
@@ -51,6 +52,7 @@ def test_case() -> TestClass:
             name='name2',
             description='description2',
             price=10,
+            discount=20,
             picture_filename='picture_filename2',
             picture_url='picture_url2',
             available_stock=10,
@@ -76,6 +78,7 @@ def test_case() -> TestClass:
             name='name1',
             description='description1',
             price=10,
+            discount=15,
             picture_filename='picture_filename1',
             picture_url='picture_url1',
             available_stock=10,
@@ -90,6 +93,7 @@ def test_case() -> TestClass:
             name='name2',
             description='description2',
             price=10,
+            discount=20,
             picture_filename='picture_filename2',
             picture_url='picture_url2',
             available_stock=10,
@@ -109,7 +113,7 @@ def test_case() -> TestClass:
 
 
 class TestCatalogItemByIdQueryHandler__handle(TestClass[CatalogItemByIdQueryHandler.handle]):
-    @patch.object(CatalogItemByIdQueryHandler, '_fetch_from_db')
+    @patch.object(CatalogItemByIdQueryHandler, CatalogItemByIdQueryHandler._fetch_from_db.__name__)
     def test(self, mock__fetch_from_db: Mock, test_case: TestCase):
 
         mock__fetch_from_db.return_value = test_case.mock__fetch_from_db__return_value
