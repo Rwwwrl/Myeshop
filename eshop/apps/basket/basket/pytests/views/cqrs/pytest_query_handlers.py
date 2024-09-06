@@ -21,7 +21,7 @@ from framework.for_pytests.test_class import TestClass
 
 class BasketByIdQueryHandler__handleTestCase(TestCase['TestBasketByIdQueryHandler__handle']):
     query: CustomerBasketQuery
-    mock_customer_basket_repository_get_by_id_return_value: CustomerBasketORM
+    mock__customer_basket_repository__get_by_id__return_value: CustomerBasketORM
     expected_result: CustomerBasketDTO
 
 
@@ -38,6 +38,7 @@ def test_case_basket_by_id_query_handler__handle() -> BasketByIdQueryHandler__ha
                     product_name='product_name1',
                     unit_price=10,
                     quantity=3,
+                    discount=10,
                     picture_url='picture_url1',
                 ),
                 BasketItem(
@@ -46,6 +47,7 @@ def test_case_basket_by_id_query_handler__handle() -> BasketByIdQueryHandler__ha
                     product_name='product_name2',
                     unit_price=15,
                     quantity=2,
+                    discount=15,
                     picture_url='picture_url2',
                 ),
             ],
@@ -61,6 +63,7 @@ def test_case_basket_by_id_query_handler__handle() -> BasketByIdQueryHandler__ha
                 product_name='product_name1',
                 unit_price=10,
                 quantity=3,
+                discount=10,
                 picture_url='picture_url1',
             ),
             BasketItemDTO(
@@ -69,6 +72,7 @@ def test_case_basket_by_id_query_handler__handle() -> BasketByIdQueryHandler__ha
                 product_name='product_name2',
                 unit_price=15,
                 quantity=2,
+                discount=15,
                 picture_url='picture_url2',
             ),
         ],
@@ -76,7 +80,7 @@ def test_case_basket_by_id_query_handler__handle() -> BasketByIdQueryHandler__ha
 
     return BasketByIdQueryHandler__handleTestCase(
         query=query,
-        mock_customer_basket_repository_get_by_id_return_value=mock_repository_get_by_id_return_value,
+        mock__customer_basket_repository__get_by_id__return_value=mock_repository_get_by_id_return_value,
         expected_result=expected_result,
     )
 
@@ -91,7 +95,7 @@ class TestBasketByIdQueryHandler__handle(TestClass[CustomerBasketQueryHandler.ha
         test_case = test_case_basket_by_id_query_handler__handle
 
         mock__customer_basket_repository__get_by_buyer_id.return_value = (
-            test_case.mock_customer_basket_repository_get_by_id_return_value
+            test_case.mock__customer_basket_repository__get_by_id__return_value
         )
 
         result = CustomerBasketQueryHandler().handle(query=test_case.query)
