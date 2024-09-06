@@ -4,8 +4,6 @@ from mock import MagicMock, Mock, patch
 
 import pytest
 
-from typing_extensions import TypedDict
-
 from basket.domain.models.customer_basket import (
     CustomerBasketORM,
     PostgresCustomerBasketRepository,
@@ -25,13 +23,9 @@ from framework.for_pytests.test_class import TestClass
 from framework.sqlalchemy.session import Session
 
 
-class ExpectedPostgresBasketRepositorySaveCallArgs(TypedDict):
-    customer_basket_orm: CustomerBasketORM
-
-
 class TestCaseSucess(TestCase['TestUpdateCustomerBasketCommandHandler__handle']):
     command: UpdateCustomerBasketCommand
-    expected_posgres_basket_repository_save_call_args: ExpectedPostgresBasketRepositorySaveCallArgs
+    expected_updated_customer_basket: CustomerBasketORM
 
 
 @pytest.fixture(scope='session')
@@ -46,6 +40,7 @@ def test_case_success() -> TestCaseSucess:
                     product_name='product_name1',
                     unit_price=10,
                     quantity=10,
+                    discount=15,
                     picture_url='picture_url1',
                 ),
                 BasketItemDTO(
@@ -54,48 +49,48 @@ def test_case_success() -> TestCaseSucess:
                     product_name='product_name2',
                     unit_price=20,
                     quantity=20,
+                    discount=25,
                     picture_url='picture_url2',
                 ),
             ],
         ),
     )
 
-    expected_posgres_basket_repository_save_call_args: ExpectedPostgresBasketRepositorySaveCallArgs = {
-        'customer_basket_orm':
-            CustomerBasketORM(
-                buyer_id=1,
-                data=Data(
-                    basket_items=[
-                        BasketItem(
-                            id=1,
-                            product_id=1,
-                            product_name='product_name1',
-                            unit_price=10,
-                            quantity=10,
-                            picture_url='picture_url1',
-                        ),
-                        BasketItem(
-                            id=2,
-                            product_id=2,
-                            product_name='product_name2',
-                            unit_price=20,
-                            quantity=20,
-                            picture_url='picture_url2',
-                        ),
-                    ],
+    expected_updated_customer_basket = CustomerBasketORM(
+        buyer_id=1,
+        data=Data(
+            basket_items=[
+                BasketItem(
+                    id=1,
+                    product_id=1,
+                    product_name='product_name1',
+                    unit_price=10,
+                    quantity=10,
+                    discount=15,
+                    picture_url='picture_url1',
                 ),
-            ),
-    }
+                BasketItem(
+                    id=2,
+                    product_id=2,
+                    product_name='product_name2',
+                    unit_price=20,
+                    quantity=20,
+                    discount=25,
+                    picture_url='picture_url2',
+                ),
+            ],
+        ),
+    )
 
     return TestCaseSucess(
         command=command,
-        expected_posgres_basket_repository_save_call_args=expected_posgres_basket_repository_save_call_args,
+        expected_updated_customer_basket=expected_updated_customer_basket,
     )
 
 
 class TestUpdateCustomerBasketCommandHandler__handle(TestClass[UpdateCustomerBasketCommandHandler]):
     @patch.object(command_handlers, 'Session', new=MagicMock(spec=Session))
-    @patch.object(PostgresCustomerBasketRepository, 'save')
+    @patch.object(PostgresCustomerBasketRepository, PostgresCustomerBasketRepository.save.__name__)
     def test_case_success(
         self,
         mock__postgres_customer_basket_repository__save: Mock,
@@ -105,13 +100,9 @@ class TestUpdateCustomerBasketCommandHandler__handle(TestClass[UpdateCustomerBas
 
         UpdateCustomerBasketCommandHandler().handle(command=test_case.command)
 
-        call = mock__postgres_customer_basket_repository__save.call_args_list[0]
-        call_kwargs__customer_basket_orm_arg = cast(
+        fact_updated_customer_basket = cast(
             CustomerBasketORM,
-            call._get_call_arguments()[1]['customer_basket_orm'],
+            mock__postgres_customer_basket_repository__save.call_args_list[0].kwargs['customer_basket_orm'],
         )
-        expected_customer_basket_orm_arg = (
-            test_case.expected_posgres_basket_repository_save_call_args['customer_basket_orm']
-        )
-        assert call_kwargs__customer_basket_orm_arg.buyer_id == expected_customer_basket_orm_arg.buyer_id
-        assert call_kwargs__customer_basket_orm_arg.data == expected_customer_basket_orm_arg.data
+        assert fact_updated_customer_basket.buyer_id == test_case.expected_updated_customer_basket.buyer_id
+        assert fact_updated_customer_basket.data == test_case.expected_updated_customer_basket.data
