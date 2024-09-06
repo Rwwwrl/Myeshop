@@ -91,6 +91,7 @@ def test_case_success() -> TestCaseSuccess:
             restock_threshold=5,
             maxstock_threshold=15,
             on_reorder=False,
+            discount=10,
         ),
         CatalogItemDTO(
             id=2,
@@ -111,6 +112,7 @@ def test_case_success() -> TestCaseSuccess:
             restock_threshold=5,
             maxstock_threshold=15,
             on_reorder=False,
+            discount=20,
         ),
     ]
 
@@ -125,6 +127,7 @@ def test_case_success() -> TestCaseSuccess:
                     unit_price=100,
                     quantity=1,
                     picture_url='picture_url1',
+                    discount=10,
                 ),
                 BasketItemDTO(
                     id=None,
@@ -133,6 +136,7 @@ def test_case_success() -> TestCaseSuccess:
                     unit_price=200,
                     quantity=2,
                     picture_url='picture_url2',
+                    discount=20,
                 ),
             ],
         ),
@@ -199,6 +203,7 @@ def test_case_400_basket_refer_to_non_existing_products() -> TestCase400BasketRe
             restock_threshold=5,
             maxstock_threshold=15,
             on_reorder=False,
+            discount=10,
         ),
         CatalogItemDTO(
             id=2,
@@ -219,6 +224,7 @@ def test_case_400_basket_refer_to_non_existing_products() -> TestCase400BasketRe
             restock_threshold=5,
             maxstock_threshold=15,
             on_reorder=False,
+            discount=20,
         ),
     ]
 
@@ -269,6 +275,7 @@ def test_case_500_failed_to_update_basket_due_to_UpdateCustomerBasketCommand_fai
             restock_threshold=5,
             maxstock_threshold=15,
             on_reorder=False,
+            discount=10,
         ),
         CatalogItemDTO(
             id=2,
@@ -289,6 +296,7 @@ def test_case_500_failed_to_update_basket_due_to_UpdateCustomerBasketCommand_fai
             restock_threshold=5,
             maxstock_threshold=15,
             on_reorder=False,
+            discount=20,
         ),
     ]
 
@@ -303,6 +311,7 @@ def test_case_500_failed_to_update_basket_due_to_UpdateCustomerBasketCommand_fai
                     unit_price=100,
                     quantity=1,
                     picture_url='picture_url1',
+                    discount=10,
                 ),
                 BasketItemDTO(
                     id=None,
@@ -311,6 +320,7 @@ def test_case_500_failed_to_update_basket_due_to_UpdateCustomerBasketCommand_fai
                     unit_price=200,
                     quantity=2,
                     picture_url='picture_url2',
+                    discount=20,
                 ),
             ],
         ),
@@ -339,8 +349,8 @@ class TestViewUpdateBasket(TestClass[update_basket]):
     def _assert(fact: Any, expected: Any) -> None:
         assert fact == expected
 
-    @patch.object(UpdateCustomerBasketCommand, 'execute', autospec=True)
-    @patch.object(CatalogItemsByIdsQuery, 'fetch')
+    @patch.object(UpdateCustomerBasketCommand, UpdateCustomerBasketCommand.execute.__name__, autospec=True)
+    @patch.object(CatalogItemsByIdsQuery, CatalogItemsByIdsQuery.fetch.__name__)
     def test_case_success(
         self,
         mock__catalog_item_by_ids_query__fetch: Mock,
@@ -383,7 +393,7 @@ class TestViewUpdateBasket(TestClass[update_basket]):
             assert e.status_code == test_case.expected_http_response_exception.status_code
             assert e.detail == test_case.expected_http_response_exception.detail
 
-    @patch.object(CatalogItemsByIdsQuery, 'fetch')
+    @patch.object(CatalogItemsByIdsQuery, CatalogItemsByIdsQuery.fetch.__name__)
     def test_case_400_basket_refer_to_non_existing_products(
         self,
         mock__catalog_item_by_ids_query__fetch: Mock,
@@ -401,8 +411,8 @@ class TestViewUpdateBasket(TestClass[update_basket]):
             assert e.status_code == test_case.expected_http_response_exception.status_code
             assert e.detail == test_case.expected_http_response_exception.detail
 
-    @patch.object(UpdateCustomerBasketCommand, 'execute', autospec=True)
-    @patch.object(CatalogItemsByIdsQuery, 'fetch')
+    @patch.object(UpdateCustomerBasketCommand, UpdateCustomerBasketCommand.execute.__name__, autospec=True)
+    @patch.object(CatalogItemsByIdsQuery, CatalogItemsByIdsQuery.fetch.__name__)
     def test_case_500_failed_to_update_basket_due_to_UpdateCustomerBasketCommand_failed(
         self,
         mock__catalog_item_by_ids_query__fetch: Mock,
