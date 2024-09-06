@@ -93,8 +93,6 @@ def test_failed_due_to_integrity_error_case() -> TestFailedDueToIntegrityErrorCa
         name='name',
         description='description',
         price=10,
-        picture_filename='picture_filename',
-        picture_url='picture_url',
         catalog_type_id=1,
         catalog_brand_id=1,
         available_stock=10,

@@ -18,6 +18,8 @@ class CatalogItemDTO(DTO):
     restock_threshold: PositiveInt
     maxstock_threshold: PositiveInt
     on_reorder: bool
+    catalog_type_id: PositiveInt
+    catalog_brand_id: PositiveInt
     discount: int = Field(ge=0, lt=100)
 
     @classmethod
