@@ -1,6 +1,6 @@
 from typing import List, Set, Union
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 from sqlalchemy import INTEGER
 from sqlalchemy.orm import Mapped, mapped_column
@@ -23,6 +23,7 @@ class BasketItem(BaseModel):
     product_id: hints.ProductId
     product_name: hints.ProductName
     unit_price: hints.Price
+    discount: int = Field(ge=0, le=100)
     quantity: hints.Quantity
     picture_url: hints.PictureUrl
 
