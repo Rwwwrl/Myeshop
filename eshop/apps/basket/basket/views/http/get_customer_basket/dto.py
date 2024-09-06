@@ -1,5 +1,7 @@
 from typing import List, Union, final
 
+from pydantic import Field
+
 from basket import hints
 
 from framework.common.dto import DTO
@@ -13,6 +15,7 @@ class BasketItemDTO(DTO):
     unit_price: hints.Price
     quantity: hints.Quantity
     picture_url: hints.PictureUrl
+    discount: int = Field(ge=0, le=100)
 
 
 @final

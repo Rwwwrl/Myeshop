@@ -52,6 +52,7 @@ def test_case_user_have_basket() -> TestCaseUserHaveBasket:
                     unit_price=10,
                     quantity=1,
                     picture_url='picture_url1',
+                    discount=10,
                 ),
                 BasketItem(
                     id=2,
@@ -60,6 +61,7 @@ def test_case_user_have_basket() -> TestCaseUserHaveBasket:
                     unit_price=10,
                     quantity=1,
                     picture_url='picture_url2',
+                    discount=12,
                 ),
             ],
         ),
@@ -75,6 +77,7 @@ def test_case_user_have_basket() -> TestCaseUserHaveBasket:
                 unit_price=10,
                 quantity=1,
                 picture_url='picture_url1',
+                discount=10,
             ),
             BasketItemDTO(
                 id=2,
@@ -83,6 +86,7 @@ def test_case_user_have_basket() -> TestCaseUserHaveBasket:
                 unit_price=10,
                 quantity=1,
                 picture_url='picture_url2',
+                discount=12,
             ),
         ],
     )
@@ -125,7 +129,7 @@ class TestUrlToView(TestClass[get_customer_basket]):
 
 
 class TestGetCustomerBasketView(TestClass[get_customer_basket]):
-    @patch.object(PostgresCustomerBasketRepository, 'get_by_buyer_id')
+    @patch.object(PostgresCustomerBasketRepository, PostgresCustomerBasketRepository.get_by_buyer_id.__name__)
     def test_case_user_have_basket(
         self,
         mock__customer_basket_repository__get_by_buyer_id: Mock,
@@ -143,8 +147,8 @@ class TestGetCustomerBasketView(TestClass[get_customer_basket]):
         mock__customer_basket_repository__get_by_buyer_id.assert_called_once_with(buyer_id=test_case.user_id)
 
     @patch.object(view, 'Session', new=MagicMock(spec=Session))
-    @patch.object(PostgresCustomerBasketRepository, 'create')
-    @patch.object(PostgresCustomerBasketRepository, 'get_by_buyer_id')
+    @patch.object(PostgresCustomerBasketRepository, PostgresCustomerBasketRepository.create.__name__)
+    @patch.object(PostgresCustomerBasketRepository, PostgresCustomerBasketRepository.get_by_buyer_id.__name__)
     def test_case_user_does_not_have_basket(
         self,
         mock__customer_basket_repository__get_by_buyer_id: Mock,
