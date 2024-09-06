@@ -62,6 +62,7 @@ def test_case() -> TestCase:
                 product_name='product_name1',
                 unit_price=10,
                 quantity=20,
+                discount=30,
                 picture_url='picture_url1',
             ),
             BasketItemDTO(
@@ -70,6 +71,7 @@ def test_case() -> TestCase:
                 product_name='product_name2',
                 unit_price=10,
                 quantity=20,
+                discount=35,
                 picture_url='picture_url2',
             ),
         ],
@@ -108,9 +110,9 @@ class TestUrlToView(TestClass[checkout]):
 
 
 class TestCheckoutView(TestClass[checkout]):
-    @patch.object(UserByIdQuery, 'fetch')
-    @patch.object(CustomerBasketQuery, 'fetch')
-    @patch.object(UserCheckoutAcceptedEvent, 'publish', autospec=True)
+    @patch.object(UserByIdQuery, UserByIdQuery.fetch.__name__)
+    @patch.object(CustomerBasketQuery, CustomerBasketQuery.fetch.__name__)
+    @patch.object(UserCheckoutAcceptedEvent, UserCheckoutAcceptedEvent.publish.__name__, autospec=True)
     def test(
         self,
         mock__user_checkout_accepted_event__publish: Mock,
