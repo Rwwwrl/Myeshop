@@ -25,6 +25,7 @@ class TestCatalogItemByIdsQuery(ITestQueryContract[CatalogItemsByIdsQuery]):
         assert_attribute(CatalogItemDTO, 'id', int)
         assert_attribute(CatalogItemDTO, 'name', str)
         assert_attribute(CatalogItemDTO, 'price', float)
+        assert_attribute(CatalogItemDTO, 'discount', int)
         assert_attribute(CatalogItemDTO, 'picture_url', str)
 
 
@@ -38,6 +39,7 @@ class TestUpdateCustomerBasketCommand(ITestSyncCommandContract[UpdateCustomerBas
         assert_attribute(BasketItemDTO, 'product_id', int)
         assert_attribute(BasketItemDTO, 'product_name', str)
         assert_attribute(BasketItemDTO, 'quantity', int)
+        assert_attribute(BasketItemDTO, 'discount', int)
         assert_attribute(BasketItemDTO, 'picture_url', str)
 
     def test_command_response_contract(self) -> None:
