@@ -83,6 +83,7 @@ def test_case_success() -> TestCaseSuccess:
                 product_name='product_name1',
                 unit_price=10,
                 quantity=1,
+                discount=10,
                 picture_url='picture_url1',
             ),
             BasketItemDTO(
@@ -91,6 +92,7 @@ def test_case_success() -> TestCaseSuccess:
                 product_name='product_name2',
                 unit_price=20,
                 quantity=2,
+                discount=20,
                 picture_url='picture_url2',
             ),
             BasketItemDTO(
@@ -99,6 +101,7 @@ def test_case_success() -> TestCaseSuccess:
                 product_name='product_name3',
                 unit_price=30,
                 quantity=3,
+                discount=30,
                 picture_url='picture_url3',
             ),
         ],
@@ -114,6 +117,7 @@ def test_case_success() -> TestCaseSuccess:
                     product_name='product_name1',
                     unit_price=10,
                     quantity=10,
+                    discount=10,
                     picture_url='picture_url1',
                 ),
                 BasketItemDTO(
@@ -122,6 +126,7 @@ def test_case_success() -> TestCaseSuccess:
                     product_name='product_name2',
                     unit_price=20,
                     quantity=20,
+                    discount=20,
                     picture_url='picture_url2',
                 ),
                 BasketItemDTO(
@@ -130,6 +135,7 @@ def test_case_success() -> TestCaseSuccess:
                     product_name='product_name3',
                     unit_price=30,
                     quantity=3,
+                    discount=30,
                     picture_url='picture_url3',
                 ),
             ],
@@ -158,6 +164,7 @@ def test_case_not_updates_sent() -> TestCase:
                 product_id=1,
                 product_name='product_name1',
                 unit_price=10,
+                discount=10,
                 quantity=1,
                 picture_url='picture_url1',
             ),
@@ -166,6 +173,7 @@ def test_case_not_updates_sent() -> TestCase:
                 product_id=2,
                 product_name='product_name2',
                 unit_price=20,
+                discount=20,
                 quantity=2,
                 picture_url='picture_url2',
             ),
@@ -174,6 +182,7 @@ def test_case_not_updates_sent() -> TestCase:
                 product_id=3,
                 product_name='product_name3',
                 unit_price=30,
+                discount=30,
                 quantity=3,
                 picture_url='picture_url3',
             ),
@@ -221,6 +230,7 @@ def test_case_request_data_reference_to_non_existing_basket_items():
                 product_name='product_name1',
                 unit_price=10,
                 quantity=1,
+                discount=10,
                 picture_url='picture_url1',
             ),
             BasketItemDTO(
@@ -229,6 +239,7 @@ def test_case_request_data_reference_to_non_existing_basket_items():
                 product_name='product_name2',
                 unit_price=11,
                 quantity=2,
+                discount=20,
                 picture_url='picture_url2',
             ),
         ],
@@ -274,6 +285,7 @@ def test_case_500_failed_to_update_basket_due_to_UpdateCustomerBasketCommand_fai
                 product_name='product_name1',
                 unit_price=10,
                 quantity=1,
+                discount=10,
                 picture_url='picture_url1',
             ),
             BasketItemDTO(
@@ -282,6 +294,7 @@ def test_case_500_failed_to_update_basket_due_to_UpdateCustomerBasketCommand_fai
                 product_name='product_name2',
                 unit_price=20,
                 quantity=2,
+                discount=20,
                 picture_url='picture_url2',
             ),
             BasketItemDTO(
@@ -290,6 +303,7 @@ def test_case_500_failed_to_update_basket_due_to_UpdateCustomerBasketCommand_fai
                 product_name='product_name3',
                 unit_price=30,
                 quantity=3,
+                discount=30,
                 picture_url='picture_url3',
             ),
         ],
@@ -305,6 +319,7 @@ def test_case_500_failed_to_update_basket_due_to_UpdateCustomerBasketCommand_fai
                     product_name='product_name1',
                     unit_price=10,
                     quantity=10,
+                    discount=10,
                     picture_url='picture_url1',
                 ),
                 BasketItemDTO(
@@ -313,6 +328,7 @@ def test_case_500_failed_to_update_basket_due_to_UpdateCustomerBasketCommand_fai
                     product_name='product_name2',
                     unit_price=20,
                     quantity=20,
+                    discount=20,
                     picture_url='picture_url2',
                 ),
                 BasketItemDTO(
@@ -321,6 +337,7 @@ def test_case_500_failed_to_update_basket_due_to_UpdateCustomerBasketCommand_fai
                     product_name='product_name3',
                     unit_price=30,
                     quantity=3,
+                    discount=30,
                     picture_url='picture_url3',
                 ),
             ],
@@ -351,8 +368,8 @@ class TestViewUpdateQuantities(TestClass[update_quantities]):
     def _assert(fact: Any, expected: Any) -> None:
         assert fact == expected
 
-    @patch.object(UpdateCustomerBasketCommand, 'execute', autospec=True)
-    @patch.object(CustomerBasketQuery, 'fetch')
+    @patch.object(UpdateCustomerBasketCommand, UpdateCustomerBasketCommand.execute.__name__, autospec=True)
+    @patch.object(CustomerBasketQuery, CustomerBasketQuery.fetch.__name__)
     def test_case_success(
         self,
         mock__customer_basket_query__fetch: Mock,
@@ -381,7 +398,7 @@ class TestViewUpdateQuantities(TestClass[update_quantities]):
         )
         mock__update_customer_basket_command__execute.assert_called_once()
 
-    @patch.object(CustomerBasketQuery, 'fetch')
+    @patch.object(CustomerBasketQuery, CustomerBasketQuery.fetch.__name__)
     def test_case_not_updates_sent(
         self,
         mock__customer_basket_query__fetch: Mock,
@@ -397,7 +414,7 @@ class TestViewUpdateQuantities(TestClass[update_quantities]):
             assert e.status_code == test_case.expected_http_response_exception.status_code
             assert e.detail == test_case.expected_http_response_exception.detail
 
-    @patch.object(CustomerBasketQuery, 'fetch')
+    @patch.object(CustomerBasketQuery, CustomerBasketQuery.fetch.__name__)
     def test_case_request_data_reference_to_non_existing_basket_items(
         self,
         mock__customer_basket_query__fetch: Mock,
@@ -414,8 +431,8 @@ class TestViewUpdateQuantities(TestClass[update_quantities]):
             assert e.status_code == test_case.expected_http_response_exception.status_code
             assert e.detail == test_case.expected_http_response_exception.detail
 
-    @patch.object(UpdateCustomerBasketCommand, 'execute', autospec=True)
-    @patch.object(CustomerBasketQuery, 'fetch')
+    @patch.object(UpdateCustomerBasketCommand, UpdateCustomerBasketCommand.execute.__name__, autospec=True)
+    @patch.object(CustomerBasketQuery, CustomerBasketQuery.fetch.__name__)
     def test_case_500_failed_to_update_basket_due_to_UpdateCustomerBasketCommand_failed(
         self,
         mock__customer_basket_query__fetch: Mock,
