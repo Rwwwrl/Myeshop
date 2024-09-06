@@ -47,6 +47,7 @@ class TestUserCheckoutAcceptedEvent(ITestEventContractPublisher[UserCheckoutAcce
         assert_attribute(BasketItemDTO, 'product_name', str)
         assert_attribute(BasketItemDTO, 'unit_price', float)
         assert_attribute(BasketItemDTO, 'quantity', int)
+        assert_attribute(BasketItemDTO, 'discount', int)
         assert_attribute(BasketItemDTO, 'picture_url', str)
 
 
