@@ -32,6 +32,7 @@ class CustomerBasketQueryHandler(IQueryHandler):
                     unit_price=basket_item.unit_price,
                     quantity=basket_item.quantity,
                     picture_url=basket_item.picture_url,
+                    discount=basket_item.discount,
                 ),
             )
 

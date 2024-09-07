@@ -43,6 +43,7 @@ def test_case() -> TestCase:
                         product_name='product_name1',
                         unit_price=10,
                         quantity=1,
+                        discount=10,
                         picture_url='picture_url1',
                     ),
                     BasketItem(
@@ -51,6 +52,7 @@ def test_case() -> TestCase:
                         product_name='product_name2',
                         unit_price=15,
                         quantity=2,
+                        discount=20,
                         picture_url='picture_url2',
                     ),
                 ],
@@ -65,6 +67,7 @@ def test_case() -> TestCase:
                         product_id=2,
                         product_name='product_name2',
                         unit_price=15,
+                        discount=10,
                         quantity=2,
                         picture_url='picture_url2',
                     ),
@@ -80,6 +83,7 @@ def test_case() -> TestCase:
                         product_id=1,
                         product_name='product_name1',
                         unit_price=9,
+                        discount=10,
                         quantity=1,
                         picture_url='picture_url1',
                     ),
@@ -88,6 +92,7 @@ def test_case() -> TestCase:
                         product_id=2,
                         product_name='product_name2',
                         unit_price=15,
+                        discount=20,
                         quantity=2,
                         picture_url='picture_url2',
                     ),
@@ -106,6 +111,7 @@ def test_case() -> TestCase:
                         product_id=2,
                         product_name='product_name2',
                         unit_price=15,
+                        discount=20,
                         quantity=2,
                         picture_url='picture_url2',
                     ),
@@ -121,6 +127,7 @@ def test_case() -> TestCase:
                         product_id=2,
                         product_name='product_name2',
                         unit_price=15,
+                        discount=20,
                         quantity=2,
                         picture_url='picture_url2',
                     ),
@@ -137,8 +144,8 @@ def test_case() -> TestCase:
 
 
 class TestCatalogItemHasBeenDeletedEventHandler__handle(TestClass[CatalogItemHasBeenDeletedEventHandler.handle]):
-    @patch.object(PostgresCustomerBasketRepository, 'save')
-    @patch.object(PostgresCustomerBasketRepository, 'all')
+    @patch.object(PostgresCustomerBasketRepository, PostgresCustomerBasketRepository.save.__name__)
+    @patch.object(PostgresCustomerBasketRepository, PostgresCustomerBasketRepository.all.__name__)
     def test_case(
         self,
         mock__customer_basket_repository__all: Mock,

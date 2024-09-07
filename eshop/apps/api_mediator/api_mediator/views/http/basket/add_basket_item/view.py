@@ -46,6 +46,7 @@ def add_basket_item(
             product_name=catalog_item.name,
             unit_price=catalog_item.price,
             quantity=request_data.quantity,
+            discount=catalog_item.discount,
             picture_url=catalog_item.picture_url,
         )
         basket_items: List[BasketItemDTO] = [new_basket_item, *customer_basket.basket_items]
@@ -56,6 +57,7 @@ def add_basket_item(
             product_id=basket_item.product_id,
             product_name=basket_item.product_name,
             unit_price=basket_item.unit_price,
+            discount=basket_item.discount,
             quantity=basket_item.quantity + request_data.quantity,
             picture_url=basket_item.picture_url,
         )

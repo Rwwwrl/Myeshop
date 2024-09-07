@@ -30,6 +30,7 @@ def _orm_to_dto(customer_basket_orm: CustomerBasketORM) -> CustomerBasketDTO:
                 unit_price=basket_item.unit_price,
                 quantity=basket_item.quantity,
                 picture_url=basket_item.picture_url,
+                discount=basket_item.discount,
             ),
         )
 

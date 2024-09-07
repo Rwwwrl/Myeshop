@@ -58,10 +58,13 @@ def test_valid_request_query_params__ids() -> TestValidRequestQueryParamsIds:
             price=10,
             picture_filename='picture_filename1',
             picture_url='picture_url1',
+            catalog_type_id=1,
+            catalog_brand_id=2,
             available_stock=10,
             restock_threshold=20,
             maxstock_threshold=25,
             on_reorder=False,
+            discount=0,
         ),
         CatalogItem(
             id=2,
@@ -70,10 +73,13 @@ def test_valid_request_query_params__ids() -> TestValidRequestQueryParamsIds:
             price=10,
             picture_filename='picture_filename2',
             picture_url='picture_url2',
+            catalog_type_id=3,
+            catalog_brand_id=4,
             available_stock=10,
             restock_threshold=20,
             maxstock_threshold=25,
             on_reorder=False,
+            discount=0,
         ),
     ]
 
@@ -85,10 +91,13 @@ def test_valid_request_query_params__ids() -> TestValidRequestQueryParamsIds:
             price=10,
             picture_filename='picture_filename1',
             picture_url='picture_url1',
+            catalog_type_id=1,
+            catalog_brand_id=2,
             available_stock=10,
             restock_threshold=20,
             maxstock_threshold=25,
             on_reorder=False,
+            discount=0,
         ),
         CatalogItemDTO(
             id=2,
@@ -97,10 +106,13 @@ def test_valid_request_query_params__ids() -> TestValidRequestQueryParamsIds:
             price=10,
             picture_filename='picture_filename2',
             picture_url='picture_url2',
+            catalog_type_id=3,
+            catalog_brand_id=4,
             available_stock=10,
             restock_threshold=20,
             maxstock_threshold=25,
             on_reorder=False,
+            discount=0,
         ),
     ]
 
@@ -121,10 +133,13 @@ def test_without_request_query_params__ids() -> TestWithoutRequestQueryParamsIds
             price=10,
             picture_filename='picture_filename1',
             picture_url='picture_url1',
+            catalog_type_id=1,
+            catalog_brand_id=2,
             available_stock=10,
             restock_threshold=20,
             maxstock_threshold=25,
             on_reorder=False,
+            discount=0,
         ),
         CatalogItem(
             id=2,
@@ -133,10 +148,13 @@ def test_without_request_query_params__ids() -> TestWithoutRequestQueryParamsIds
             price=10,
             picture_filename='picture_filename2',
             picture_url='picture_url2',
+            catalog_type_id=3,
+            catalog_brand_id=4,
             available_stock=10,
             restock_threshold=20,
             maxstock_threshold=25,
             on_reorder=False,
+            discount=0,
         ),
     ]
 
@@ -148,10 +166,13 @@ def test_without_request_query_params__ids() -> TestWithoutRequestQueryParamsIds
             price=10,
             picture_filename='picture_filename1',
             picture_url='picture_url1',
+            catalog_type_id=1,
+            catalog_brand_id=2,
             available_stock=10,
             restock_threshold=20,
             maxstock_threshold=25,
             on_reorder=False,
+            discount=0,
         ),
         CatalogItemDTO(
             id=2,
@@ -160,10 +181,13 @@ def test_without_request_query_params__ids() -> TestWithoutRequestQueryParamsIds
             price=10,
             picture_filename='picture_filename2',
             picture_url='picture_url2',
+            catalog_type_id=3,
+            catalog_brand_id=4,
             available_stock=10,
             restock_threshold=20,
             maxstock_threshold=25,
             on_reorder=False,
+            discount=0,
         ),
     ]
 
@@ -193,7 +217,7 @@ class TestGetItemsView(TestClass[get_items]):
             assert e.status_code == test_case.expected_http_response_exception.status_code
             assert e.detail == test_case.expected_http_response_exception.detail
 
-    @patch.object(view, '_fetch_catalog_items_from_db')
+    @patch.object(view, view._fetch_catalog_items_from_db.__name__)
     def test_valid_request_query_params__ids(
         self,
         mock__fetch_catalog_items_from_db: Mock,
@@ -208,7 +232,7 @@ class TestGetItemsView(TestClass[get_items]):
 
         mock__fetch_catalog_items_from_db.assert_called_once_with(ids=[1, 2, 3])
 
-    @patch.object(view, '_fetch_catalog_items_from_db')
+    @patch.object(view, view._fetch_catalog_items_from_db.__name__)
     def test_without_request_query_params__ids(
         self,
         mock__fetch_catalog_items_from_db: Mock,

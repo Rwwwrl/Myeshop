@@ -1,3 +1,4 @@
+from pydantic import Field
 from pydantic.types import PositiveFloat, PositiveInt
 
 from catalog import hints
@@ -17,6 +18,9 @@ class CatalogItemDTO(DTO):
     restock_threshold: PositiveInt
     maxstock_threshold: PositiveInt
     on_reorder: bool
+    catalog_type_id: PositiveInt
+    catalog_brand_id: PositiveInt
+    discount: int = Field(ge=0, lt=100)
 
     @classmethod
     def from_orm(cls, orm: CatalogItem) -> 'CatalogItemDTO':
@@ -33,4 +37,5 @@ class CatalogItemDTO(DTO):
             restock_threshold=orm.restock_threshold,
             maxstock_threshold=orm.maxstock_threshold,
             on_reorder=orm.on_reorder,
+            discount=orm.discount,
         )

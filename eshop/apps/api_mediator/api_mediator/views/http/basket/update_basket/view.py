@@ -102,6 +102,7 @@ def update_basket(
                 product_id=basket_request_item_data.product_id,
                 product_name=catalog_item.name,
                 unit_price=catalog_item.price,
+                discount=catalog_item.discount,
                 quantity=basket_request_item_data.quantity,
                 picture_url=catalog_item.picture_url,
             ),

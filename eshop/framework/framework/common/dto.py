@@ -1,5 +1,5 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class DTO(BaseModel, frozen=True):
-    pass
+    model_config = ConfigDict(extra='forbid')

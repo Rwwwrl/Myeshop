@@ -28,6 +28,7 @@ class UpdateCustomerBasketCommandHandler(ICommandHandler):
                         unit_price=basket_item.unit_price,
                         quantity=basket_item.quantity,
                         picture_url=basket_item.picture_url,
+                        discount=basket_item.discount,
                     ) for basket_item in command.customer_basket.basket_items
                 ],
             ),

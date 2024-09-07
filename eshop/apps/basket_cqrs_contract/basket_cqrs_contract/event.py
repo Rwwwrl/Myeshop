@@ -6,6 +6,8 @@ from framework.cqrs.event import Event
 
 from .customer_basket_dto import CustomerBasketDTO
 
+__all__ = ('UserCheckoutAcceptedEvent', )
+
 
 class UserCheckoutAcceptedEvent(Event):
 

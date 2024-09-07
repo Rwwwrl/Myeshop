@@ -3,6 +3,7 @@ from typing import Annotated
 import fastapi
 from fastapi import Depends, Response, status
 
+from pydantic import Field
 from pydantic.types import PositiveFloat, PositiveInt
 
 from sqlalchemy.exc import IntegrityError
@@ -33,6 +34,7 @@ class NewCatalogItemRequestData(DTO):
     restock_threshold: PositiveInt
     maxstock_threshold: PositiveInt
     on_reorder: bool
+    discount: int = Field(ge=0, le=100)
 
 
 def _save_new_catalog_item_to_db(session: lib_Session, new_catalog_item: CatalogItem) -> None:
@@ -56,6 +58,7 @@ def _new_catalog_item(
         restock_threshold=new_catalog_item_request_data.restock_threshold,
         maxstock_threshold=new_catalog_item_request_data.maxstock_threshold,
         on_reorder=new_catalog_item_request_data.on_reorder,
+        discount=new_catalog_item_request_data.discount,
     )
 
 
@@ -75,16 +78,16 @@ def create_item(
     )
 
     with Session() as session:
-        with session.begin():
-            try:
+        try:
+            with session.begin():
                 _save_new_catalog_item_to_db(session=session, new_catalog_item=new_catalog_item)
-            except IntegrityError:
-                raise BadRequestException(
-                    detail=f'''
-                    catalog brand with id = {new_catalog_item.catalog_brand_id}
-                    or catalog type with id = {new_catalog_item.catalog_type_id} does not exist
-                    ''',
-                )
+        except IntegrityError:
+            raise BadRequestException(
+                detail=f"""
+                catalog brand with id = {new_catalog_item.catalog_brand_id}
+                or catalog type with id = {new_catalog_item.catalog_type_id} does not exist
+                """,
+            )
 
     file_storage_api.upload(
         upload_file=UploadFile(

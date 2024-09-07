@@ -38,10 +38,13 @@ def test_case() -> TestCase:
             price=10,
             picture_filename='picture_filename1',
             picture_url='picture_url1',
+            catalog_type_id=1,
+            catalog_brand_id=2,
             available_stock=10,
             restock_threshold=20,
             maxstock_threshold=25,
             on_reorder=False,
+            discount=10,
         ),
         CatalogItem(
             id=2,
@@ -50,10 +53,13 @@ def test_case() -> TestCase:
             price=10,
             picture_filename='picture_filename2',
             picture_url='picture_url2',
+            catalog_type_id=3,
+            catalog_brand_id=4,
             available_stock=10,
             restock_threshold=20,
             maxstock_threshold=25,
             on_reorder=False,
+            discount=20,
         ),
     ]
 
@@ -65,10 +71,13 @@ def test_case() -> TestCase:
             price=10,
             picture_filename='picture_filename1',
             picture_url='picture_url1',
+            catalog_type_id=1,
+            catalog_brand_id=2,
             available_stock=10,
             restock_threshold=20,
             maxstock_threshold=25,
             on_reorder=False,
+            discount=10,
         ),
         CatalogItemDTO(
             id=2,
@@ -77,10 +86,13 @@ def test_case() -> TestCase:
             price=10,
             picture_filename='picture_filename2',
             picture_url='picture_url2',
+            catalog_type_id=3,
+            catalog_brand_id=4,
             available_stock=10,
             restock_threshold=20,
             maxstock_threshold=25,
             on_reorder=False,
+            discount=20,
         ),
     ]
 
@@ -104,7 +116,7 @@ class TestUrlToView(TestClass[get_items_by_brand_id]):
 
 
 class TestGetItemsByBrandIdView(TestClass[get_items_by_brand_id]):
-    @patch.object(view, '_fetch_catalog_items_from_db')
+    @patch.object(view, view._fetch_catalog_items_from_db.__name__)
     def test_case(
         self,
         mock__fetch_catalog_items_from_db: Mock,

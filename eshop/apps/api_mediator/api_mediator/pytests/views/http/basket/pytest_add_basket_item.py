@@ -69,6 +69,7 @@ def test_case_basket_does_not_have_basket_item() -> TestCaseBasketDoesNotHaveBas
                 product_name='product_name1',
                 unit_price=10,
                 quantity=5,
+                discount=10,
                 picture_url='picture_url1',
             ),
             BasketItemDTO(
@@ -77,6 +78,7 @@ def test_case_basket_does_not_have_basket_item() -> TestCaseBasketDoesNotHaveBas
                 product_name='product_name2',
                 unit_price=20,
                 quantity=1,
+                discount=15,
                 picture_url='picture_url2',
             ),
         ],
@@ -89,6 +91,7 @@ def test_case_basket_does_not_have_basket_item() -> TestCaseBasketDoesNotHaveBas
             description='description',
             price=10,
             picture_filename='picture_filename',
+            discount=20,
             picture_url='picture_url3',
             catalog_type=catalog_cqrs_contract.query.query_response.CatalogTypeDTO(
                 id=1,
@@ -115,6 +118,7 @@ def test_case_basket_does_not_have_basket_item() -> TestCaseBasketDoesNotHaveBas
                     product_name='product_name1',
                     unit_price=10,
                     quantity=5,
+                    discount=10,
                     picture_url='picture_url1',
                 ),
                 BasketItemDTO(
@@ -123,6 +127,7 @@ def test_case_basket_does_not_have_basket_item() -> TestCaseBasketDoesNotHaveBas
                     product_name='product_name2',
                     unit_price=20,
                     quantity=1,
+                    discount=15,
                     picture_url='picture_url2',
                 ),
                 BasketItemDTO(
@@ -131,6 +136,7 @@ def test_case_basket_does_not_have_basket_item() -> TestCaseBasketDoesNotHaveBas
                     product_name='product_name3',
                     unit_price=10,
                     quantity=3,
+                    discount=20,
                     picture_url='picture_url3',
                 ),
             ],
@@ -168,6 +174,7 @@ def test_case_basket_already_have_basket_item() -> TestCaseBasketAlreadyHaveBask
                 product_name='product_name1',
                 unit_price=10,
                 quantity=5,
+                discount=10,
                 picture_url='picture_url1',
             ),
             BasketItemDTO(
@@ -176,6 +183,7 @@ def test_case_basket_already_have_basket_item() -> TestCaseBasketAlreadyHaveBask
                 product_name='product_name2',
                 unit_price=20,
                 quantity=1,
+                discount=15,
                 picture_url='picture_url2',
             ),
         ],
@@ -191,6 +199,7 @@ def test_case_basket_already_have_basket_item() -> TestCaseBasketAlreadyHaveBask
                     product_name='product_name1',
                     unit_price=10,
                     quantity=8,
+                    discount=10,
                     picture_url='picture_url1',
                 ),
                 BasketItemDTO(
@@ -199,6 +208,7 @@ def test_case_basket_already_have_basket_item() -> TestCaseBasketAlreadyHaveBask
                     product_name='product_name2',
                     unit_price=20,
                     quantity=1,
+                    discount=15,
                     picture_url='picture_url2',
                 ),
             ],
@@ -235,6 +245,7 @@ def test_case_update_customer_basket_command_execute_cqrs_exception() -> TestCas
                 product_name='product_name1',
                 unit_price=10,
                 quantity=5,
+                discount=10,
                 picture_url='picture_url1',
             ),
             BasketItemDTO(
@@ -243,6 +254,7 @@ def test_case_update_customer_basket_command_execute_cqrs_exception() -> TestCas
                 product_name='product_name2',
                 unit_price=20,
                 quantity=1,
+                discount=15,
                 picture_url='picture_url2',
             ),
         ],
@@ -258,6 +270,7 @@ def test_case_update_customer_basket_command_execute_cqrs_exception() -> TestCas
                     product_name='product_name1',
                     unit_price=10,
                     quantity=8,
+                    discount=10,
                     picture_url='picture_url1',
                 ),
                 BasketItemDTO(
@@ -266,6 +279,7 @@ def test_case_update_customer_basket_command_execute_cqrs_exception() -> TestCas
                     product_name='product_name2',
                     unit_price=20,
                     quantity=1,
+                    discount=15,
                     picture_url='picture_url2',
                 ),
             ],
@@ -289,9 +303,9 @@ class TestViewAddBasketItem(TestClass[add_basket_item]):
     def _assert(fact: Any, expected: Any) -> None:
         assert fact == expected
 
-    @patch.object(UpdateCustomerBasketCommand, 'execute', autospec=True)
-    @patch.object(CatalogItemsByIdsQuery, 'fetch')
-    @patch.object(CustomerBasketQuery, 'fetch')
+    @patch.object(UpdateCustomerBasketCommand, UpdateCustomerBasketCommand.execute.__name__, autospec=True)
+    @patch.object(CatalogItemsByIdsQuery, CatalogItemsByIdsQuery.fetch.__name__)
+    @patch.object(CustomerBasketQuery, CustomerBasketQuery.fetch.__name__)
     def test_case_basket_does_not_have_basket_item(
         self,
         mock__customer_basket_query__fetch: Mock,
@@ -325,8 +339,8 @@ class TestViewAddBasketItem(TestClass[add_basket_item]):
         )
         mock__update_customer_basket_command__execute.assert_called_once()
 
-    @patch.object(UpdateCustomerBasketCommand, 'execute', autospec=True)
-    @patch.object(CustomerBasketQuery, 'fetch')
+    @patch.object(UpdateCustomerBasketCommand, UpdateCustomerBasketCommand.execute.__name__, autospec=True)
+    @patch.object(CustomerBasketQuery, CustomerBasketQuery.fetch.__name__)
     def test_case_basket_already_have_basket_item(
         self,
         mock__customer_basket_query__fetch: Mock,
@@ -355,8 +369,8 @@ class TestViewAddBasketItem(TestClass[add_basket_item]):
         )
         mock__update_customer_basket_command__execute.assert_called_once()
 
-    @patch.object(UpdateCustomerBasketCommand, 'execute', autospec=True)
-    @patch.object(CustomerBasketQuery, 'fetch')
+    @patch.object(UpdateCustomerBasketCommand, UpdateCustomerBasketCommand.execute.__name__, autospec=True)
+    @patch.object(CustomerBasketQuery, CustomerBasketQuery.fetch.__name__)
     def test_case_update_customer_basket_command_execute_cqrs_exception(
         self,
         mock__customer_basket_query__fetch: Mock,

@@ -82,6 +82,7 @@ def update_quantities(
                 product_id=basket_item.product_id,
                 product_name=basket_item.product_name,
                 unit_price=basket_item.unit_price,
+                discount=basket_item.discount,
                 quantity=basket_item_id_to_new_quantity[basket_item.id],
                 picture_url=basket_item.picture_url,
             )

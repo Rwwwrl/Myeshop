@@ -45,7 +45,7 @@ def _fetch_catalog_items_from_db(ids: Optional[List[hints.CatalogItemId]]) -> Li
 
 
 @api_router.get('/items/')
-def get_items(ids: Annotated[Optional[str], Query(example="[10, 20, 30]")] = None) -> List[CatalogItemDTO]:
+def get_items(ids: Annotated[Optional[str], Query(example='[10, 20, 30]')] = None) -> List[CatalogItemDTO]:
     # TODO: добавить пагинацию в случае если не передается ids
     if ids:
         try:

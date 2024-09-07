@@ -3,6 +3,7 @@ from typing import Annotated
 import fastapi
 from fastapi import Depends, Response, status
 
+from pydantic import Field
 from pydantic.types import PositiveFloat, PositiveInt
 
 from sqlalchemy import select, update
@@ -13,7 +14,7 @@ from catalog import hints
 from catalog.domain.models import CatalogItem
 from catalog.views.http.api_router import api_router
 
-from catalog_cqrs_contract.event import CatalogItemPriceChangedEvent
+from catalog_cqrs_contract.event import CatalogItemPriceOrDiscountWasChangedEvent
 
 from eshop.dependency_container import dependency_container
 
@@ -38,24 +39,25 @@ class CatalogItemRequestData(DTO):
     restock_threshold: PositiveInt
     maxstock_threshold: PositiveInt
     on_reorder: bool
+    discount: int = Field(ge=0, le=100)
 
 
 class NotFoundError(Exception):
     pass
 
 
-class CatalogItemPriceAndPictureFilenameResult(DTO):
+class CatalogItemData(DTO):
     price: PositiveFloat
     picture_filename: str
+    discount: int = Field(ge=0, le=100)
 
 
-def _fetch_catalog_item_price_and_picture_filename(
-    catalog_item_id: hints.CatalogItemId,
-) -> CatalogItemPriceAndPictureFilenameResult:
+def _fetch_catalog_item_data(catalog_item_id: hints.CatalogItemId) -> CatalogItemData:
     # yapf: disable
     stmt = select(
         CatalogItem.price,
         CatalogItem.picture_filename,
+        CatalogItem.discount,
     ).where(
         CatalogItem.id == catalog_item_id,
     )
@@ -68,8 +70,12 @@ def _fetch_catalog_item_price_and_picture_filename(
     if not result:
         raise NotFoundError('catalog item with id = %s does not exist', catalog_item_id)
 
-    price, picture_filename = result
-    return CatalogItemPriceAndPictureFilenameResult(price=price, picture_filename=picture_filename)
+    price, picture_filename, discount = result
+    return CatalogItemData(
+        price=price,
+        picture_filename=picture_filename,
+        discount=discount,
+    )
 
 
 def _update_catalog_item_in_db(session: lib_Session, catalog_item: CatalogItem) -> None:
@@ -114,6 +120,7 @@ def _updated_catalog_item(
         restock_threshold=catalog_item_request_data.restock_threshold,
         maxstock_threshold=catalog_item_request_data.maxstock_threshold,
         on_reorder=catalog_item_request_data.on_reorder,
+        discount=catalog_item_request_data.discount,
     )
 
 
@@ -123,14 +130,13 @@ def update_item(
     catalog_item_picture: fastapi.UploadFile,
 ) -> Response:
     try:
-        catalog_item_price_and_picture_filename = _fetch_catalog_item_price_and_picture_filename(
-            catalog_item_id=catalog_item_request_data.id,
-        )
+        catalog_item_data = _fetch_catalog_item_data(catalog_item_id=catalog_item_request_data.id)
     except NotFoundError:
         raise BadRequestException(detail=f'catalog item with id = {catalog_item_request_data.id} does not exist')
 
-    current_catalog_item_price = catalog_item_price_and_picture_filename.price
-    current_catalog_item_picture_filename = catalog_item_price_and_picture_filename.picture_filename
+    current_catalog_item_price = catalog_item_data.price
+    current_catalog_item_discount = catalog_item_data.discount
+    current_catalog_item_picture_filename = catalog_item_data.picture_filename
 
     file_storage_api = dependency_container.file_storage_api_factory()
 
@@ -151,17 +157,20 @@ def update_item(
                 )
             except IntegrityError:
                 raise BadRequestException(
-                    detail=f'''
+                    detail=f"""
                     catalog brand with id = {updated_catalog_item.catalog_brand_id}
                     or catalog type with id = {updated_catalog_item.catalog_type_id} does not exist
-                    ''',
+                    """,
                 )
 
-            if updated_catalog_item.price != current_catalog_item_price:
-                CatalogItemPriceChangedEvent(
+            is_price_changed: bool = updated_catalog_item.price != current_catalog_item_price
+            is_discount_changed: bool = updated_catalog_item.discount != current_catalog_item_discount
+
+            if is_price_changed or is_discount_changed:
+                CatalogItemPriceOrDiscountWasChangedEvent(
                     catalog_item_id=updated_catalog_item.id,
-                    old_price=current_catalog_item_price,
                     new_price=updated_catalog_item.price,
+                    new_discount=updated_catalog_item.discount,
                     context=InsideSqlachemyTransactionContext(session=session),
                 ).publish()
 

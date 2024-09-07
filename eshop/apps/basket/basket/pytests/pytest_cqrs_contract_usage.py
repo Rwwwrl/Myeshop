@@ -7,7 +7,7 @@ from basket_cqrs_contract.query import CustomerBasketQuery
 
 from catalog_cqrs_contract.event import (
     CatalogItemHasBeenDeletedEvent,
-    CatalogItemPriceChangedEvent,
+    CatalogItemPriceOrDiscountWasChangedEvent,
 )
 
 from framework.cqrs.context import InsideSqlachemyTransactionContext
@@ -47,14 +47,18 @@ class TestUserCheckoutAcceptedEvent(ITestEventContractPublisher[UserCheckoutAcce
         assert_attribute(BasketItemDTO, 'product_name', str)
         assert_attribute(BasketItemDTO, 'unit_price', float)
         assert_attribute(BasketItemDTO, 'quantity', int)
+        assert_attribute(BasketItemDTO, 'discount', int)
         assert_attribute(BasketItemDTO, 'picture_url', str)
 
 
-class TestCatalogItemPriceChangedEvent(ITestEventContractConsumer[CatalogItemPriceChangedEvent]):
+class TestCatalogItemPriceOrDiscountWasChangedEvent(
+    ITestEventContractConsumer[CatalogItemPriceOrDiscountWasChangedEvent],
+):
     def test_event_contract(self) -> None:
-        assert_attribute(CatalogItemPriceChangedEvent, 'catalog_item_id', int)
-        assert_attribute(CatalogItemPriceChangedEvent, 'new_price', float)
-        assert_attribute(CatalogItemPriceChangedEvent, 'context', InsideSqlachemyTransactionContext)
+        assert_attribute(CatalogItemPriceOrDiscountWasChangedEvent, 'catalog_item_id', int)
+        assert_attribute(CatalogItemPriceOrDiscountWasChangedEvent, 'new_price', float)
+        assert_attribute(CatalogItemPriceOrDiscountWasChangedEvent, 'new_discount', int)
+        assert_attribute(CatalogItemPriceOrDiscountWasChangedEvent, 'context', InsideSqlachemyTransactionContext)
 
 
 class TestCatalogItemHasBeenDeletedEvent(ITestEventContractConsumer[CatalogItemHasBeenDeletedEvent]):

@@ -16,7 +16,7 @@ from catalog_cqrs_contract.query.query_response import (
 from framework.cqrs.query import IQueryHandler
 from framework.sqlalchemy.session import Session
 
-__all__ = ("CatalogItemByIdQueryHandler", )
+__all__ = ('CatalogItemByIdQueryHandler', )
 
 
 @CatalogItemsByIdsQuery.handler
@@ -46,6 +46,7 @@ class CatalogItemByIdQueryHandler(IQueryHandler):
             name=catalog_item_orm.name,
             description=catalog_item_orm.description,
             price=catalog_item_orm.price,
+            discount=catalog_item_orm.discount,
             available_stock=catalog_item_orm.available_stock,
             maxstock_threshold=catalog_item_orm.maxstock_threshold,
             on_reorder=catalog_item_orm.on_reorder,
