@@ -4,8 +4,14 @@ https://rwwwrl.notion.site/1aa3f3f8c5a143f99683bf313bbbea2c?v=d4b6284348e1405684
 
 ## Test stand
 
-https://myeshoponcontainers.site/docs#/
-Test admin user: admin / 1423
+**url**: *https://myeshoponcontainers.site/docs/*
+Test admin user login / password = admin / 1423
+
+---
+
+**Grafana**
+**url**: *https://myeshoponcontainers.site:3000*
+login / password = admin / 1423
 
 ## Deploy
 
