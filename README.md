@@ -1,26 +1,29 @@
-https://www.notion.so/rwwwrl/eshoponcontainers-b1c5adea1aed4e96bcaf3cecb04a337b?pvs=4
+## Current tasks
+
+https://rwwwrl.notion.site/1aa3f3f8c5a143f99683bf313bbbea2c?v=d4b6284348e140568404fe19c3b395f0
+
+## Test stand
+
+https://myeshoponcontainers.site/docs#/
+Test admin user: admin / 1423
 
 ## Deploy
 
-1. создаем _ssl сертификаты_:
+1. create ssl sertificates:
 
    ```bash
    make create_or_renew_ssl_certificates
    ```
 
-2. поднимаем приложение:
+2. up services:
    ```bash
    make up_prod
    ```
 
-## Обновление _ssl сертификатов_
+## Updating ssl сертификатов
 
-    1.
-    ```bash
-    make create_or_renew_ssl_certificates
-    ```
+```bash
+make create_or_renew_ssl_certificates
+```
 
-    2. **если** приложение запущено, то нужно, чтобы nginx перечитал конфигурацию
-    ```bash
-    make nginx_reload
-    ```
+\*it will restart services
